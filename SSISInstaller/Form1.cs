@@ -12,33 +12,37 @@ namespace SSISInstaller
     {
         public Form1()
         {
+            // Initialize main graphic elements
             InitializeComponent();
+
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            // Pulisci la listView da eventuali altri oggetti
             versionList.Rows.Clear();
-            // Cicla su tutti gli elementi dell'enumerativo ed aggiungi i rispettivi valori alla lista.
-            // Inserisci i soli elementi che possono essere installati
+            
+            // For each Version of SQL (100,110,120...) enumerated into SQLVersion, get its installation Path
             foreach (int i in Enum.GetValues(typeof(SQLVersion)))
             {
-                string txt = Program.GetSQLServerDescription((SQLVersion)i);
+                // Retrive the decription of the instance given its version. This will be printed on the UI.
+                string fullDescr = Program.GetSQLServerDescription((SQLVersion)i);
                 
-                // Controlla se trovo il path adatto, in tal caso aggiungi l'elemento alla lista di quelli installabili.
+                // Check if the machine has this version (x32) installed. 
                 string path = null;
                 if (Program.GetDTSInstallationPath((SQLVersion)i, out path,Architecture.x32) && path != null)
                 {
+                    // If so, print it
                     DataGridViewRow row = new DataGridViewRow();
                     row.Tag = (SQLVersion)i;
                     DataGridViewCheckBoxCell cb = new DataGridViewCheckBoxCell();
                     cb.Value = true;
                     cb.ReadOnly = false;
                     DataGridViewTextBoxCell opath = new DataGridViewTextBoxCell();
-                    opath.Value = txt + " " + Program.GetArchDescription(Architecture.x32);
+                    opath.Value = fullDescr + " " + Program.GetArchDescription(Architecture.x32);
                     opath.Tag = path;
                     opath.ToolTipText = path;
                     row.Cells.AddRange(cb, opath);
                     versionList.Rows.Add(row);
                 }
 
+                // Check if the machine has this version (x32) installed. 
                 if (Program.GetDTSInstallationPath((SQLVersion)i, out path, Architecture.x64) && path != null)
                 {
                     DataGridViewRow row = new DataGridViewRow();
@@ -47,7 +51,7 @@ namespace SSISInstaller
                     cb.Value = true;
                     cb.ReadOnly = false;
                     DataGridViewTextBoxCell opath = new DataGridViewTextBoxCell();
-                    opath.Value = txt + " " + Program.GetArchDescription(Architecture.x64);
+                    opath.Value = fullDescr + " " + Program.GetArchDescription(Architecture.x64);
                     opath.Tag = path;
                     opath.ToolTipText = path;
                     row.Cells.AddRange(cb, opath);

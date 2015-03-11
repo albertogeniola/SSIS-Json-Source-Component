@@ -8,6 +8,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONSource_110", "JSONSource_110\JSONSource_110.csproj", "{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSISInstaller", "SSISInstaller\SSISInstaller.csproj", "{5822DDA5-CB97-477A-8F6E-C99D12165E57}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B613178A-92DA-435F-958B-44533F1B2DAE} = {B613178A-92DA-435F-958B-44533F1B2DAE}
+		{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533} = {E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

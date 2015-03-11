@@ -27,7 +27,6 @@ namespace SSISInstaller
             Application.Run(new Form1());
         }
 
-
         public static bool GetDTSInstallationPath(SQLVersion sqlVersion, out string path,Architecture ark)
         {
             string regKey = null;
@@ -84,7 +83,7 @@ namespace SSISInstaller
                 {
                     string str = Path.Combine(s, SUBDIR);
                     // Copy the appropriate DLL into that folder
-                    foreach (string dll in Directory.GetFiles(RELATIVE_DLL_DIR))
+                    foreach (string dll in Directory.GetFiles(Path.Combine(RELATIVE_DLL_DIR,((int)k).ToString())))
                     {
                         try
                         {
