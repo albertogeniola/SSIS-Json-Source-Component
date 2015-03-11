@@ -1,5 +1,4 @@
-﻿using JSONSource.webkingsoft.JSONSource_120;
-using Microsoft.SqlServer.Dts.Runtime;
+﻿using Microsoft.SqlServer.Dts.Runtime;
 using Microsoft.SqlServer.Dts.Runtime.Design;
 using Microsoft.SqlServer.Dts.Runtime.Wrapper;
 using System;
@@ -16,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace com.webkingsoft.JSONSource_120
+namespace com.webkingsoft.JSONSource_110
 {
     public partial class JsonSourceUI : Form
     {

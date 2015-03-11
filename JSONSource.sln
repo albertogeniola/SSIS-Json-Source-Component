@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONSource", "JSONSource\JSONSource.csproj", "{B613178A-92DA-435F-958B-44533F1B2DAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONSource_120", "JSONSource_120\JSONSource_120.csproj", "{B613178A-92DA-435F-958B-44533F1B2DAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONSource_110", "JSONSource_110\JSONSource_110.csproj", "{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSISInstaller", "SSISInstaller\SSISInstaller.csproj", "{5822DDA5-CB97-477A-8F6E-C99D12165E57}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +29,26 @@ Global
 		{B613178A-92DA-435F-958B-44533F1B2DAE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B613178A-92DA-435F-958B-44533F1B2DAE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B613178A-92DA-435F-958B-44533F1B2DAE}.Release|Win32.ActiveCfg = Release|Any CPU
+		{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}.Release|Win32.ActiveCfg = Release|Any CPU
+		{5822DDA5-CB97-477A-8F6E-C99D12165E57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5822DDA5-CB97-477A-8F6E-C99D12165E57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5822DDA5-CB97-477A-8F6E-C99D12165E57}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5822DDA5-CB97-477A-8F6E-C99D12165E57}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5822DDA5-CB97-477A-8F6E-C99D12165E57}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{5822DDA5-CB97-477A-8F6E-C99D12165E57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5822DDA5-CB97-477A-8F6E-C99D12165E57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5822DDA5-CB97-477A-8F6E-C99D12165E57}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5822DDA5-CB97-477A-8F6E-C99D12165E57}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5822DDA5-CB97-477A-8F6E-C99D12165E57}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
