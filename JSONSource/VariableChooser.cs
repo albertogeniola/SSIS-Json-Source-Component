@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace JSONSource
+namespace com.webkingsoft.JSONSource_120
 {
     public partial class VariableChooser : Form
     {

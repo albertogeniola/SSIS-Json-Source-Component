@@ -8,7 +8,7 @@ using Microsoft.SqlServer.Dts.Design;
 using Microsoft.SqlServer.Dts.Runtime.Design;
 using System.Collections.Generic;
 
-namespace JSONSource
+namespace com.webkingsoft.JSONSource_120
 {
 
     /*
@@ -85,7 +85,7 @@ namespace JSONSource
                 model.Value = _model.ToXmlString();
             }
             else
-                _model = Model.Load(model.Value);
+                _model = Model.Load(model.Value.ToString());
 
             if (_md == null)
                 _md = (IDTSComponentMetaData100)_md.Instantiate();

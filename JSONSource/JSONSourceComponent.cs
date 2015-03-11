@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.Dts.Pipeline;
+﻿using JSONSource.webkingsoft.JSONSource_120;
+using Microsoft.SqlServer.Dts.Pipeline;
 using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 using Microsoft.SqlServer.Dts.Runtime.Wrapper;
 using Newtonsoft.Json;
@@ -14,9 +15,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace JSONSource
+namespace com.webkingsoft.JSONSource_120
 {
-    [DtsPipelineComponent(DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.SourceAdapter, UITypeName = "JSONSource.JSONSourceComponentUI,JSONSource,Version=1.0.0.0,Culture=neutral", IconResource = "JSONSource.jsource.ico")]
+    [DtsPipelineComponent(DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.SourceAdapter, UITypeName = "com.webkingsoft.JSONSource_120.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.0.120.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
     public class JSONSourceComponent : PipelineComponent
     {
         public const int WARNING_FILE_MISSING = 10;
@@ -280,7 +281,7 @@ namespace JSONSource
                     // Provo ad aprire il file
                     IDTSVariables100 vars = null;
                     VariableDispenser.LockOneForRead(m.FilePathVar, ref vars);
-                    string filePath = vars[m.FilePathVar].Value;
+                    string filePath = vars[m.FilePathVar].Value.ToString();
                     vars.Unlock();
 
                     if (!File.Exists(filePath))
@@ -317,7 +318,7 @@ namespace JSONSource
                 case SourceType.WebUrlVariable:
                     vars = null;
                     VariableDispenser.LockOneForRead(m.WebUrlVariable, ref vars);
-                    filePath = DownloadJsonFile(vars[m.WebUrlVariable].Value,m.CustomLocalTempDir);
+                    filePath = DownloadJsonFile(vars[m.WebUrlVariable].Value.ToString(),m.CustomLocalTempDir);
                     vars.Unlock();
 
                     if (!File.Exists(filePath))

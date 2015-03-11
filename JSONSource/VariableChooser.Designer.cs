@@ -1,4 +1,4 @@
-﻿namespace JSONSource
+﻿namespace com.webkingsoft.JSONSource_120
 {
     partial class VariableChooser
     {

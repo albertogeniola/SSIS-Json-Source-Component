@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.Dts.Runtime;
+﻿using JSONSource.webkingsoft.JSONSource_120;
+using Microsoft.SqlServer.Dts.Runtime;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace JSONSource
+namespace com.webkingsoft.JSONSource_120
 {
     /*
         * Classe wrapper che contiene le informazioni per configurare il componente.

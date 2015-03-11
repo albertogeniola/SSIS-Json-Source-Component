@@ -1,4 +1,4 @@
-﻿namespace JSONSource
+﻿namespace com.webkingsoft.JSONSource_120
 {
     partial class JsonSourceUI
     {
@@ -490,7 +490,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::JSONSource.Properties.Resources.Untitled;
+            this.pictureBox1.Image = global::com.webkingsoft.JSONSource_120.Properties.Resources.Untitled;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(295, 446);
