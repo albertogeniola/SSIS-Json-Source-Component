@@ -131,8 +131,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="jsource.ico" />
-    <Content Include="libs\100\com.webkingsoft.JSONSource_100.dll" />
-    <Content Include="libs\100\Newtonsoft.Json.dll" />
+    <Content Include="libs\100\com.webkingsoft.JSONSource_100.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\100\Newtonsoft.Json.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="libs\110\com.webkingsoft.JSONSource_110.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
