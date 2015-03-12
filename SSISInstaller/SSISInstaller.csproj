@@ -53,6 +53,9 @@
   <PropertyGroup>
     <ApplicationIcon>jsource.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SSISInstaller.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -113,9 +116,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="libs\100\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
@@ -130,6 +131,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="jsource.ico" />
+    <Content Include="libs\100\com.webkingsoft.JSONSource_100.dll" />
+    <Content Include="libs\100\Newtonsoft.Json.dll" />
     <Content Include="libs\110\com.webkingsoft.JSONSource_110.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

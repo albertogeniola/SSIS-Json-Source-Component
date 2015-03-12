@@ -9,9 +9,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONSource_110", "JSONSourc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSISInstaller", "SSISInstaller\SSISInstaller.csproj", "{5822DDA5-CB97-477A-8F6E-C99D12165E57}"
 	ProjectSection(ProjectDependencies) = postProject
+		{8853EC66-D848-4879-A8DB-86CCD9412168} = {8853EC66-D848-4879-A8DB-86CCD9412168}
 		{B613178A-92DA-435F-958B-44533F1B2DAE} = {B613178A-92DA-435F-958B-44533F1B2DAE}
 		{E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533} = {E7AC29C4-2EE6-4B2E-891A-4B63DCC2B533}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONSource_100", "JSONSource_100\JSONSource_100.csproj", "{8853EC66-D848-4879-A8DB-86CCD9412168}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +56,16 @@ Global
 		{5822DDA5-CB97-477A-8F6E-C99D12165E57}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{5822DDA5-CB97-477A-8F6E-C99D12165E57}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{5822DDA5-CB97-477A-8F6E-C99D12165E57}.Release|Win32.ActiveCfg = Release|Any CPU
+		{8853EC66-D848-4879-A8DB-86CCD9412168}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8853EC66-D848-4879-A8DB-86CCD9412168}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8853EC66-D848-4879-A8DB-86CCD9412168}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8853EC66-D848-4879-A8DB-86CCD9412168}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8853EC66-D848-4879-A8DB-86CCD9412168}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{8853EC66-D848-4879-A8DB-86CCD9412168}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8853EC66-D848-4879-A8DB-86CCD9412168}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8853EC66-D848-4879-A8DB-86CCD9412168}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8853EC66-D848-4879-A8DB-86CCD9412168}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8853EC66-D848-4879-A8DB-86CCD9412168}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
