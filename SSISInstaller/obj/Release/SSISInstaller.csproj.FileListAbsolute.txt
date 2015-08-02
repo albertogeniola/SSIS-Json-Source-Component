@@ -36,3 +36,21 @@ C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource\S
 C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource\SSISInstaller\obj\Release\SSISInstaller.csproj.GenerateResource.Cache
 C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource\SSISInstaller\bin\Release\libs\100\com.webkingsoft.JSONSource_100.dll
 C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource\SSISInstaller\bin\Release\libs\100\Newtonsoft.Json.dll
+C:\Users\webking\Dropbox\Area Personale\Progetti\JSONSource\JSONSource\SSISInstaller\bin\Release\SSISInstaller.exe.config
+C:\Users\webking\Dropbox\Area Personale\Progetti\JSONSource\JSONSource\SSISInstaller\obj\Release\SSISInstaller.exe
+C:\Users\webking\Dropbox\Area Personale\Progetti\JSONSource\JSONSource\SSISInstaller\obj\Release\SSISInstaller.pdb
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\bin\Release\SSISInstaller.exe.config
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\obj\Release\SSISInstaller.exe
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\obj\Release\SSISInstaller.pdb
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\bin\Release\libs\100\com.webkingsoft.JSONSource_100.dll
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\bin\Release\libs\100\Newtonsoft.Json.dll
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\bin\Release\libs\110\com.webkingsoft.JSONSource_110.dll
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\bin\Release\libs\110\Newtonsoft.Json.dll
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\bin\Release\libs\120\com.webkingsoft.JSONSource_120.dll
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\bin\Release\libs\120\Newtonsoft.Json.dll
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\bin\Release\SSISInstaller.exe
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\bin\Release\SSISInstaller.pdb
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\obj\Release\SSISInstaller.Form1.resources
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\obj\Release\SSISInstaller.Form2.resources
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\obj\Release\SSISInstaller.Properties.Resources.resources
+C:\Users\Alberto Geniola\Dropbox\Area Personale\Progetti\JSONSource\JSONSource_Devel\SSISInstaller\obj\Release\SSISInstaller.csproj.GenerateResource.Cache

@@ -40,7 +40,7 @@ namespace com.webkingsoft.JSONSource_120
 
             if (result == DialogResult.OK)
             {
-                _md.CustomPropertyCollection[JSONSourceComponent.PROPERTY_KEY_MODEL].Value = _model.ToXmlString();
+                _md.CustomPropertyCollection[JSONSourceComponent.PROPERTY_KEY_MODEL].Value = _model.ToJsonConfig();
                 AddOutputColumns(_model.IoMap);
                 return true;
             }
@@ -82,10 +82,10 @@ namespace com.webkingsoft.JSONSource_120
             if (model.Value == null)
             {
                 _model = new Model();
-                model.Value = _model.ToXmlString();
+                model.Value = _model.ToJsonConfig();
             }
             else
-                _model = Model.Load(model.Value.ToString());
+                _model = Model.LoadFromJson(model.Value.ToString());
 
             if (_md == null)
                 _md = (IDTSComponentMetaData100)_md.Instantiate();

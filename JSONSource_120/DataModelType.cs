@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace com.webkingsoft.JSONSource_120
 {
-    public enum OperationMode
+    public enum DataModelType
     {
-        SyncIO,
-        StoreInMemory
+        SingleObject,
+        ArrayOfObjects,
+        ArrayOfData,
+        DataTable
     }
 }

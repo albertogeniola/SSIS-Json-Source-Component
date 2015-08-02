@@ -1,4 +1,5 @@
 ﻿using Microsoft.SqlServer.Dts.Runtime.Wrapper;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,18 +8,19 @@ using System.Threading.Tasks;
 
 namespace com.webkingsoft.JSONSource_120
 {
+    [Newtonsoft.Json.JsonObject(MemberSerialization.OptIn)]
     public class IOMapEntry
     {
-        private string inputFieldName;
-
-        public string InputFieldName
+        private string inFieldPath;
+        [JsonProperty]
+        public string InputFieldPath
         {
-            get { return inputFieldName; }
-            set { inputFieldName = value; }
+            get { return inFieldPath; }
+            set { inFieldPath = value; }
         }
 
         private int inputFieldLen;
-
+        [JsonProperty]
         public int InputFieldLen
         {
             get { return inputFieldLen; }
@@ -26,86 +28,39 @@ namespace com.webkingsoft.JSONSource_120
         }
 
         private string outputColName;
-
+        [JsonProperty]
         public string OutputColName
         {
             get { return outputColName; }
             set { outputColName = value; }
         }
 
-        private DataType outputColumnType;
+        private JsonTypes outputColumnType;
 
-        public DataType OutputColumnType
+        [JsonProperty]
+        public JsonTypes OutputJsonColumnType
         {
             get { return outputColumnType; }
             set { outputColumnType = value; }
         }
 
-       
-
-        public const string EL_IOMAPROW="IOMAPROW";
-        public const string ATT_INPUTFIELDNAME = "InputFieldName";
-        public const string ATT_INPUTFIELDLEN ="InputfieldLength";
-        public const string ATT_OUTPUTFIELDNAME = "OutputFieldName";
-        public const string ATT_OUTPUTFIELDTYPE = "OutputFieldType";
-       
-        public void WriteToXml(System.Xml.XmlWriter writer)
+        public DataType OutputColumnType
         {
-            writer.WriteStartElement(EL_IOMAPROW);
-            writer.WriteAttributeString(ATT_INPUTFIELDNAME, inputFieldName);
-            writer.WriteAttributeString(ATT_INPUTFIELDLEN,inputFieldLen.ToString());
-            writer.WriteAttributeString(ATT_OUTPUTFIELDNAME,outputColName);
-            writer.WriteAttributeString(ATT_OUTPUTFIELDTYPE,outputColumnType.ToString());
-            writer.WriteEndElement(); // Closing EL_IOMAPROW
-        }
-
-        public static IOMapEntry Load(System.Xml.XmlReader reader)
-        {
-            IOMapEntry e = new IOMapEntry();
-
-            string fieldname = null;
-            try
-            {
-                fieldname = reader.GetAttribute(ATT_INPUTFIELDNAME);
+            get {
+                // Mao here a JSON type to the corresponding SSIS DataType
+                switch (outputColumnType) { 
+                    case JsonTypes.Boolean:
+                        return DataType.DT_BOOL;
+                    case JsonTypes.Number:
+                        return DataType.DT_DECIMAL;
+                    case JsonTypes.String:
+                        return DataType.DT_WSTR;
+                    case JsonTypes.RawJson:
+                        return DataType.DT_WSTR;
+                    default:
+                        throw new Exception("Invalid column type specified");
+                }
             }
-            catch (ArgumentException ex)
-            {}
-
-            int fieldlen = 0;
-            try
-            {
-                fieldlen = int.Parse(reader.GetAttribute(ATT_INPUTFIELDLEN));
-            }
-            catch (ArgumentException ex)
-            {}
-
-            string outputName = null;
-            try
-            {
-                outputName = reader.GetAttribute(ATT_OUTPUTFIELDNAME);
-            }
-            catch (ArgumentException ex)
-            {}
-
-            DataType dt = 0;
-            try
-            {
-                dt = (DataType)Enum.Parse(typeof(DataType),reader.GetAttribute(ATT_OUTPUTFIELDTYPE));
-            }
-            catch (ArgumentException ex)
-            {}
-
-            
-
-            e.inputFieldName = fieldname;
-            e.inputFieldLen = fieldlen;
-            e.outputColName = outputName;
-            e.OutputColumnType = dt;
-            
-            if (e.inputFieldName == null)
-                return null;
-            else
-                return e;
         }
     }
 }

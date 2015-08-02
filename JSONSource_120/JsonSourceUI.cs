@@ -279,10 +279,9 @@ ffffffffffffffffffffffffffffffff52006f006f007400200045006e0074007200790000000000
 
             // Inizializza la UI
             InitializeComponent();
-            uiAdvancedInstructions.Rtf = rtf;
 
             // Imposta i vari Enumerativi previsti come tipi di dato.
-            (uiIOGrid.Columns["OutColumnType"] as DataGridViewComboBoxColumn).DataSource = Enum.GetNames(typeof(DataType));
+            (uiIOGrid.Columns["OutColumnType"] as DataGridViewComboBoxColumn).DataSource = Enum.GetNames(typeof(JsonTypes));
             uiSourceType.DataSource = Enum.GetNames(typeof(SourceType));
 
             // Registra l'handler per il settaggio dei valori di default
@@ -294,7 +293,7 @@ ffffffffffffffffffffffffffffffff52006f006f007400200045006e0074007200790000000000
 
         private void uiIOGrid_DefaultValuesNeeded(object sender, DataGridViewRowEventArgs e)
         {
-            e.Row.Cells["OutColumnType"].Value = Enum.GetName(typeof(DataType), DataType.DT_WSTR);
+            e.Row.Cells["OutColumnType"].Value = Enum.GetName(typeof(JsonTypes), JsonTypes.String);
         }
 
         /*
@@ -344,10 +343,6 @@ ffffffffffffffffffffffffffffffff52006f006f007400200045006e0074007200790000000000
             else
                 uiTempDir.Text = m.CustomLocalTempDir;
 
-            uiMemoryModeHigh.Checked = m.OpMode == OperationMode.StoreInMemory;
-            uiMemoryModeLow.Checked = m.OpMode == OperationMode.SyncIO;
-            
-
             // Tab IO
             if (m.IoMap != null)
                 LoadIO(m.IoMap);
@@ -364,10 +359,10 @@ ffffffffffffffffffffffffffffffff52006f006f007400200045006e0074007200790000000000
             foreach(IOMapEntry e in ios)
             {
                 int index = uiIOGrid.Rows.Add();
-                uiIOGrid.Rows[index].Cells[0].Value = e.InputFieldName;
+                uiIOGrid.Rows[index].Cells[0].Value = e.InputFieldPath;
                 uiIOGrid.Rows[index].Cells[1].Value = e.InputFieldLen;
                 uiIOGrid.Rows[index].Cells[2].Value = e.OutputColName;
-                uiIOGrid.Rows[index].Cells[3].Value = Enum.GetName(typeof(DataType),e.OutputColumnType);
+                uiIOGrid.Rows[index].Cells[3].Value = Enum.GetName(typeof(JsonTypes),e.OutputJsonColumnType);
             }
         }
 
@@ -440,22 +435,22 @@ ffffffffffffffffffffffffffffffff52006f006f007400200045006e0074007200790000000000
                         return;
                     }
 
-                    DataType dataType = 0;
+                    JsonTypes dataType = 0;
                     try
                     {
-                        dataType = (DataType)Enum.Parse(typeof(DataType), (string)r.Cells[3].Value);
+                        dataType = (JsonTypes)Enum.Parse(typeof(JsonTypes), (string)r.Cells[3].Value);
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Column typee is invalid on row " + row);
+                        MessageBox.Show("Column type is invalid on row " + row);
                         return;
                     }
 
                     IOMapEntry map = new IOMapEntry();
-                    map.InputFieldName = inputName;
+                    map.InputFieldPath = inputName;
                     map.InputFieldLen = maxLen;
                     map.OutputColName = outName;
-                    map.OutputColumnType = dataType;
+                    map.OutputJsonColumnType = dataType;
 
                     _model.AddMapping(map);
                     row++;
@@ -470,11 +465,6 @@ ffffffffffffffffffffffffffffffff52006f006f007400200045006e0074007200790000000000
                     _model.JsonObjectRelativePath = uiPathToArray.Text;
                 else
                     _model.JsonObjectRelativePath = null;
-
-                if (uiMemoryModeHigh.Checked)
-                    _model.OpMode = OperationMode.StoreInMemory;
-                else if (uiMemoryModeLow.Checked)
-                    _model.OpMode = OperationMode.SyncIO;
 
                 DialogResult = DialogResult.OK;
 
@@ -654,6 +644,11 @@ ffffffffffffffffffffffffffffffff52006f006f007400200045006e0074007200790000000000
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
         {
 
         }

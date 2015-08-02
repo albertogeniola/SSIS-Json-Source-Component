@@ -58,7 +58,7 @@ namespace com.webkingsoft.JSONSource_120
                 var model = ComponentMetaData.CustomPropertyCollection.New();
                 model.Description = "Contains information about the confiuguration of the item.";
                 model.Name = PROPERTY_KEY_MODEL;
-                model.Value = new Model().ToXmlString();
+                model.Value = new Model().ToJsonConfig();
             }
 
         }
@@ -96,7 +96,7 @@ namespace com.webkingsoft.JSONSource_120
                     found = true;
                     try
                     {
-                        m = Model.Load((string)prop.Value);
+                        m = Model.LoadFromJson((string)prop.Value);
                     }
                     catch (Exception e)
                     {
@@ -166,7 +166,7 @@ namespace com.webkingsoft.JSONSource_120
             foreach (IOMapEntry e in m.IoMap)
             {
                 // FieldName and outputFiledName cannot be null, empty and must be unique.
-                if (string.IsNullOrEmpty(e.InputFieldName))
+                if (string.IsNullOrEmpty(e.InputFieldPath))
                 {
                     ComponentMetaData.FireError(ERROR_IOMAP_ENTRY_ERROR, ComponentMetaData.Name, "One row of the Input-Output mapping is invalid: null or empty input field name. Please review IO configuration.", null, 0, out fireAgain);
                     return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
@@ -178,8 +178,8 @@ namespace com.webkingsoft.JSONSource_120
                 }
                 // Checks for unique cols
                 foreach (IOMapEntry e1 in m.IoMap)
-                { 
-                    if (!ReferenceEquals(e,e1) && e.InputFieldName==e1.InputFieldName)
+                {
+                    if (!ReferenceEquals(e, e1) && e.InputFieldPath == e1.InputFieldPath)
                     {
                         // Not unique!
                         ComponentMetaData.FireError(ERROR_IOMAP_ENTRY_ERROR, ComponentMetaData.Name, "There are two or more rows with same InputFieldName. This is not allowed.", null, 0, out fireAgain);
@@ -218,15 +218,14 @@ namespace com.webkingsoft.JSONSource_120
         private IOMapEntry[] _iomap;
         private Dictionary<string, int> _outColsMaps;
         private string _pathToArray = null;
-        private OperationMode _opMode = OperationMode.SyncIO;
+        ParallelOptions _opt;
+
         public override void PreExecute()
         {
-            /*
-            IDTSOutput100 output = ComponentMetaData.OutputCollection[0];
 
-            m_FileNameColumnIndex = (int)BufferManager.FindColumnByLineageID(output.Buffer, output.OutputColumnCollection[0].LineageID);
-            m_FileBlobColumnIndex = (int)BufferManager.FindColumnByLineageID(output.Buffer, output.OutputColumnCollection[1].LineageID);
-             * */
+            _opt = new ParallelOptions();
+            _opt.MaxDegreeOfParallelism = 4;
+
             bool cancel = false;
             // Carico i dettagli dal model
             Model m = null;
@@ -238,7 +237,7 @@ namespace com.webkingsoft.JSONSource_120
                     found = true;
                     try
                     {
-                        m = Model.Load((string)prop.Value);
+                        m = Model.LoadFromJson((string)prop.Value);
                     }
                     catch (Exception e)
                     {
@@ -367,9 +366,6 @@ namespace com.webkingsoft.JSONSource_120
 
             // Salva una copia locale del percorso cui attingere l'array
             _pathToArray = m.JsonObjectRelativePath;
-            // Copiati la opMode
-            _opMode = m.OpMode;
-
         }
 
         private string DownloadJsonFile(string url, string customLocalTempDir=null)
@@ -414,18 +410,7 @@ namespace com.webkingsoft.JSONSource_120
             
             try
             {
-
-                if (_opMode == OperationMode.StoreInMemory)
-                {
-                    ProcessInMemory(_sr, buffer);
-                }
-                else if (_opMode == OperationMode.SyncIO)
-                {
-                    ProcessInFile(_sr,buffer);
-                }
-                else
-                    throw new Exception("Invalid Operation mode specified: "+_opMode);
-
+                ProcessInMemory(_sr, buffer);
                 buffer.SetEndOfRowset();
             }
             catch (Exception e)
@@ -437,189 +422,89 @@ namespace com.webkingsoft.JSONSource_120
         }
 
         /**
-         Questo metodo prevede il processing del file Json utilizzando il reader e passando in rassegna le chiavi
-         una alla volta, minimizzando l'uso della memoria ed aumentando l'uso del disco. 
-        **/
-        private void ProcessInFile(StreamReader _sr, PipelineBuffer buffer)
-        {
-            using (_sr)
-            {
-                using (JsonTextReader jr = new JsonTextReader(_sr))
-                {
-                    JsonTokenizer tokenizer = new JsonTokenizer(_pathToArray);
-                    // Finchè non raggiungo il livello specificato
-                    while (tokenizer.HasMoreTokens())
-                    {
-                        string curKey = tokenizer.Next();
-                        int depth = 1;
-                        bool keyFound = false;
-                        while (jr.Read())
-                        {
-                            // Se sono allo stesso livello di interesse, controlla la tipologia ed il nome della chiave
-                            if (jr.Depth == depth)
-                            {
-                                // Se il token è di tipo chiave e la chiave ha lo stesso valore che cerco, allora alzo il flag e rompo il ciclo
-                                if (jr.TokenType == JsonToken.PropertyName && ((string)jr.Value) == curKey)
-                                {
-                                    keyFound = true;
-                                    break; // Interrompe il while(jr.Read())
-                                }
-                            }
-                        } // Fine While(jr.Read())
-
-                        // Se non ho trovato la chiave che cercavo, lancia un errore
-                        if (!keyFound)
-                        {
-                            //TODO
-                            throw new Exception("Invalid Path to array specified in component properties. Cannot reach \"" + _pathToArray + "\"");
-                        }
-
-                        // altrimenti procedi con il ciclo
-                        depth++;
-                    } // Fine  While(tokenizer.HasMoreTokens())
-
-                    // Esco dal ciclo quando non ho più token da cercare: significa che lo streamReader ha spostato il cursore esattamente dove
-                    // mi interessa che sia, ovvero all'inizio di un array di oggetti.
-                    // Controllo che l'oggetto in questione si di tipo ARRAY
-                    if (!jr.Read())
-                    {
-                        // Non è presente il prossimo elemento! Errore, json malformato
-                        throw new Exception("Invalid Json data. Cannot read the array start token. Error in line " + jr.LineNumber + " char " + jr.LinePosition);
-                        //TODO
-                    }
-                    if (jr.TokenType != JsonToken.StartArray)
-                    {
-                        // Errore: mi aspettavo un array
-                        throw new Exception("Invalid json data: element found at " + _pathToArray + " was of type " + jr.TokenType + ". Expecting " + JsonToken.StartArray + " instead. Error in line " + jr.LineNumber + " char " + jr.LinePosition);
-                        //TODO
-                    }
-                    // A questo punto sono all'interno dell'array.
-                    // Per ogni oggetto contenuto al suo interno, parso l'uscita
-                    bool firstDone = false;
-                    int referenceDepth = -1;
-                    int count = 0;
-                    while (jr.Read() && jr.Depth >= referenceDepth)
-                    {
-                        // Da eseguire solamente al primo giro. Il Do...While non mi piaceva :)
-                        if (!firstDone)
-                        {
-                            referenceDepth = jr.Depth;
-                            firstDone = true;
-                        }
-
-                        // Non parso gli oggetti innestati.
-                        if (jr.Depth > (referenceDepth + 1))
-                        {
-                            jr.Skip();
-                            continue;
-                        }
-
-                        // Se una nuova riga è rihiesta, aggiungila
-                        if (jr.TokenType == JsonToken.StartObject)
-                            buffer.AddRow();
-
-                        if (jr.TokenType == JsonToken.PropertyName)
-                        {
-                            string propName = (string)jr.Value;
-                            // Leggo direttamente il value da qui:
-                            if (!jr.Read())
-                            {
-                                // Errore 
-                                //TODO
-                                throw new Exception("Error during JSON PARSING:cannot read property value for property name " + propName + " for item # " + count + ". Line " + jr.LineNumber + " char " + jr.LinePosition);
-                            }
-                            // Mi aspetto di avere in mano il valore.
-                            // Cerco la colonna corrispondente nella lista delle collonne in IOMap ed effettuo l'inserimento
-                            foreach (IOMapEntry e in _iomap)
-                            {
-                                if (e.InputFieldName == propName)
-                                {
-                                    // Identifico qual'è la colonna di output
-                                    int destColIndex = _outColsMaps[e.OutputColName];
-                                    // Effettuo la copia del valore
-                                    buffer[destColIndex] = jr.Value;
-                                    break;
-                                }
-                            }
-
-                        }
-                    }
-
-
-                } // Fine using jr
-            } // Fine using _sr
-        }
-
-        /**
-         * Il processing in memory prevede il caricamento dell'intero dataset in ingresso, deserializzandolo in opportuni oggetti C#.
-        **/
+         * Executes the navigation+parsing operation for the given json, putting results into the buffer.
+         */
         private void ProcessInMemory(StreamReader _sr, PipelineBuffer buffer)
         {
-            ParallelOptions opt = new ParallelOptions();
-            opt.MaxDegreeOfParallelism = 4;
-
             using (_sr)
             {
                 bool cancel = false;
                 ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Loading whole model into memory and deserializing...", null, 0, ref cancel);
 
-                // Eseguo il caricamento in memoria e la deserializzazione dell'oggetto
-                JObject o = JObject.Load(new JsonTextReader(_sr));
-                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Object loaded.", null, 0, ref cancel);
-
-                // Se è stato specificato un sottopath da seguire, lo cerco
+                // Navigate to the relative Root.
                 try
                 {
-                    JToken t = o.SelectToken(_pathToArray, true);
-                    if (t.Type != JTokenType.Array)
-                    {
-                        // Not an array!
-                        ComponentMetaData.FireError(RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "The path specified: " + _pathToArray + " doesn't point to an array. This component only supports Array deserialization.", null, 0, out cancel);
-                        throw new Exception("The path specified: " + _pathToArray + " doesn't point to an array. This component only supports Array deserialization.");
-                    }
-                    else
-                    {
-                        object[] arr = t.ToArray<object>();
-                        int count = 0;
-                        // Per ogni oggetto nell'array
-                        foreach (Newtonsoft.Json.Linq.JObject obj in arr)
-                        {
-                            buffer.AddRow();
-                            Parallel.ForEach<IOMapEntry>(_iomap, opt, delegate(IOMapEntry e) {
-                                try {
-                                    object val = obj.Property(e.InputFieldName).Value;
-                                    int colIndex = _outColsMaps[e.OutputColName];
-                                    buffer[colIndex] = val;
-                                }
-                                catch(Exception ex)
-                                {
-                                    ComponentMetaData.FireError(RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, "Cannot set property value for column " + e.OutputColName + " from the input field " + e.InputFieldName + " on object # " + count, null, 0, out cancel);
-                                    throw new Exception("Cannot set property value for column "+e.OutputColName+" from the input field "+e.InputFieldName+" on object # "+count);
-                                }
+                    // Load all the Array so we can navigate it quickly.
+                    // TODO: we need to change this to support Single Object parsing
+                    JObject o = JObject.Load(new JsonTextReader(_sr));
+                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Object loaded.", null, 0, ref cancel);
 
-                            });
-                            count++;
+                    // Get all the tokens returned by the XPath string specified
+                    if (_pathToArray == null)
+                        _pathToArray = "";
+
+                    IEnumerable<JToken> els =  o.SelectTokens(_pathToArray);
+                    int rootEls = els.Count();
+                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Array: loaded " + rootEls + " tokens.", null, 0, ref cancel);
+
+                    int count = 0;
+                    // For each root element we got...
+                    foreach (JToken t in els) {
+                        if (t.Type == JTokenType.Array) {
+                            count+=ProcessArray(t as JArray, buffer);
+                        }
+                        else if (t.Type == JTokenType.Object) {
+                            count+=ProcessObject(t as JObject, buffer);
+                        }
+                        else {
+                            throw new Exception("Invalid token returned by RootPath query: "+t.Type.ToString());
                         }
                     }
+                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Succesfully parsed " + count + " tokens.", null, 0, ref cancel);
                 }
                 catch (Exception ex)
                 {
-                    ComponentMetaData.FireError(RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "Cannot find an array to the object path specified: " + _pathToArray + ". Please check the path.", null, 0, out cancel);
-                    throw new Exception("Cannot find an array to the object path specified: " + _pathToArray + ". Please check the path.");
+                    ComponentMetaData.FireError(RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, ex.Message + ex.StackTrace+ex.InnerException, null, 0, out cancel);
+                    throw new Exception("Error occurred: " + ex.Message + ex.StackTrace + ex.InnerException);
                 }
             }
-            //TODO
-            /*
-            // TEST ------
-            long bytes_old = GC.GetTotalMemory(false);
-            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Before invocation using " + (bytes_old / 1024 / 1024) + " mb.",null,0,cancel);
-            JObject o = JObject.Load(new JsonTextReader(_sr));
-            long bytes = GC.GetTotalMemory(false);
-            ComponentMetaData.FireInformation(1001, ComponentMetaData.Name, "After invocation using " + (bytes / 1024 / 1024) + " mb.", null, 0, cancel);
-            ComponentMetaData.FireInformation(1002, ComponentMetaData.Name, "DELTA IS " + ((bytes - bytes_old) / 1024 / 1024) + " mb.", null, 0, cancel);
-            o.SelectToken(m.JsonObjectRelativePath);
-            // FINE TEST ----
-            */
+
+        }
+
+        private int ProcessObject(JObject obj, PipelineBuffer buffer)
+        {
+            
+            // Each objects corresponds to an output row.
+            buffer.AddRow();
+
+            // For each column requested from metadata, look for data into the object we parsed
+            Parallel.ForEach<IOMapEntry>(_iomap, _opt, delegate(IOMapEntry e)
+            {
+                object val = obj.SelectToken(e.InputFieldPath);
+                int colIndex = _outColsMaps[e.OutputColName];
+                buffer[colIndex] = val;
+            });
+            return 1;
+        }
+
+        private int ProcessArray(JArray arr, PipelineBuffer buffer)
+        {
+            int count = 0;
+            foreach (JObject obj in arr)
+            {
+                // Each objects corresponds to an output row.
+                buffer.AddRow();
+
+                // For each column requested from metadata, look for data into the object we parsed
+                Parallel.ForEach<IOMapEntry>(_iomap, _opt, delegate(IOMapEntry e)
+                {
+                    object val = obj.SelectToken(e.InputFieldPath);
+                    int colIndex = _outColsMaps[e.OutputColName];
+                    buffer[colIndex] = val;
+                });
+                count++;
+            }
+            return count;
         }
 
         

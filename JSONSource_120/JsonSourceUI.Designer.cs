@@ -62,16 +62,10 @@
             this.uiSourceType = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.uiMemoryModeHigh = new System.Windows.Forms.RadioButton();
-            this.uiMemoryModeLow = new System.Windows.Forms.RadioButton();
-            this.uiAdvancedInstructions = new System.Windows.Forms.RichTextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.uiPathToArray = new System.Windows.Forms.TextBox();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.uiIOGrid)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -82,14 +76,11 @@
             this.uiFilePathGroup.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // uiTempDir
             // 
-            this.uiTempDir.Location = new System.Drawing.Point(9, 346);
+            this.uiTempDir.Location = new System.Drawing.Point(9, 28);
             this.uiTempDir.Name = "uiTempDir";
             this.uiTempDir.Size = new System.Drawing.Size(333, 20);
             this.uiTempDir.TabIndex = 5;
@@ -105,7 +96,7 @@
             this.OutColumnType});
             this.uiIOGrid.Location = new System.Drawing.Point(6, 42);
             this.uiIOGrid.Name = "uiIOGrid";
-            this.uiIOGrid.Size = new System.Drawing.Size(602, 363);
+            this.uiIOGrid.Size = new System.Drawing.Size(730, 363);
             this.uiIOGrid.TabIndex = 6;
             // 
             // JSONFieldName
@@ -130,7 +121,7 @@
             // 
             // ok
             // 
-            this.ok.Location = new System.Drawing.Point(540, 455);
+            this.ok.Location = new System.Drawing.Point(670, 455);
             this.ok.Name = "ok";
             this.ok.Size = new System.Drawing.Size(92, 36);
             this.ok.TabIndex = 7;
@@ -140,7 +131,7 @@
             // 
             // cancel
             // 
-            this.cancel.Location = new System.Drawing.Point(442, 455);
+            this.cancel.Location = new System.Drawing.Point(572, 455);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(92, 36);
             this.cancel.TabIndex = 8;
@@ -151,7 +142,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 330);
+            this.label3.Location = new System.Drawing.Point(6, 12);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(210, 13);
             this.label3.TabIndex = 4;
@@ -183,7 +174,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(622, 437);
+            this.tabControl1.Size = new System.Drawing.Size(750, 437);
             this.tabControl1.TabIndex = 9;
             // 
             // tabPage1
@@ -195,7 +186,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(614, 411);
+            this.tabPage1.Size = new System.Drawing.Size(742, 411);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Source";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -391,118 +382,51 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.label2);
+            this.tabPage3.Controls.Add(this.uiPathToArray);
             this.tabPage3.Controls.Add(this.uiIOGrid);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(614, 411);
+            this.tabPage3.Size = new System.Drawing.Size(742, 411);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Input - Output";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 15);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(85, 13);
+            this.label2.TabIndex = 9;
+            this.label2.Text = "Array Root Path:";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // uiPathToArray
+            // 
+            this.uiPathToArray.Location = new System.Drawing.Point(97, 12);
+            this.uiPathToArray.Name = "uiPathToArray";
+            this.uiPathToArray.Size = new System.Drawing.Size(639, 20);
+            this.uiPathToArray.TabIndex = 8;
+            // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.panel1);
-            this.tabPage2.Controls.Add(this.groupBox1);
-            this.tabPage2.Controls.Add(this.uiAdvancedInstructions);
-            this.tabPage2.Controls.Add(this.label2);
-            this.tabPage2.Controls.Add(this.uiPathToArray);
             this.tabPage2.Controls.Add(this.label3);
             this.tabPage2.Controls.Add(this.uiTempDir);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(614, 411);
+            this.tabPage2.Size = new System.Drawing.Size(742, 411);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Advanced";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.uiMemoryModeHigh);
-            this.groupBox1.Controls.Add(this.uiMemoryModeLow);
-            this.groupBox1.Location = new System.Drawing.Point(348, 285);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(238, 81);
-            this.groupBox1.TabIndex = 10;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Parsing Mode:";
-            // 
-            // uiMemoryModeHigh
-            // 
-            this.uiMemoryModeHigh.AutoSize = true;
-            this.uiMemoryModeHigh.Location = new System.Drawing.Point(22, 43);
-            this.uiMemoryModeHigh.Name = "uiMemoryModeHigh";
-            this.uiMemoryModeHigh.Size = new System.Drawing.Size(109, 17);
-            this.uiMemoryModeHigh.TabIndex = 1;
-            this.uiMemoryModeHigh.Text = "High performance";
-            this.uiMemoryModeHigh.UseVisualStyleBackColor = true;
-            this.uiMemoryModeHigh.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
-            // 
-            // uiMemoryModeLow
-            // 
-            this.uiMemoryModeLow.AutoSize = true;
-            this.uiMemoryModeLow.Checked = true;
-            this.uiMemoryModeLow.Location = new System.Drawing.Point(22, 20);
-            this.uiMemoryModeLow.Name = "uiMemoryModeLow";
-            this.uiMemoryModeLow.Size = new System.Drawing.Size(166, 17);
-            this.uiMemoryModeLow.TabIndex = 0;
-            this.uiMemoryModeLow.TabStop = true;
-            this.uiMemoryModeLow.Text = "Low Memory (Recommended)";
-            this.uiMemoryModeLow.UseVisualStyleBackColor = true;
-            this.uiMemoryModeLow.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
-            // 
-            // uiAdvancedInstructions
-            // 
-            this.uiAdvancedInstructions.Location = new System.Drawing.Point(9, 6);
-            this.uiAdvancedInstructions.Name = "uiAdvancedInstructions";
-            this.uiAdvancedInstructions.ReadOnly = true;
-            this.uiAdvancedInstructions.Size = new System.Drawing.Size(355, 273);
-            this.uiAdvancedInstructions.TabIndex = 8;
-            this.uiAdvancedInstructions.Text = "";
-            this.uiAdvancedInstructions.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 282);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(90, 13);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "JSON Array Path:";
-            // 
-            // uiPathToArray
-            // 
-            this.uiPathToArray.Location = new System.Drawing.Point(9, 298);
-            this.uiPathToArray.Name = "uiPathToArray";
-            this.uiPathToArray.Size = new System.Drawing.Size(333, 20);
-            this.uiPathToArray.TabIndex = 7;
-            // 
-            // panel1
-            // 
-            this.panel1.AutoScroll = true;
-            this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Location = new System.Drawing.Point(370, 6);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(238, 273);
-            this.panel1.TabIndex = 11;
-            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::com.webkingsoft.JSONSource_120.Properties.Resources.Untitled;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(295, 446);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox1.TabIndex = 10;
-            this.pictureBox1.TabStop = false;
             // 
             // JsonSourceUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(646, 500);
+            this.ClientSize = new System.Drawing.Size(766, 500);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.ok);
@@ -524,13 +448,9 @@
             this.uiFilePathGroup.ResumeLayout(false);
             this.uiFilePathGroup.PerformLayout();
             this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -552,8 +472,6 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Panel MainPanel;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox uiPathToArray;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.Button uiBrowseFilePath;
         private System.Windows.Forms.TextBox uiFilePathCustom;
@@ -574,11 +492,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn JSONMaxLen;
         private System.Windows.Forms.DataGridViewTextBoxColumn OutColName;
         private System.Windows.Forms.DataGridViewComboBoxColumn OutColumnType;
-        private System.Windows.Forms.RichTextBox uiAdvancedInstructions;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RadioButton uiMemoryModeHigh;
-        private System.Windows.Forms.RadioButton uiMemoryModeLow;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox uiPathToArray;
     }
 }
