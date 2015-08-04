@@ -10,7 +10,7 @@ namespace JSONSource.webkingsoft.JSONSource_120
     {
         WebUrlPath,
         WebUrlVariable,
-        filePath,
-        filePathVariable
+        FilePath,
+        FilePathVariable
     }
 }

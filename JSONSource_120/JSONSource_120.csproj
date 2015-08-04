@@ -65,6 +65,14 @@
     <Compile Include="DataModelType.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="IOMapEntry.cs" />
+    <Compile Include="JSONTransformComponentUI.cs" />
+    <Compile Include="JsonTransformUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="JsonTransformUI.Designer.cs">
+      <DependentUpon>JsonTransformUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSONTransformComponent.cs" />
     <Compile Include="JSONSourceComponent.cs" />
     <Compile Include="JSONSourceComponentUI.cs" />
     <Compile Include="JsonSourceUI.cs">
@@ -74,7 +82,9 @@
       <DependentUpon>JsonSourceUI.cs</DependentUpon>
     </Compile>
     <Compile Include="JsonTypes.cs" />
-    <Compile Include="Model.cs" />
+    <Compile Include="TransformationModel.cs" />
+    <Compile Include="SourceModel.cs" />
+    <Compile Include="ModelNotFoundException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -89,6 +99,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="JsonTransformUI.resx">
+      <DependentUpon>JsonTransformUI.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="JsonSourceUI.resx">
       <DependentUpon>JsonSourceUI.cs</DependentUpon>
       <SubType>Designer</SubType>

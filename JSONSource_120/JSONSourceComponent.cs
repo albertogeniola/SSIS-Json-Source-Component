@@ -31,7 +31,10 @@ namespace com.webkingsoft.JSONSource_120
         public const int ERROR_IOMAP_EMPTY = 14;
         public const int ERROR_IOMAP_ENTRY_ERROR = 15;
         public const int ERROR_SINGLE_OUTPUT_SUPPORTED = 16;
-        
+        public const int ERROR_INPUT_LANE_NOT_FOUND = 17;
+
+        public const int ERROR_SELECT_TOKEN = 1001;
+
         public const int RUNTIME_ERROR_MODEL_INVALID = 100;
 
         public const int RUNTIME_GENERIC_ERROR = 1000;
@@ -39,28 +42,27 @@ namespace com.webkingsoft.JSONSource_120
         public static readonly string PROPERTY_KEY_MODEL = "CONFIGURATION_MODEL_OBJECT";
         public override void ProvideComponentProperties()
         {
-            // Questo componente non prevede alcun input!
+            // Pulisco gli input, output e le custom properties
             base.RemoveAllInputsOutputsAndCustomProperties();
+            // Configuro gli output (per default nessun output presente)
             var output = ComponentMetaData.OutputCollection.New();
             output.Name = "Parsed Json lines";
-            bool found = false;
-            foreach (IDTSProperty100 prop in ComponentMetaData.CustomPropertyCollection)
-                if (prop.Name == PROPERTY_KEY_MODEL)
-                { 
-                    // Trovato, non fare nulla.
-                    found = true;
-                    break;
-                }
-            if (!found)
+            
+
+            SourceModel m = null;
+            try
+            {
+                m = GetModel();
+            }
+            catch (ModelNotFoundException e)
             {
                 // Non l'ho trovato. Aggiungi la proprietà, salvando l'oggetto MODEL serializzato
                 // in XML. 
                 var model = ComponentMetaData.CustomPropertyCollection.New();
                 model.Description = "Contains information about the confiuguration of the item.";
                 model.Name = PROPERTY_KEY_MODEL;
-                model.Value = new Model().ToJsonConfig();
+                model.Value = new SourceModel().ToJsonConfig();
             }
-
         }
 
         /**
@@ -70,8 +72,6 @@ namespace com.webkingsoft.JSONSource_120
         **/
         public override Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus Validate()
         {
-            Model m = null;
-            Boolean found = false;
             bool fireAgain = false;
 
             // Validazione di base
@@ -88,31 +88,21 @@ namespace com.webkingsoft.JSONSource_120
                 return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
             }
 
-            // Recupera i metadati. Se non sono presenti, ritorna uno stato di invalido
-            foreach (dynamic prop in ComponentMetaData.CustomPropertyCollection)
-                if (prop.Name == PROPERTY_KEY_MODEL)
-                {
-                    // Trovato!
-                    found = true;
-                    try
-                    {
-                        m = Model.LoadFromJson((string)prop.Value);
-                    }
-                    catch (Exception e)
-                    {
-                        return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
-                    }
-                    break;
-                }
-
-            if (!found)
+            SourceModel m = null;
+            try
+            {
+                m = GetModel();
+            }
+            catch (Exception e)
+            {
                 return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
+            }
 
             // Controlla la validità di ogni elemento del MODEL
             // Sorgente: controlla la validità di tutti i campi in base al tipo di sorgente specificato.
             switch (m.SourceType)
             { 
-                case SourceType.filePath:
+                case SourceType.FilePath:
                     // l'URL deve essere corretto. Se non lo è, lancia un warning. Non faccio fallire il componente,
                     // pochè potrebbe essere interessante scaricare o posizionare il file a runtime.
                     if (string.IsNullOrEmpty(m.FilePath))
@@ -123,7 +113,7 @@ namespace com.webkingsoft.JSONSource_120
                     if (!File.Exists(m.FilePath))
                         ComponentMetaData.FireWarning(WARNING_FILE_MISSING, ComponentMetaData.Name, "The file " + m.FilePath + " doesn't exist. Make sure it will at runtime.",null,0);
                     break;
-                case SourceType.filePathVariable:
+                case SourceType.FilePathVariable:
                     // La variabile deve esistere. Se non esiste, produci un errore
                     if (string.IsNullOrEmpty(m.FilePathVar) || !VariableDispenser.Contains(m.FilePathVar))
                     {
@@ -150,6 +140,7 @@ namespace com.webkingsoft.JSONSource_120
                         return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
                     }
                     break;
+                
                 default:
                     return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
             }
@@ -211,6 +202,26 @@ namespace com.webkingsoft.JSONSource_120
             return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISVALID;
         }
 
+        private SourceModel GetModel()
+        {
+            SourceModel m = null;
+            bool found = false;
+            // Recupera i metadati. Se non sono presenti, ritorna uno stato di invalido
+            foreach (dynamic prop in ComponentMetaData.CustomPropertyCollection)
+                if (prop.Name == PROPERTY_KEY_MODEL)
+                {
+                    // Trovato!
+                    found = true;
+                    m = SourceModel.LoadFromJson((string)prop.Value);    
+                    break;
+                }
+
+            if (!found)
+                throw new ModelNotFoundException();
+            else
+                return m;
+        }
+
 
         // Le seguenti variabili contengono gli oggetti da usare a runtime, instanziati dal metodo seguente,
         // invocato appena prima di processare l'input.
@@ -228,7 +239,7 @@ namespace com.webkingsoft.JSONSource_120
 
             bool cancel = false;
             // Carico i dettagli dal model
-            Model m = null;
+            SourceModel m = null;
             bool found = false;
             foreach (dynamic prop in ComponentMetaData.CustomPropertyCollection)
                 if (prop.Name == PROPERTY_KEY_MODEL)
@@ -237,7 +248,7 @@ namespace com.webkingsoft.JSONSource_120
                     found = true;
                     try
                     {
-                        m = Model.LoadFromJson((string)prop.Value);
+                        m = SourceModel.LoadFromJson((string)prop.Value);
                     }
                     catch (Exception e)
                     {
@@ -258,7 +269,7 @@ namespace com.webkingsoft.JSONSource_120
             // cui attinge il model, rendendolo inutilizzabile. Però se l'è andata a cercare!
             switch (m.SourceType)
             { 
-                case SourceType.filePath:
+                case SourceType.FilePath:
                     // Provo ad aprire il file
                     if (!File.Exists(m.FilePath))
                     {
@@ -275,7 +286,7 @@ namespace com.webkingsoft.JSONSource_120
                         return;
                     }
                     break;
-                case SourceType.filePathVariable:
+                case SourceType.FilePathVariable:
                     // Assumo che la variabile esista e non sia nulla. Me lo conferma la corretta esecuzione del metodo VALIDATE.
                     // Provo ad aprire il file
                     IDTSVariables100 vars = null;
@@ -402,7 +413,7 @@ namespace com.webkingsoft.JSONSource_120
                 
             }
         }
-        
+
         public override void PrimeOutput(int outputs, int[] outputIDs, PipelineBuffer[] buffers)
         {
             IDTSOutput100 output = ComponentMetaData.OutputCollection[0];
@@ -435,7 +446,6 @@ namespace com.webkingsoft.JSONSource_120
                 try
                 {
                     // Load all the Array so we can navigate it quickly.
-                    // TODO: we need to change this to support Single Object parsing
                     JObject o = JObject.Load(new JsonTextReader(_sr));
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Object loaded.", null, 0, ref cancel);
 
@@ -473,22 +483,58 @@ namespace com.webkingsoft.JSONSource_120
 
         private int ProcessObject(JObject obj, PipelineBuffer buffer)
         {
-            
+            bool cancel=false;
+            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Processing Object...", null, 0, ref cancel);
             // Each objects corresponds to an output row.
             buffer.AddRow();
 
             // For each column requested from metadata, look for data into the object we parsed
             Parallel.ForEach<IOMapEntry>(_iomap, _opt, delegate(IOMapEntry e)
             {
-                object val = obj.SelectToken(e.InputFieldPath);
-                int colIndex = _outColsMaps[e.OutputColName];
-                buffer[colIndex] = val;
+                // If the user wants to get raw json, we should parse nothing: simply return all the json as a string
+                if (e.OutputJsonColumnType == JsonTypes.RawJson)
+                {
+                    string val = null;
+                    var vals = obj.SelectTokens(e.InputFieldPath);
+                    if (vals.Count() > 1)
+                    {
+                        JArray arr = new JArray();
+                        foreach (var t in vals)
+                        {
+                            arr.Add(t);
+                        }
+                        val = arr.ToString();
+                    }
+                    else {
+                        val = vals.ElementAt(0).ToString();
+                    }
+                    
+                    int colIndex = _outColsMaps[e.OutputColName];
+                    buffer[colIndex] = val;
+                }
+                else {
+                    // If it's not a json raw type, parse the value.
+                    try
+                    {
+                        object val = obj.SelectToken(e.InputFieldPath);
+                        int colIndex = _outColsMaps[e.OutputColName];
+                        buffer[colIndex] = val;
+                    }
+                    catch (Newtonsoft.Json.JsonException ex) {
+                        bool fireAgain = false;
+                        ComponentMetaData.FireError(ERROR_SELECT_TOKEN, ComponentMetaData.Name, "SelectToken failed. This may be due to an invalid Xpath syntax / member name. However this error still happens if multiple tokens are returned and the value expected is single. Specific error was: "+ex.Message, null, 0, out fireAgain);
+                        throw ex;
+                    }
+                }
+                
             });
             return 1;
         }
 
         private int ProcessArray(JArray arr, PipelineBuffer buffer)
         {
+            bool cancel = false;
+            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Processing Array...", null, 0, ref cancel);
             int count = 0;
             foreach (JObject obj in arr)
             {
@@ -507,51 +553,48 @@ namespace com.webkingsoft.JSONSource_120
             return count;
         }
 
+        public override System.Collections.ObjectModel.Collection<int> GetDependentInputs(int blockedInputID)
+        {
+            return base.GetDependentInputs(blockedInputID);
+        }
+
+        public override IDTSExternalMetadataColumn100 InsertExternalMetadataColumnAt(int iID, int iExternalMetadataColumnIndex, string strName, string strDescription)
+        {
+            return base.InsertExternalMetadataColumnAt(iID, iExternalMetadataColumnIndex, strName, strDescription);
+        }
+
+        public override IDTSExternalMetadataColumn100 MapInputColumn(int iInputID, int iInputColumnID, int iExternalMetadataColumnID)
+        {
+            return base.MapInputColumn(iInputID, iInputColumnID, iExternalMetadataColumnID);
+        }
+
         
+
+        public override void OnInputPathAttached(int inputID)
+        {
+            throw new Exception("This component is a source adapter and doesn't support any input.");
+        }
+
+        public override IDTSOutput100 InsertOutput(DTSInsertPlacement insertPlacement, int outputID)
+        {
+            throw new Exception("This component doesn't support any additional output");
+        }
+
         public override IDTSInput100 InsertInput(DTSInsertPlacement insertPlacement, int inputID)
         {
-            throw new InvalidOperationException("This component doesn't support any input.");
-        } 
-
-
-        private class JsonTokenizer
-        {
-            private string _pathToArr;
-            private string[] _tokens;
-            private int _index;
-
-            public JsonTokenizer(string pathToArr)
-            {
-                _pathToArr = pathToArr;
-                if (_pathToArr == null)
-                    _tokens = new string[] { };
-                else
-                    _tokens = pathToArr.Split('.');
-                _index = 0;
-            }
-
-            public bool HasMoreTokens()
-            {
-                if (string.IsNullOrEmpty(_pathToArr))
-                    return false;
-
-                return (_index < _tokens.Length);
-            }
-
-            /**
-             * Alla prima chiamata ritorna il primissimo token (con indice 0
-            **/
-            public string Next()
-            {
-                if (_index >= _tokens.Length)
-                    throw new IndexOutOfRangeException("No more tokens available.");
-
-                string res = _tokens[_index];
-                _index++;
-                return res;
-            }
-
+            throw new Exception("This component doesn't support any additional input");
         }
+
+        public override void DeleteInput(int inputID)
+        {
+            throw new Exception("You cannot delete the input lane");
+        }
+
+        public override void DeleteOutput(int outputID)
+        {
+            throw new Exception("You cannot delete the output lane");
+        }
+
     }
     
 }

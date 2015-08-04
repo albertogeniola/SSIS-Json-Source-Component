@@ -17,8 +17,16 @@ namespace com.webkingsoft.JSONSource_120
         * 
     */
     [JsonObject(MemberSerialization.OptIn)]
-    public class Model
+    public class SourceModel
     {
+        
+        [JsonProperty]
+        public Microsoft.SqlServer.Dts.Pipeline.ComponentType ComponentType {
+            get {
+                return Microsoft.SqlServer.Dts.Pipeline.ComponentType.SourceAdapter;
+            }
+        }
+
         // Definisce il tipo di sorgente dello script JSON
         private SourceType _sourceType;
         [JsonProperty]
@@ -64,7 +72,7 @@ namespace com.webkingsoft.JSONSource_120
             set { _webUrlVariable = value; }
         }
 
-        // Definisce la cartella di appoggio temporanea per la gestione dei file a runtime
+        // Definisce la cartella di appoggio temporanea per la gestione dei file a runtiModele
         private string _customLocalTempDir = null;
         [JsonProperty]
         public string CustomLocalTempDir
@@ -113,9 +121,9 @@ namespace com.webkingsoft.JSONSource_120
             return JsonConvert.SerializeObject(this);
         }
 
-        public static Model LoadFromJson(string jsonConfig)
+        public static SourceModel LoadFromJson(string jsonConfig)
         {
-            Model res = JsonConvert.DeserializeObject<Model>(jsonConfig);
+            SourceModel res = JsonConvert.DeserializeObject<SourceModel>(jsonConfig);
             return res;
         }
     }

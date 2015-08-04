@@ -41,7 +41,7 @@
             this.uiWebURLCustom = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.sourceTabPage = new System.Windows.Forms.TabPage();
             this.MainPanel = new System.Windows.Forms.Panel();
             this.uiVariableFilePathGroup = new System.Windows.Forms.GroupBox();
             this.button2 = new System.Windows.Forms.Button();
@@ -68,7 +68,7 @@
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.uiIOGrid)).BeginInit();
             this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.sourceTabPage.SuspendLayout();
             this.MainPanel.SuspendLayout();
             this.uiVariableFilePathGroup.SuspendLayout();
             this.uiVariableUrlGroup.SuspendLayout();
@@ -98,6 +98,9 @@
             this.uiIOGrid.Name = "uiIOGrid";
             this.uiIOGrid.Size = new System.Drawing.Size(730, 363);
             this.uiIOGrid.TabIndex = 6;
+            this.uiIOGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.uiIOGrid_CellContentClick);
+            this.uiIOGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.uiIOGrid_CellEndEdit);
+            this.uiIOGrid.Validating += new System.ComponentModel.CancelEventHandler(this.uiIOGrid_Validating);
             // 
             // JSONFieldName
             // 
@@ -168,7 +171,7 @@
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.sourceTabPage);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
@@ -177,19 +180,19 @@
             this.tabControl1.Size = new System.Drawing.Size(750, 437);
             this.tabControl1.TabIndex = 9;
             // 
-            // tabPage1
+            // sourceTabPage
             // 
-            this.tabPage1.Controls.Add(this.MainPanel);
-            this.tabPage1.Controls.Add(this.label5);
-            this.tabPage1.Controls.Add(this.uiSourceType);
-            this.tabPage1.Controls.Add(this.label4);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(742, 411);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Source";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.sourceTabPage.Controls.Add(this.MainPanel);
+            this.sourceTabPage.Controls.Add(this.label5);
+            this.sourceTabPage.Controls.Add(this.uiSourceType);
+            this.sourceTabPage.Controls.Add(this.label4);
+            this.sourceTabPage.Location = new System.Drawing.Point(4, 22);
+            this.sourceTabPage.Name = "sourceTabPage";
+            this.sourceTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.sourceTabPage.Size = new System.Drawing.Size(742, 411);
+            this.sourceTabPage.TabIndex = 0;
+            this.sourceTabPage.Text = "Source";
+            this.sourceTabPage.UseVisualStyleBackColor = true;
             // 
             // MainPanel
             // 
@@ -207,9 +210,9 @@
             this.uiVariableFilePathGroup.Controls.Add(this.button2);
             this.uiVariableFilePathGroup.Controls.Add(this.uiBrowseFilePathVariable);
             this.uiVariableFilePathGroup.Controls.Add(this.uiFilePathVariable);
-            this.uiVariableFilePathGroup.Location = new System.Drawing.Point(338, 151);
+            this.uiVariableFilePathGroup.Location = new System.Drawing.Point(338, 117);
             this.uiVariableFilePathGroup.Name = "uiVariableFilePathGroup";
-            this.uiVariableFilePathGroup.Size = new System.Drawing.Size(258, 142);
+            this.uiVariableFilePathGroup.Size = new System.Drawing.Size(258, 84);
             this.uiVariableFilePathGroup.TabIndex = 16;
             this.uiVariableFilePathGroup.TabStop = false;
             this.uiVariableFilePathGroup.Text = "Path from varible";
@@ -249,7 +252,7 @@
             this.uiVariableUrlGroup.Controls.Add(this.uiURLVariable);
             this.uiVariableUrlGroup.Location = new System.Drawing.Point(338, 3);
             this.uiVariableUrlGroup.Name = "uiVariableUrlGroup";
-            this.uiVariableUrlGroup.Size = new System.Drawing.Size(258, 142);
+            this.uiVariableUrlGroup.Size = new System.Drawing.Size(258, 108);
             this.uiVariableUrlGroup.TabIndex = 15;
             this.uiVariableUrlGroup.TabStop = false;
             this.uiVariableUrlGroup.Text = "URL From variable";
@@ -426,7 +429,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(766, 500);
+            this.ClientSize = new System.Drawing.Size(768, 500);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.ok);
@@ -434,10 +437,11 @@
             this.Name = "JsonSourceUI";
             this.Text = "JsonSourceUI";
             this.TopMost = true;
+            this.Load += new System.EventHandler(this.JsonSourceUI_Load);
             ((System.ComponentModel.ISupportInitialize)(this.uiIOGrid)).EndInit();
             this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
+            this.sourceTabPage.ResumeLayout(false);
+            this.sourceTabPage.PerformLayout();
             this.MainPanel.ResumeLayout(false);
             this.uiVariableFilePathGroup.ResumeLayout(false);
             this.uiVariableFilePathGroup.PerformLayout();
@@ -465,7 +469,7 @@
         private System.Windows.Forms.TextBox uiWebURLCustom;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage sourceTabPage;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox uiSourceType;
         private System.Windows.Forms.Label label4;
