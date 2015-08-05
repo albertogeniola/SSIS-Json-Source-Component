@@ -66,6 +66,8 @@
             this.uiPathToArray = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.getRadio = new System.Windows.Forms.RadioButton();
+            this.postRadio = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.uiIOGrid)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.sourceTabPage.SuspendLayout();
@@ -157,7 +159,7 @@
             this.uiWebURLCustom.Location = new System.Drawing.Point(13, 42);
             this.uiWebURLCustom.Multiline = true;
             this.uiWebURLCustom.Name = "uiWebURLCustom";
-            this.uiWebURLCustom.Size = new System.Drawing.Size(280, 111);
+            this.uiWebURLCustom.Size = new System.Drawing.Size(280, 82);
             this.uiWebURLCustom.TabIndex = 1;
             // 
             // label1
@@ -295,6 +297,8 @@
             // 
             // uiCustomUrlGroup
             // 
+            this.uiCustomUrlGroup.Controls.Add(this.postRadio);
+            this.uiCustomUrlGroup.Controls.Add(this.getRadio);
             this.uiCustomUrlGroup.Controls.Add(this.uiTestWebURL);
             this.uiCustomUrlGroup.Controls.Add(this.uiWebURLCustom);
             this.uiCustomUrlGroup.Controls.Add(this.label1);
@@ -425,6 +429,29 @@
             this.tabPage2.Text = "Advanced";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // getRadio
+            // 
+            this.getRadio.AutoSize = true;
+            this.getRadio.Checked = true;
+            this.getRadio.Location = new System.Drawing.Point(21, 131);
+            this.getRadio.Name = "getRadio";
+            this.getRadio.Size = new System.Drawing.Size(47, 17);
+            this.getRadio.TabIndex = 14;
+            this.getRadio.TabStop = true;
+            this.getRadio.Text = "GET";
+            this.getRadio.UseVisualStyleBackColor = true;
+            // 
+            // postRadio
+            // 
+            this.postRadio.AutoSize = true;
+            this.postRadio.Location = new System.Drawing.Point(74, 130);
+            this.postRadio.Name = "postRadio";
+            this.postRadio.Size = new System.Drawing.Size(54, 17);
+            this.postRadio.TabIndex = 15;
+            this.postRadio.TabStop = true;
+            this.postRadio.Text = "POST";
+            this.postRadio.UseVisualStyleBackColor = true;
+            // 
             // JsonSourceUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -498,5 +525,7 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn OutColumnType;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox uiPathToArray;
+        private System.Windows.Forms.RadioButton postRadio;
+        private System.Windows.Forms.RadioButton getRadio;
     }
 }

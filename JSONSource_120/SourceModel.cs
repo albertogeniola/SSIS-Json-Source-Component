@@ -63,6 +63,14 @@ namespace com.webkingsoft.JSONSource_120
             set { _webUrl = value; }
         }
 
+        private string _webMethod;
+        [JsonProperty]
+        public stirng WebMethod
+        {
+            get;
+            set;
+        }
+
         // Variabile che contiene il webUrl, in caso di tipo webUrlVariable
         private string _webUrlVariable;
         [JsonProperty]

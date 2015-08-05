@@ -379,10 +379,15 @@ namespace com.webkingsoft.JSONSource_120
             _pathToArray = m.JsonObjectRelativePath;
         }
 
-        private string DownloadJsonFile(string url, string customLocalTempDir=null)
+        private string DownloadJsonFile(string url, string method, string customLocalTempDir=null)
         {
             string localTmp = null;
             string filePath = null;
+            
+            method = method.ToUpper();
+            if (method != "GET" && method != "POST")
+                throw new ArgumentException("Invalid http method supplied: "+method);
+
             if (!string.IsNullOrEmpty(customLocalTempDir))
             {
                 if (!Directory.Exists(customLocalTempDir))
@@ -396,22 +401,24 @@ namespace com.webkingsoft.JSONSource_120
 
             filePath = Path.Combine(localTmp, Guid.NewGuid().ToString() + ".json");
 
-            using (StreamWriter sr = File.CreateText(Path.Combine(localTmp, Guid.NewGuid().ToString()) + ".txt"))
+
+            HttpWebRequest rq = (HttpWebRequest)WebRequest.Create(url);
+            rq.Credentials = CredentialCache.DefaultCredentials;
+            rq.Method = method;
+            HttpWebResponse resp = (HttpWebResponse)rq.GetResponse();
+            if (resp.StatusCode != HttpStatusCode.OK)
             {
-                using (WebClient webClient = new WebClient())
-                {
-                    try
-                    {
-                        webClient.DownloadFile(url, filePath);
-                        return filePath;
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception("Cannot download the json file from " + url + " to " + filePath,ex);
-                    }
-                }
-                
+                throw new Exception("Status code received was " + resp.StatusCode+", i.e. "+resp.StatusDescription);
             }
+            using(StreamWriter sw = new StreamWriter(new FileStream(filePath, FileMode.OpenOrCreate)))
+                using(StreamReader sr = new StreamReader(resp.GetResponseStream())){
+                    char[] buff = new char[4096];
+                    int read = 0;
+                    while ((read = sr.ReadBlock(buff, 0, buff.Length)) > 0)
+                        sw.Write(buff, 0, read);
+                }
+
+            return filePath;
         }
 
         public override void PrimeOutput(int outputs, int[] outputIDs, PipelineBuffer[] buffers)

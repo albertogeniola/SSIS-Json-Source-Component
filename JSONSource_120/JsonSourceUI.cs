@@ -146,7 +146,9 @@ namespace com.webkingsoft.JSONSource_120
                     _model.WebUrlVariable = uiURLVariable.Text;
                 else
                     _model.WebUrlVariable = null;
-                
+
+                _model.WebMethod = postRadio.Checked ? "POST" : "GET";
+
                 _model.ClearMapping();
                 // - Salva le impostazioni di IO
                 if (uiIOGrid.IsCurrentCellDirty || uiIOGrid.IsCurrentRowDirty)
@@ -297,6 +299,7 @@ namespace com.webkingsoft.JSONSource_120
             {
                 HttpWebRequest rq = (HttpWebRequest)WebRequest.Create(uiWebURLCustom.Text);
                 rq.Credentials = CredentialCache.DefaultCredentials;
+                rq.Method = postRadio.Checked ? "POST" : "GET";
                 HttpWebResponse resp = (HttpWebResponse)rq.GetResponse();
                 if (resp.StatusCode != HttpStatusCode.OK)
                 {
