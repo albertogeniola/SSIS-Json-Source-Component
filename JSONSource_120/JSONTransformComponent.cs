@@ -21,7 +21,7 @@ namespace com.webkingsoft.JSONSource_120
     [DtsPipelineComponent(DisplayName = "JSON Filter", Description = "Parses json data from an input column", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_120.JSONTransformComponentUI,com.webkingsoft.JSONSource_120,Version=1.0.120.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
     public class JSONTransformComponent : PipelineComponent
     {
-        
+        public const string JSON_SOURCE_DEBUG_VAR = "wk_debug";
         public const int WARNING_CUSTOM_TEMP_DIR_INVALID = 11;
         public const int ERROR_NO_INPUT_SUPPORTED = 1;
         
@@ -88,13 +88,11 @@ namespace com.webkingsoft.JSONSource_120
         {
             throw new Exception("You cannot delete the output lane");
         }
-
+        
         /*
-        public override void OnInputPathAttached(int inputID)
+        public override void OnInputPathDetached(int inputID)
         {
-            bool cancel = true;
-            if (ComponentMetaData.InputCollection[0].InputColumnCollection.Count > 0)
-                throw new Exception("This component only supports one input. Please detach any other input before connecting the new one.");
+            base.OnInputPathDetached(inputID);
         }
         */
 
@@ -195,6 +193,24 @@ namespace com.webkingsoft.JSONSource_120
                 }
             }
 
+            // Controllo che la colonna di input sia ancora valida
+            bool found = false;
+            if (String.IsNullOrEmpty(m.InputColumnName))
+            {
+                ComponentMetaData.FireError(ERROR_INPUT_LANE_NOT_FOUND,ComponentMetaData.Name, "Input column has not been selected.", null, 0, out fireAgain);
+                return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
+            }
+            foreach (IDTSVirtualInputColumn100 vcol in ComponentMetaData.InputCollection[0].GetVirtualInput().VirtualInputColumnCollection) {
+                if (vcol.Name == m.InputColumnName) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                ComponentMetaData.FireError(ERROR_INPUT_LANE_NOT_FOUND, ComponentMetaData.Name, "Input column "+m.InputColumnName+" is not present among the inputs of this component. Please update the component configuration.", null, 0, out fireAgain);
+                return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
+            }
             return base.Validate();
         }
 
@@ -235,7 +251,29 @@ namespace com.webkingsoft.JSONSource_120
 
         public override void PreExecute()
         {
-            MessageBox.Show("Start Debugger");
+            bool debugging = false;
+            IDTSVariables100 vars = null;
+            try
+            {
+                VariableDispenser.LockOneForRead(JSON_SOURCE_DEBUG_VAR, ref vars);
+                object o = vars[JSON_SOURCE_DEBUG_VAR].Value;
+                if (o != null)
+                    if ((bool)o)
+                        debugging = true;
+            }
+            catch(Exception e){
+                //Do nothing
+                bool fireAgain = false;
+                ComponentMetaData.FireInformation(0, ComponentMetaData.Name, "wk_debug variable cannot be found. I won't stop to let debug attachment.", null,0,ref fireAgain);
+            }
+            finally
+            {
+                if (vars != null)
+                    vars.Unlock();
+            }
+
+            if (debugging)
+                MessageBox.Show("Start Debugger");
 
             TransformationModel m = GetModel();
             _opt = new ParallelOptions();
@@ -279,6 +317,9 @@ namespace com.webkingsoft.JSONSource_120
                     return;
                 }
             }
+
+            _inputColIndex = BufferManager.FindColumnByLineageID(ComponentMetaData.InputCollection[0].Buffer, ComponentMetaData.InputCollection[0].InputColumnCollection[0].LineageID);
+
         }
 
         private string DownloadJsonFile(string url, string customLocalTempDir = null)
@@ -330,8 +371,10 @@ namespace com.webkingsoft.JSONSource_120
             while (buffer.NextRow()) {
                 try
                 {
+                    //TODO: il buffer di input arriva completo, e non con le sole colonne mappate. 
                     // Process data according to IOMappings
-                    ProcessInMemory(buffer.GetString(0), _outputBuffer);
+                    //(GetModel().InputColumnName
+                    ProcessInMemory(buffer.GetString(_inputColIndex), _outputBuffer);
                 }
                 catch (Exception e) {
                     bool fireAgain = false;
@@ -359,15 +402,12 @@ namespace com.webkingsoft.JSONSource_120
             // Navigate to the relative Root.
             try
             {
-                // Load all the Array so we can navigate it quickly.
-                JObject o = JObject.Parse(jsonData);
-                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Object loaded.", null, 0, ref cancel);
-
                 // Get all the tokens returned by the XPath string specified
                 if (_pathToArray == null)
                     _pathToArray = "";
-
-                IEnumerable<JToken> els = o.SelectTokens(_pathToArray);
+                // Load the JToken and navigate it to the selected root
+                JToken jt = JToken.Parse(jsonData);
+                IEnumerable<JToken> els = jt.SelectTokens(_pathToArray);
                 int rootEls = els.Count();
                 ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Array: loaded " + rootEls + " tokens.", null, 0, ref cancel);
 
