@@ -53,6 +53,8 @@
             this.uiVarLabel = new System.Windows.Forms.Label();
             this.uiURLVariable = new System.Windows.Forms.TextBox();
             this.uiCustomUrlGroup = new System.Windows.Forms.GroupBox();
+            this.postRadio = new System.Windows.Forms.RadioButton();
+            this.getRadio = new System.Windows.Forms.RadioButton();
             this.uiTestWebURL = new System.Windows.Forms.Button();
             this.uiFilePathGroup = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -66,8 +68,8 @@
             this.uiPathToArray = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.getRadio = new System.Windows.Forms.RadioButton();
-            this.postRadio = new System.Windows.Forms.RadioButton();
+            this.putRadio = new System.Windows.Forms.RadioButton();
+            this.delRadio = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.uiIOGrid)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.sourceTabPage.SuspendLayout();
@@ -100,9 +102,7 @@
             this.uiIOGrid.Name = "uiIOGrid";
             this.uiIOGrid.Size = new System.Drawing.Size(730, 363);
             this.uiIOGrid.TabIndex = 6;
-            this.uiIOGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.uiIOGrid_CellContentClick);
             this.uiIOGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.uiIOGrid_CellEndEdit);
-            this.uiIOGrid.Validating += new System.ComponentModel.CancelEventHandler(this.uiIOGrid_Validating);
             // 
             // JSONFieldName
             // 
@@ -297,6 +297,8 @@
             // 
             // uiCustomUrlGroup
             // 
+            this.uiCustomUrlGroup.Controls.Add(this.delRadio);
+            this.uiCustomUrlGroup.Controls.Add(this.putRadio);
             this.uiCustomUrlGroup.Controls.Add(this.postRadio);
             this.uiCustomUrlGroup.Controls.Add(this.getRadio);
             this.uiCustomUrlGroup.Controls.Add(this.uiTestWebURL);
@@ -308,6 +310,29 @@
             this.uiCustomUrlGroup.TabIndex = 14;
             this.uiCustomUrlGroup.TabStop = false;
             this.uiCustomUrlGroup.Text = "Pre-Defined URL";
+            // 
+            // postRadio
+            // 
+            this.postRadio.AutoSize = true;
+            this.postRadio.Location = new System.Drawing.Point(74, 130);
+            this.postRadio.Name = "postRadio";
+            this.postRadio.Size = new System.Drawing.Size(54, 17);
+            this.postRadio.TabIndex = 15;
+            this.postRadio.TabStop = true;
+            this.postRadio.Text = "POST";
+            this.postRadio.UseVisualStyleBackColor = true;
+            // 
+            // getRadio
+            // 
+            this.getRadio.AutoSize = true;
+            this.getRadio.Checked = true;
+            this.getRadio.Location = new System.Drawing.Point(21, 131);
+            this.getRadio.Name = "getRadio";
+            this.getRadio.Size = new System.Drawing.Size(47, 17);
+            this.getRadio.TabIndex = 14;
+            this.getRadio.TabStop = true;
+            this.getRadio.Text = "GET";
+            this.getRadio.UseVisualStyleBackColor = true;
             // 
             // uiTestWebURL
             // 
@@ -408,7 +433,6 @@
             this.label2.Size = new System.Drawing.Size(85, 13);
             this.label2.TabIndex = 9;
             this.label2.Text = "Array Root Path:";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // uiPathToArray
             // 
@@ -429,28 +453,27 @@
             this.tabPage2.Text = "Advanced";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // getRadio
+            // putRadio
             // 
-            this.getRadio.AutoSize = true;
-            this.getRadio.Checked = true;
-            this.getRadio.Location = new System.Drawing.Point(21, 131);
-            this.getRadio.Name = "getRadio";
-            this.getRadio.Size = new System.Drawing.Size(47, 17);
-            this.getRadio.TabIndex = 14;
-            this.getRadio.TabStop = true;
-            this.getRadio.Text = "GET";
-            this.getRadio.UseVisualStyleBackColor = true;
+            this.putRadio.AutoSize = true;
+            this.putRadio.Location = new System.Drawing.Point(137, 131);
+            this.putRadio.Name = "putRadio";
+            this.putRadio.Size = new System.Drawing.Size(47, 17);
+            this.putRadio.TabIndex = 16;
+            this.putRadio.TabStop = true;
+            this.putRadio.Text = "PUT";
+            this.putRadio.UseVisualStyleBackColor = true;
             // 
-            // postRadio
+            // delRadio
             // 
-            this.postRadio.AutoSize = true;
-            this.postRadio.Location = new System.Drawing.Point(74, 130);
-            this.postRadio.Name = "postRadio";
-            this.postRadio.Size = new System.Drawing.Size(54, 17);
-            this.postRadio.TabIndex = 15;
-            this.postRadio.TabStop = true;
-            this.postRadio.Text = "POST";
-            this.postRadio.UseVisualStyleBackColor = true;
+            this.delRadio.AutoSize = true;
+            this.delRadio.Location = new System.Drawing.Point(190, 130);
+            this.delRadio.Name = "delRadio";
+            this.delRadio.Size = new System.Drawing.Size(67, 17);
+            this.delRadio.TabIndex = 17;
+            this.delRadio.TabStop = true;
+            this.delRadio.Text = "DELETE";
+            this.delRadio.UseVisualStyleBackColor = true;
             // 
             // JsonSourceUI
             // 
@@ -464,7 +487,6 @@
             this.Name = "JsonSourceUI";
             this.Text = "JsonSourceUI";
             this.TopMost = true;
-            this.Load += new System.EventHandler(this.JsonSourceUI_Load);
             ((System.ComponentModel.ISupportInitialize)(this.uiIOGrid)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.sourceTabPage.ResumeLayout(false);
@@ -527,5 +549,7 @@
         private System.Windows.Forms.TextBox uiPathToArray;
         private System.Windows.Forms.RadioButton postRadio;
         private System.Windows.Forms.RadioButton getRadio;
+        private System.Windows.Forms.RadioButton delRadio;
+        private System.Windows.Forms.RadioButton putRadio;
     }
 }

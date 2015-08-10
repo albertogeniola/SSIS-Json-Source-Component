@@ -63,9 +63,8 @@ namespace com.webkingsoft.JSONSource_120
             set { _webUrl = value; }
         }
 
-        private string _webMethod;
         [JsonProperty]
-        public stirng WebMethod
+        public string WebMethod
         {
             get;
             set;

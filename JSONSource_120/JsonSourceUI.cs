@@ -147,7 +147,14 @@ namespace com.webkingsoft.JSONSource_120
                 else
                     _model.WebUrlVariable = null;
 
-                _model.WebMethod = postRadio.Checked ? "POST" : "GET";
+                if (getRadio.Checked)
+                    _model.WebMethod = "GET";
+                else if (postRadio.Checked)
+                    _model.WebMethod = "POST";
+                else if (putRadio.Checked)
+                    _model.WebMethod = "PUT";
+                else if (delRadio.Checked)
+                    _model.WebMethod = "DELETE";
 
                 _model.ClearMapping();
                 // - Salva le impostazioni di IO
@@ -299,7 +306,15 @@ namespace com.webkingsoft.JSONSource_120
             {
                 HttpWebRequest rq = (HttpWebRequest)WebRequest.Create(uiWebURLCustom.Text);
                 rq.Credentials = CredentialCache.DefaultCredentials;
-                rq.Method = postRadio.Checked ? "POST" : "GET";
+                if (getRadio.Checked)
+                    rq.Method = "GET";
+                else if (postRadio.Checked)
+                    rq.Method = "POST";
+                else if (putRadio.Checked)
+                    rq.Method = "PUT";
+                else if (delRadio.Checked)
+                    rq.Method = "DELETE";
+
                 HttpWebResponse resp = (HttpWebResponse)rq.GetResponse();
                 if (resp.StatusCode != HttpStatusCode.OK)
                 {
@@ -385,46 +400,6 @@ namespace com.webkingsoft.JSONSource_120
                 uiFilePathVariable.Text = vv.QualifiedName;
         }
 
-        private void label7_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void richTextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void uiIOGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void uiIOGrid_Validating(object sender, CancelEventArgs e)
-        {
-            
-        }
-
         private void uiIOGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             // Adatta il campo lunghezza in base alla tipologia di dato scelta.
@@ -454,9 +429,5 @@ namespace com.webkingsoft.JSONSource_120
             }
         }
 
-        private void JsonSourceUI_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 }
