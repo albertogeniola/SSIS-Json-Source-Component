@@ -64,6 +64,8 @@
   <ItemGroup>
     <Compile Include="DataModelType.cs" />
     <Compile Include="Enum.cs" />
+    <Compile Include="HTTPParamBinding.cs" />
+    <Compile Include="HTTPParameter.cs" />
     <Compile Include="IOMapEntry.cs" />
     <Compile Include="JSONTransformComponentUI.cs" />
     <Compile Include="JsonTransformUI.cs">
@@ -82,6 +84,12 @@
       <DependentUpon>JsonSourceUI.cs</DependentUpon>
     </Compile>
     <Compile Include="JsonTypes.cs" />
+    <Compile Include="Parameters.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Parameters.Designer.cs">
+      <DependentUpon>Parameters.cs</DependentUpon>
+    </Compile>
     <Compile Include="TransformationModel.cs" />
     <Compile Include="SourceModel.cs" />
     <Compile Include="ModelNotFoundException.cs" />
@@ -106,6 +114,9 @@
     <EmbeddedResource Include="JsonSourceUI.resx">
       <DependentUpon>JsonSourceUI.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Parameters.resx">
+      <DependentUpon>Parameters.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

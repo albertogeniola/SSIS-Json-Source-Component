@@ -47,7 +47,6 @@ namespace com.webkingsoft.JSONSource_120
             // Configuro gli output (per default nessun output presente)
             var output = ComponentMetaData.OutputCollection.New();
             output.Name = "Parsed Json lines";
-            
 
             SourceModel m = null;
             try
@@ -195,9 +194,6 @@ namespace com.webkingsoft.JSONSource_120
                     return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
                 }
             }
-
-            // TODO: Parasare la validità del sottopercorso all'array dei dati.
-            
 
             return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISVALID;
         }

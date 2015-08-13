@@ -39,10 +39,19 @@
             this.cancel = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.uiWebURLCustom = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.sourceTabPage = new System.Windows.Forms.TabPage();
             this.MainPanel = new System.Windows.Forms.Panel();
+            this.httpparams = new System.Windows.Forms.Button();
+            this.cookieGroup = new System.Windows.Forms.GroupBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.uiTestWebURL = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.delRadio = new System.Windows.Forms.RadioButton();
+            this.getRadio = new System.Windows.Forms.RadioButton();
+            this.putRadio = new System.Windows.Forms.RadioButton();
+            this.postRadio = new System.Windows.Forms.RadioButton();
             this.uiVariableFilePathGroup = new System.Windows.Forms.GroupBox();
             this.button2 = new System.Windows.Forms.Button();
             this.uiBrowseFilePathVariable = new System.Windows.Forms.Button();
@@ -50,14 +59,9 @@
             this.uiVariableUrlGroup = new System.Windows.Forms.GroupBox();
             this.button1 = new System.Windows.Forms.Button();
             this.uiSelectURLVariable = new System.Windows.Forms.Button();
-            this.uiVarLabel = new System.Windows.Forms.Label();
             this.uiURLVariable = new System.Windows.Forms.TextBox();
             this.uiCustomUrlGroup = new System.Windows.Forms.GroupBox();
-            this.postRadio = new System.Windows.Forms.RadioButton();
-            this.getRadio = new System.Windows.Forms.RadioButton();
-            this.uiTestWebURL = new System.Windows.Forms.Button();
             this.uiFilePathGroup = new System.Windows.Forms.GroupBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.uiBrowseFilePath = new System.Windows.Forms.Button();
             this.uiFilePathCustom = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -68,12 +72,14 @@
             this.uiPathToArray = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.putRadio = new System.Windows.Forms.RadioButton();
-            this.delRadio = new System.Windows.Forms.RadioButton();
+            this.cookieVarTb = new System.Windows.Forms.TextBox();
+            this.tmpBrowse = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.uiIOGrid)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.sourceTabPage.SuspendLayout();
             this.MainPanel.SuspendLayout();
+            this.cookieGroup.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.uiVariableFilePathGroup.SuspendLayout();
             this.uiVariableUrlGroup.SuspendLayout();
             this.uiCustomUrlGroup.SuspendLayout();
@@ -126,7 +132,7 @@
             // 
             // ok
             // 
-            this.ok.Location = new System.Drawing.Point(670, 455);
+            this.ok.Location = new System.Drawing.Point(670, 366);
             this.ok.Name = "ok";
             this.ok.Size = new System.Drawing.Size(92, 36);
             this.ok.TabIndex = 7;
@@ -136,7 +142,7 @@
             // 
             // cancel
             // 
-            this.cancel.Location = new System.Drawing.Point(572, 455);
+            this.cancel.Location = new System.Drawing.Point(572, 366);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(92, 36);
             this.cancel.TabIndex = 8;
@@ -156,20 +162,11 @@
             // 
             // uiWebURLCustom
             // 
-            this.uiWebURLCustom.Location = new System.Drawing.Point(13, 42);
+            this.uiWebURLCustom.Location = new System.Drawing.Point(13, 20);
             this.uiWebURLCustom.Multiline = true;
             this.uiWebURLCustom.Name = "uiWebURLCustom";
-            this.uiWebURLCustom.Size = new System.Drawing.Size(280, 82);
+            this.uiWebURLCustom.Size = new System.Drawing.Size(238, 73);
             this.uiWebURLCustom.TabIndex = 1;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 26);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(58, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Web URL:";
             // 
             // tabControl1
             // 
@@ -179,7 +176,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(750, 437);
+            this.tabControl1.Size = new System.Drawing.Size(750, 348);
             this.tabControl1.TabIndex = 9;
             // 
             // sourceTabPage
@@ -191,37 +188,153 @@
             this.sourceTabPage.Location = new System.Drawing.Point(4, 22);
             this.sourceTabPage.Name = "sourceTabPage";
             this.sourceTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.sourceTabPage.Size = new System.Drawing.Size(742, 411);
+            this.sourceTabPage.Size = new System.Drawing.Size(742, 322);
             this.sourceTabPage.TabIndex = 0;
             this.sourceTabPage.Text = "Source";
             this.sourceTabPage.UseVisualStyleBackColor = true;
+            this.sourceTabPage.Click += new System.EventHandler(this.sourceTabPage_Click);
             // 
             // MainPanel
             // 
+            this.MainPanel.Controls.Add(this.httpparams);
+            this.MainPanel.Controls.Add(this.cookieGroup);
+            this.MainPanel.Controls.Add(this.uiTestWebURL);
+            this.MainPanel.Controls.Add(this.groupBox1);
             this.MainPanel.Controls.Add(this.uiVariableFilePathGroup);
             this.MainPanel.Controls.Add(this.uiVariableUrlGroup);
             this.MainPanel.Controls.Add(this.uiCustomUrlGroup);
             this.MainPanel.Controls.Add(this.uiFilePathGroup);
-            this.MainPanel.Location = new System.Drawing.Point(9, 91);
+            this.MainPanel.Location = new System.Drawing.Point(9, 80);
             this.MainPanel.Name = "MainPanel";
-            this.MainPanel.Size = new System.Drawing.Size(599, 314);
+            this.MainPanel.Size = new System.Drawing.Size(733, 237);
             this.MainPanel.TabIndex = 7;
+            // 
+            // httpparams
+            // 
+            this.httpparams.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.httpparams.Location = new System.Drawing.Point(18, 206);
+            this.httpparams.Name = "httpparams";
+            this.httpparams.Size = new System.Drawing.Size(263, 23);
+            this.httpparams.TabIndex = 21;
+            this.httpparams.Text = "HTTP Parameters...";
+            this.httpparams.UseVisualStyleBackColor = true;
+            this.httpparams.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // cookieGroup
+            // 
+            this.cookieGroup.Controls.Add(this.cookieVarTb);
+            this.cookieGroup.Controls.Add(this.button3);
+            this.cookieGroup.Controls.Add(this.button4);
+            this.cookieGroup.Location = new System.Drawing.Point(563, 114);
+            this.cookieGroup.Name = "cookieGroup";
+            this.cookieGroup.Size = new System.Drawing.Size(164, 86);
+            this.cookieGroup.TabIndex = 20;
+            this.cookieGroup.TabStop = false;
+            this.cookieGroup.Text = "COOKIE Variable";
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(85, 46);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(74, 31);
+            this.button3.TabIndex = 16;
+            this.button3.Text = "Add new...";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(9, 46);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(71, 31);
+            this.button4.TabIndex = 15;
+            this.button4.Text = "Browse...";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click_1);
+            // 
+            // uiTestWebURL
+            // 
+            this.uiTestWebURL.Location = new System.Drawing.Point(563, 206);
+            this.uiTestWebURL.Name = "uiTestWebURL";
+            this.uiTestWebURL.Size = new System.Drawing.Size(164, 23);
+            this.uiTestWebURL.TabIndex = 13;
+            this.uiTestWebURL.Text = "Test...";
+            this.uiTestWebURL.UseVisualStyleBackColor = true;
+            this.uiTestWebURL.Click += new System.EventHandler(this.uiTestWebURL_Click_1);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.delRadio);
+            this.groupBox1.Controls.Add(this.getRadio);
+            this.groupBox1.Controls.Add(this.putRadio);
+            this.groupBox1.Controls.Add(this.postRadio);
+            this.groupBox1.Location = new System.Drawing.Point(563, 3);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(164, 108);
+            this.groupBox1.TabIndex = 19;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Method";
+            // 
+            // delRadio
+            // 
+            this.delRadio.AutoSize = true;
+            this.delRadio.Location = new System.Drawing.Point(6, 88);
+            this.delRadio.Name = "delRadio";
+            this.delRadio.Size = new System.Drawing.Size(67, 17);
+            this.delRadio.TabIndex = 17;
+            this.delRadio.TabStop = true;
+            this.delRadio.Text = "DELETE";
+            this.delRadio.UseVisualStyleBackColor = true;
+            // 
+            // getRadio
+            // 
+            this.getRadio.AutoSize = true;
+            this.getRadio.Checked = true;
+            this.getRadio.Location = new System.Drawing.Point(6, 19);
+            this.getRadio.Name = "getRadio";
+            this.getRadio.Size = new System.Drawing.Size(47, 17);
+            this.getRadio.TabIndex = 14;
+            this.getRadio.TabStop = true;
+            this.getRadio.Text = "GET";
+            this.getRadio.UseVisualStyleBackColor = true;
+            // 
+            // putRadio
+            // 
+            this.putRadio.AutoSize = true;
+            this.putRadio.Location = new System.Drawing.Point(6, 65);
+            this.putRadio.Name = "putRadio";
+            this.putRadio.Size = new System.Drawing.Size(47, 17);
+            this.putRadio.TabIndex = 16;
+            this.putRadio.TabStop = true;
+            this.putRadio.Text = "PUT";
+            this.putRadio.UseVisualStyleBackColor = true;
+            // 
+            // postRadio
+            // 
+            this.postRadio.AutoSize = true;
+            this.postRadio.Location = new System.Drawing.Point(6, 42);
+            this.postRadio.Name = "postRadio";
+            this.postRadio.Size = new System.Drawing.Size(54, 17);
+            this.postRadio.TabIndex = 15;
+            this.postRadio.TabStop = true;
+            this.postRadio.Text = "POST";
+            this.postRadio.UseVisualStyleBackColor = true;
             // 
             // uiVariableFilePathGroup
             // 
             this.uiVariableFilePathGroup.Controls.Add(this.button2);
             this.uiVariableFilePathGroup.Controls.Add(this.uiBrowseFilePathVariable);
             this.uiVariableFilePathGroup.Controls.Add(this.uiFilePathVariable);
-            this.uiVariableFilePathGroup.Location = new System.Drawing.Point(338, 117);
+            this.uiVariableFilePathGroup.Location = new System.Drawing.Point(287, 3);
             this.uiVariableFilePathGroup.Name = "uiVariableFilePathGroup";
-            this.uiVariableFilePathGroup.Size = new System.Drawing.Size(258, 84);
+            this.uiVariableFilePathGroup.Size = new System.Drawing.Size(270, 108);
             this.uiVariableFilePathGroup.TabIndex = 16;
             this.uiVariableFilePathGroup.TabStop = false;
             this.uiVariableFilePathGroup.Text = "Path from varible";
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(177, 46);
+            this.button2.Location = new System.Drawing.Point(180, 46);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(74, 31);
             this.button2.TabIndex = 16;
@@ -231,7 +344,7 @@
             // 
             // uiBrowseFilePathVariable
             // 
-            this.uiBrowseFilePathVariable.Location = new System.Drawing.Point(100, 46);
+            this.uiBrowseFilePathVariable.Location = new System.Drawing.Point(103, 46);
             this.uiBrowseFilePathVariable.Name = "uiBrowseFilePathVariable";
             this.uiBrowseFilePathVariable.Size = new System.Drawing.Size(71, 31);
             this.uiBrowseFilePathVariable.TabIndex = 15;
@@ -241,8 +354,9 @@
             // 
             // uiFilePathVariable
             // 
-            this.uiFilePathVariable.Location = new System.Drawing.Point(6, 20);
+            this.uiFilePathVariable.Location = new System.Drawing.Point(9, 20);
             this.uiFilePathVariable.Name = "uiFilePathVariable";
+            this.uiFilePathVariable.ReadOnly = true;
             this.uiFilePathVariable.Size = new System.Drawing.Size(245, 20);
             this.uiFilePathVariable.TabIndex = 14;
             // 
@@ -250,18 +364,17 @@
             // 
             this.uiVariableUrlGroup.Controls.Add(this.button1);
             this.uiVariableUrlGroup.Controls.Add(this.uiSelectURLVariable);
-            this.uiVariableUrlGroup.Controls.Add(this.uiVarLabel);
             this.uiVariableUrlGroup.Controls.Add(this.uiURLVariable);
-            this.uiVariableUrlGroup.Location = new System.Drawing.Point(338, 3);
+            this.uiVariableUrlGroup.Location = new System.Drawing.Point(18, 114);
             this.uiVariableUrlGroup.Name = "uiVariableUrlGroup";
-            this.uiVariableUrlGroup.Size = new System.Drawing.Size(258, 108);
+            this.uiVariableUrlGroup.Size = new System.Drawing.Size(263, 86);
             this.uiVariableUrlGroup.TabIndex = 15;
             this.uiVariableUrlGroup.TabStop = false;
             this.uiVariableUrlGroup.Text = "URL From variable";
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(177, 68);
+            this.button1.Location = new System.Drawing.Point(177, 45);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(74, 31);
             this.button1.TabIndex = 14;
@@ -271,7 +384,7 @@
             // 
             // uiSelectURLVariable
             // 
-            this.uiSelectURLVariable.Location = new System.Drawing.Point(100, 68);
+            this.uiSelectURLVariable.Location = new System.Drawing.Point(100, 45);
             this.uiSelectURLVariable.Name = "uiSelectURLVariable";
             this.uiSelectURLVariable.Size = new System.Drawing.Size(71, 31);
             this.uiSelectURLVariable.TabIndex = 13;
@@ -279,98 +392,40 @@
             this.uiSelectURLVariable.UseVisualStyleBackColor = true;
             this.uiSelectURLVariable.Click += new System.EventHandler(this.uiSelectURLVariable_Click);
             // 
-            // uiVarLabel
-            // 
-            this.uiVarLabel.AutoSize = true;
-            this.uiVarLabel.Location = new System.Drawing.Point(6, 26);
-            this.uiVarLabel.Name = "uiVarLabel";
-            this.uiVarLabel.Size = new System.Drawing.Size(48, 13);
-            this.uiVarLabel.TabIndex = 1;
-            this.uiVarLabel.Text = "Variable:";
-            // 
             // uiURLVariable
             // 
-            this.uiURLVariable.Location = new System.Drawing.Point(6, 42);
+            this.uiURLVariable.Location = new System.Drawing.Point(6, 19);
             this.uiURLVariable.Name = "uiURLVariable";
+            this.uiURLVariable.ReadOnly = true;
             this.uiURLVariable.Size = new System.Drawing.Size(245, 20);
             this.uiURLVariable.TabIndex = 0;
             // 
             // uiCustomUrlGroup
             // 
-            this.uiCustomUrlGroup.Controls.Add(this.delRadio);
-            this.uiCustomUrlGroup.Controls.Add(this.putRadio);
-            this.uiCustomUrlGroup.Controls.Add(this.postRadio);
-            this.uiCustomUrlGroup.Controls.Add(this.getRadio);
-            this.uiCustomUrlGroup.Controls.Add(this.uiTestWebURL);
             this.uiCustomUrlGroup.Controls.Add(this.uiWebURLCustom);
-            this.uiCustomUrlGroup.Controls.Add(this.label1);
             this.uiCustomUrlGroup.Location = new System.Drawing.Point(18, 3);
             this.uiCustomUrlGroup.Name = "uiCustomUrlGroup";
-            this.uiCustomUrlGroup.Size = new System.Drawing.Size(314, 188);
+            this.uiCustomUrlGroup.Size = new System.Drawing.Size(263, 108);
             this.uiCustomUrlGroup.TabIndex = 14;
             this.uiCustomUrlGroup.TabStop = false;
             this.uiCustomUrlGroup.Text = "Pre-Defined URL";
             // 
-            // postRadio
-            // 
-            this.postRadio.AutoSize = true;
-            this.postRadio.Location = new System.Drawing.Point(74, 130);
-            this.postRadio.Name = "postRadio";
-            this.postRadio.Size = new System.Drawing.Size(54, 17);
-            this.postRadio.TabIndex = 15;
-            this.postRadio.TabStop = true;
-            this.postRadio.Text = "POST";
-            this.postRadio.UseVisualStyleBackColor = true;
-            // 
-            // getRadio
-            // 
-            this.getRadio.AutoSize = true;
-            this.getRadio.Checked = true;
-            this.getRadio.Location = new System.Drawing.Point(21, 131);
-            this.getRadio.Name = "getRadio";
-            this.getRadio.Size = new System.Drawing.Size(47, 17);
-            this.getRadio.TabIndex = 14;
-            this.getRadio.TabStop = true;
-            this.getRadio.Text = "GET";
-            this.getRadio.UseVisualStyleBackColor = true;
-            // 
-            // uiTestWebURL
-            // 
-            this.uiTestWebURL.Location = new System.Drawing.Point(222, 159);
-            this.uiTestWebURL.Name = "uiTestWebURL";
-            this.uiTestWebURL.Size = new System.Drawing.Size(71, 20);
-            this.uiTestWebURL.TabIndex = 13;
-            this.uiTestWebURL.Text = "Test...";
-            this.uiTestWebURL.UseVisualStyleBackColor = true;
-            this.uiTestWebURL.Click += new System.EventHandler(this.uiTestWebURL_Click);
-            // 
             // uiFilePathGroup
             // 
-            this.uiFilePathGroup.Controls.Add(this.label6);
             this.uiFilePathGroup.Controls.Add(this.uiBrowseFilePath);
             this.uiFilePathGroup.Controls.Add(this.uiFilePathCustom);
-            this.uiFilePathGroup.Location = new System.Drawing.Point(18, 197);
+            this.uiFilePathGroup.Location = new System.Drawing.Point(287, 114);
             this.uiFilePathGroup.Name = "uiFilePathGroup";
-            this.uiFilePathGroup.Size = new System.Drawing.Size(314, 100);
+            this.uiFilePathGroup.Size = new System.Drawing.Size(270, 86);
             this.uiFilePathGroup.TabIndex = 13;
             this.uiFilePathGroup.TabStop = false;
             this.uiFilePathGroup.Text = "Pre-Defined File Path";
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(18, 25);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(50, 13);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "File path:";
-            this.label6.Click += new System.EventHandler(this.label6_Click);
-            // 
             // uiBrowseFilePath
             // 
-            this.uiBrowseFilePath.Location = new System.Drawing.Point(222, 67);
+            this.uiBrowseFilePath.Location = new System.Drawing.Point(180, 45);
             this.uiBrowseFilePath.Name = "uiBrowseFilePath";
-            this.uiBrowseFilePath.Size = new System.Drawing.Size(71, 20);
+            this.uiBrowseFilePath.Size = new System.Drawing.Size(71, 31);
             this.uiBrowseFilePath.TabIndex = 12;
             this.uiBrowseFilePath.Text = "Browse...";
             this.uiBrowseFilePath.UseVisualStyleBackColor = true;
@@ -378,16 +433,17 @@
             // 
             // uiFilePathCustom
             // 
-            this.uiFilePathCustom.Location = new System.Drawing.Point(21, 41);
+            this.uiFilePathCustom.Location = new System.Drawing.Point(9, 19);
             this.uiFilePathCustom.Name = "uiFilePathCustom";
-            this.uiFilePathCustom.Size = new System.Drawing.Size(272, 20);
+            this.uiFilePathCustom.ReadOnly = true;
+            this.uiFilePathCustom.Size = new System.Drawing.Size(242, 20);
             this.uiFilePathCustom.TabIndex = 11;
             this.uiFilePathCustom.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(147, 67);
+            this.label5.Location = new System.Drawing.Point(238, 56);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(71, 13);
             this.label5.TabIndex = 6;
@@ -398,7 +454,7 @@
             // 
             this.uiSourceType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.uiSourceType.FormattingEnabled = true;
-            this.uiSourceType.Location = new System.Drawing.Point(224, 64);
+            this.uiSourceType.Location = new System.Drawing.Point(315, 53);
             this.uiSourceType.Name = "uiSourceType";
             this.uiSourceType.Size = new System.Drawing.Size(221, 21);
             this.uiSourceType.TabIndex = 5;
@@ -408,7 +464,7 @@
             // 
             this.label4.Location = new System.Drawing.Point(6, 13);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(602, 43);
+            this.label4.Size = new System.Drawing.Size(725, 43);
             this.label4.TabIndex = 4;
             this.label4.Text = resources.GetString("label4.Text");
             // 
@@ -420,7 +476,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(742, 411);
+            this.tabPage3.Size = new System.Drawing.Size(742, 322);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Input - Output";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -443,43 +499,41 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.tmpBrowse);
             this.tabPage2.Controls.Add(this.label3);
             this.tabPage2.Controls.Add(this.uiTempDir);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(742, 411);
+            this.tabPage2.Size = new System.Drawing.Size(742, 322);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Advanced";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // putRadio
+            // cookieVarTb
             // 
-            this.putRadio.AutoSize = true;
-            this.putRadio.Location = new System.Drawing.Point(137, 131);
-            this.putRadio.Name = "putRadio";
-            this.putRadio.Size = new System.Drawing.Size(47, 17);
-            this.putRadio.TabIndex = 16;
-            this.putRadio.TabStop = true;
-            this.putRadio.Text = "PUT";
-            this.putRadio.UseVisualStyleBackColor = true;
+            this.cookieVarTb.Location = new System.Drawing.Point(7, 18);
+            this.cookieVarTb.Name = "cookieVarTb";
+            this.cookieVarTb.ReadOnly = true;
+            this.cookieVarTb.Size = new System.Drawing.Size(152, 20);
+            this.cookieVarTb.TabIndex = 17;
             // 
-            // delRadio
+            // tmpBrowse
             // 
-            this.delRadio.AutoSize = true;
-            this.delRadio.Location = new System.Drawing.Point(190, 130);
-            this.delRadio.Name = "delRadio";
-            this.delRadio.Size = new System.Drawing.Size(67, 17);
-            this.delRadio.TabIndex = 17;
-            this.delRadio.TabStop = true;
-            this.delRadio.Text = "DELETE";
-            this.delRadio.UseVisualStyleBackColor = true;
+            this.tmpBrowse.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("tmpBrowse.BackgroundImage")));
+            this.tmpBrowse.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.tmpBrowse.Location = new System.Drawing.Point(348, 25);
+            this.tmpBrowse.Name = "tmpBrowse";
+            this.tmpBrowse.Size = new System.Drawing.Size(26, 24);
+            this.tmpBrowse.TabIndex = 6;
+            this.tmpBrowse.UseVisualStyleBackColor = true;
+            this.tmpBrowse.Click += new System.EventHandler(this.tmpBrowse_Click);
             // 
             // JsonSourceUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(768, 500);
+            this.ClientSize = new System.Drawing.Size(772, 408);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.ok);
@@ -492,6 +546,10 @@
             this.sourceTabPage.ResumeLayout(false);
             this.sourceTabPage.PerformLayout();
             this.MainPanel.ResumeLayout(false);
+            this.cookieGroup.ResumeLayout(false);
+            this.cookieGroup.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.uiVariableFilePathGroup.ResumeLayout(false);
             this.uiVariableFilePathGroup.PerformLayout();
             this.uiVariableUrlGroup.ResumeLayout(false);
@@ -516,7 +574,6 @@
         private System.Windows.Forms.Button cancel;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox uiWebURLCustom;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage sourceTabPage;
         private System.Windows.Forms.Label label5;
@@ -528,16 +585,13 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.Button uiBrowseFilePath;
         private System.Windows.Forms.TextBox uiFilePathCustom;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.GroupBox uiVariableFilePathGroup;
         private System.Windows.Forms.GroupBox uiVariableUrlGroup;
         private System.Windows.Forms.GroupBox uiCustomUrlGroup;
         private System.Windows.Forms.GroupBox uiFilePathGroup;
-        private System.Windows.Forms.Button uiTestWebURL;
         private System.Windows.Forms.Button uiBrowseFilePathVariable;
         private System.Windows.Forms.TextBox uiFilePathVariable;
         private System.Windows.Forms.Button uiSelectURLVariable;
-        private System.Windows.Forms.Label uiVarLabel;
         private System.Windows.Forms.TextBox uiURLVariable;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
@@ -547,9 +601,17 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn OutColumnType;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox uiPathToArray;
-        private System.Windows.Forms.RadioButton postRadio;
-        private System.Windows.Forms.RadioButton getRadio;
+        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton delRadio;
+        private System.Windows.Forms.RadioButton getRadio;
         private System.Windows.Forms.RadioButton putRadio;
+        private System.Windows.Forms.RadioButton postRadio;
+        private System.Windows.Forms.GroupBox cookieGroup;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button httpparams;
+        private System.Windows.Forms.Button uiTestWebURL;
+        private System.Windows.Forms.TextBox cookieVarTb;
+        private System.Windows.Forms.Button tmpBrowse;
     }
 }

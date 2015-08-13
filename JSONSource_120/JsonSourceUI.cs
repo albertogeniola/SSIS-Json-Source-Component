@@ -24,6 +24,7 @@ namespace com.webkingsoft.JSONSource_120
         private SourceModel _model;
         private IServiceProvider _sp;
         private System.Windows.Forms.IWin32Window _parent;
+
         public JsonSourceUI(System.Windows.Forms.IWin32Window parent, Variables vars, SourceModel model,IServiceProvider sp)
         {
             // Salva i riferimenti in locale
@@ -31,6 +32,7 @@ namespace com.webkingsoft.JSONSource_120
             _vars = vars;
             _model = model;
             _sp = sp;
+            _tmpParams = _model.HttpParameters == null ? new List<HTTPParameter>() : _model.HttpParameters;
             
             // Inizializza la UI
             InitializeComponent();
@@ -156,6 +158,10 @@ namespace com.webkingsoft.JSONSource_120
                 else if (delRadio.Checked)
                     _model.WebMethod = "DELETE";
 
+                _model.HttpParameters = _tmpParams;
+
+                _model.CookieVariable = String.IsNullOrEmpty(cookieVarTb.Text) ? null : cookieVarTb.Text;
+
                 _model.ClearMapping();
                 // - Salva le impostazioni di IO
                 if (uiIOGrid.IsCurrentCellDirty || uiIOGrid.IsCurrentRowDirty)
@@ -273,6 +279,9 @@ namespace com.webkingsoft.JSONSource_120
             uiVariableFilePathGroup.Enabled = newVal == SourceType.FilePathVariable;
             uiCustomUrlGroup.Enabled = newVal == SourceType.WebUrlPath;
             uiVariableUrlGroup.Enabled = newVal == SourceType.WebUrlVariable;
+            httpparams.Enabled = newVal == SourceType.WebUrlPath || newVal == SourceType.WebUrlVariable;
+            uiTestWebURL.Enabled = newVal == SourceType.WebUrlPath;
+            cookieGroup.Enabled = newVal == SourceType.WebUrlPath || newVal == SourceType.WebUrlVariable;
         }
 
         private void FilePathFromVariable_Click(object sender, EventArgs e)
@@ -429,5 +438,70 @@ namespace com.webkingsoft.JSONSource_120
             }
         }
 
+        private void button4_Click(object sender, EventArgs e)
+        {
+            VariableChooser vc = new VariableChooser(_vars);
+            DialogResult dr = vc.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                Microsoft.SqlServer.Dts.Runtime.Variable v = vc.GetResult();
+                uiURLVariable.Text = v.QualifiedName;
+            }
+        }
+
+        private void sourceTabPage_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private IEnumerable<HTTPParameter> _tmpParams = null;
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Parameters p = new Parameters(_vars);
+            p.SetModel(_tmpParams);
+            p.TopMost = true;
+            var res = p.ShowDialog();
+            if (res == System.Windows.Forms.DialogResult.OK) {
+                _tmpParams = p.GetModel();
+            }
+        }
+
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            VariableChooser vc = new VariableChooser(_vars);
+            DialogResult dr = vc.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                Microsoft.SqlServer.Dts.Runtime.Variable v = vc.GetResult();
+                cookieVarTb.Text = v.QualifiedName;
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            IDtsVariableService vservice = (IDtsVariableService)_sp.GetService(typeof(IDtsVariableService));
+            Microsoft.SqlServer.Dts.Runtime.Variable vv = vservice.PromptAndCreateVariable(_parent, null, null, "User", typeof(string));
+            if (vv != null)
+                cookieVarTb.Text = vv.QualifiedName;
+        }
+
+        private void uiTestWebURL_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tmpBrowse_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog b = new FolderBrowserDialog();
+            var r = b.ShowDialog();
+            if (r == System.Windows.Forms.DialogResult.OK) {
+                uiTempDir.Text = b.SelectedPath;
+            }
+        }
     }
 }

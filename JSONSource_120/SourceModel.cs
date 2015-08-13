@@ -27,6 +27,20 @@ namespace com.webkingsoft.JSONSource_120
             }
         }
 
+        [JsonProperty]
+        public IEnumerable<HTTPParameter> HttpParameters
+        {
+            get;
+            set;
+        }
+
+        [JsonProperty]
+        public string CookieVariable
+        {
+            get;
+            set;
+        }
+
         // Definisce il tipo di sorgente dello script JSON
         private SourceType _sourceType;
         [JsonProperty]
