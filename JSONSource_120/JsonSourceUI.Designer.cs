@@ -44,6 +44,7 @@
             this.MainPanel = new System.Windows.Forms.Panel();
             this.httpparams = new System.Windows.Forms.Button();
             this.cookieGroup = new System.Windows.Forms.GroupBox();
+            this.cookieVarTb = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.uiTestWebURL = new System.Windows.Forms.Button();
@@ -71,9 +72,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.uiPathToArray = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.cookieVarTb = new System.Windows.Forms.TextBox();
             this.tmpBrowse = new System.Windows.Forms.Button();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.uiIOGrid)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.sourceTabPage.SuspendLayout();
@@ -231,6 +231,14 @@
             this.cookieGroup.TabIndex = 20;
             this.cookieGroup.TabStop = false;
             this.cookieGroup.Text = "COOKIE Variable";
+            // 
+            // cookieVarTb
+            // 
+            this.cookieVarTb.Location = new System.Drawing.Point(7, 18);
+            this.cookieVarTb.Name = "cookieVarTb";
+            this.cookieVarTb.ReadOnly = true;
+            this.cookieVarTb.Size = new System.Drawing.Size(152, 20);
+            this.cookieVarTb.TabIndex = 17;
             // 
             // button3
             // 
@@ -510,14 +518,6 @@
             this.tabPage2.Text = "Advanced";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // cookieVarTb
-            // 
-            this.cookieVarTb.Location = new System.Drawing.Point(7, 18);
-            this.cookieVarTb.Name = "cookieVarTb";
-            this.cookieVarTb.ReadOnly = true;
-            this.cookieVarTb.Size = new System.Drawing.Size(152, 20);
-            this.cookieVarTb.TabIndex = 17;
-            // 
             // tmpBrowse
             // 
             this.tmpBrowse.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("tmpBrowse.BackgroundImage")));
@@ -540,7 +540,6 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "JsonSourceUI";
             this.Text = "JsonSourceUI";
-            this.TopMost = true;
             ((System.ComponentModel.ISupportInitialize)(this.uiIOGrid)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.sourceTabPage.ResumeLayout(false);

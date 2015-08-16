@@ -80,12 +80,17 @@ namespace com.webkingsoft.JSONSource_120
             if (m.WebUrl == null)
                 uiWebURLCustom.Text = "";
             else
-                uiWebURLCustom.Text = m.WebUrl;
+                uiWebURLCustom.Text = m.WebUrl.AbsolutePath;
 
             if (m.WebUrlVariable == null)
                 uiURLVariable.Text = "";
             else
                 uiURLVariable.Text = m.WebUrlVariable;
+
+            if (String.IsNullOrEmpty(_model.CookieVariable))
+                cookieVarTb.Text = "";
+            else
+                cookieVarTb.Text = _model.CookieVariable;
 
             // Configura la UI in modo opportuno
             uiVariableFilePathGroup.Enabled = m.SourceType == SourceType.FilePathVariable;
@@ -138,7 +143,7 @@ namespace com.webkingsoft.JSONSource_120
                 // - Salva le informazioni riguardanti la sorgente dei dati
                 _model.SourceType = (SourceType)Enum.Parse(typeof(SourceType), uiSourceType.SelectedItem.ToString());
                 _model.FilePath = uiSourceType.Text == Enum.GetName(typeof(SourceType), SourceType.FilePath) ? uiFilePathCustom.Text : null;
-                _model.WebUrl = uiSourceType.Text == Enum.GetName(typeof(SourceType), SourceType.WebUrlPath) ? uiWebURLCustom.Text : null;
+                _model.WebUrl = uiSourceType.Text == Enum.GetName(typeof(SourceType), SourceType.WebUrlPath) ? new Uri(uiWebURLCustom.Text) : null;
 
                 if (uiSourceType.Text == Enum.GetName(typeof(SourceType), SourceType.FilePathVariable))
                     _model.FilePathVar = uiFilePathVariable.Text;
@@ -464,7 +469,6 @@ namespace com.webkingsoft.JSONSource_120
         {
             Parameters p = new Parameters(_vars);
             p.SetModel(_tmpParams);
-            p.TopMost = true;
             var res = p.ShowDialog();
             if (res == System.Windows.Forms.DialogResult.OK) {
                 _tmpParams = p.GetModel();
@@ -473,11 +477,15 @@ namespace com.webkingsoft.JSONSource_120
 
         private void button4_Click_1(object sender, EventArgs e)
         {
-            VariableChooser vc = new VariableChooser(_vars);
+            VariableChooser vc = new VariableChooser(_vars,new TypeCode[] {TypeCode.Object},null);
             DialogResult dr = vc.ShowDialog();
             if (dr == DialogResult.OK)
             {
                 Microsoft.SqlServer.Dts.Runtime.Variable v = vc.GetResult();
+                if (v.DataType != TypeCode.Object) {
+                    MessageBox.Show("The cookie variable MUST be of type \"Object\".");
+                    return;
+                }
                 cookieVarTb.Text = v.QualifiedName;
             }
         }
@@ -485,14 +493,16 @@ namespace com.webkingsoft.JSONSource_120
         private void button3_Click(object sender, EventArgs e)
         {
             IDtsVariableService vservice = (IDtsVariableService)_sp.GetService(typeof(IDtsVariableService));
-            Microsoft.SqlServer.Dts.Runtime.Variable vv = vservice.PromptAndCreateVariable(_parent, null, null, "User", typeof(string));
+            Microsoft.SqlServer.Dts.Runtime.Variable vv = vservice.PromptAndCreateVariable(this, null, "COOKIES_"+this.Name, "User", typeof(object));
             if (vv != null)
+            {
                 cookieVarTb.Text = vv.QualifiedName;
+            }
         }
 
         private void uiTestWebURL_Click_1(object sender, EventArgs e)
         {
-
+            
         }
 
         private void tmpBrowse_Click(object sender, EventArgs e)

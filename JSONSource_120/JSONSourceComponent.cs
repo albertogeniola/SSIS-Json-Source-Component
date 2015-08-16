@@ -48,6 +48,8 @@ namespace com.webkingsoft.JSONSource_120
             var output = ComponentMetaData.OutputCollection.New();
             output.Name = "Parsed Json lines";
 
+            
+
             SourceModel m = null;
             try
             {
@@ -121,7 +123,7 @@ namespace com.webkingsoft.JSONSource_120
                     }
                     break;
                 case SourceType.WebUrlPath:
-                    if (string.IsNullOrEmpty(m.WebUrl))
+                    if (m.WebUrl==null)
                     {
                         ComponentMetaData.FireError(ERROR_WEB_URL_MISSING, ComponentMetaData.Name, "Web URL has not been set.", null, 0, out fireAgain);
                         return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
@@ -311,8 +313,8 @@ namespace com.webkingsoft.JSONSource_120
                     string fName = null;
                     try
                     {
-                         fName = DownloadJsonFile(m.WebUrl,m.CustomLocalTempDir);
-                         _sr = new StreamReader(new FileStream(fName, FileMode.Open));
+                        fName = Utils.DownloadJson(VariableDispenser, m.WebUrl,m.WebMethod,m.HttpParameters,m.CookieVariable,m.CustomLocalTempDir);
+                        _sr = new StreamReader(new FileStream(fName, FileMode.Open));
                     }
                     catch(Exception ex)
                     {
@@ -322,10 +324,26 @@ namespace com.webkingsoft.JSONSource_120
                     
                     break;
                 case SourceType.WebUrlVariable:
+
+                    Uri r = null;
                     vars = null;
-                    VariableDispenser.LockOneForRead(m.WebUrlVariable, ref vars);
-                    filePath = DownloadJsonFile(vars[m.WebUrlVariable].Value.ToString(),m.CustomLocalTempDir);
-                    vars.Unlock();
+                    try
+                    {
+                        VariableDispenser.LockOneForRead(m.WebUrlVariable, ref vars);
+                        string url = vars[m.WebUrlVariable].Value.ToString();
+                        r = new Uri(url, UriKind.Absolute);
+                    }
+                    catch (Exception e)
+                    {
+                        ComponentMetaData.FireError(RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "Invalid URI into variable \"" + m.WebUrlVariable + "\" or invalid variable.", null, 0, out cancel);
+                        throw new Exception("Invalid URL");
+                    }
+                    finally { 
+                        if (vars!=null)
+                            vars.Unlock(); 
+                    }
+
+                    filePath = Utils.DownloadJson(VariableDispenser, r, m.WebMethod, m.HttpParameters,m.CookieVariable, m.CustomLocalTempDir);
 
                     if (!File.Exists(filePath))
                     {
@@ -373,48 +391,6 @@ namespace com.webkingsoft.JSONSource_120
 
             // Salva una copia locale del percorso cui attingere l'array
             _pathToArray = m.JsonObjectRelativePath;
-        }
-
-        private string DownloadJsonFile(string url, string method, string customLocalTempDir=null)
-        {
-            string localTmp = null;
-            string filePath = null;
-            
-            method = method.ToUpper();
-            if (method != "GET" && method != "POST")
-                throw new ArgumentException("Invalid http method supplied: "+method);
-
-            if (!string.IsNullOrEmpty(customLocalTempDir))
-            {
-                if (!Directory.Exists(customLocalTempDir))
-                    throw new ArgumentException("Local tmp path doesn't exist: " + customLocalTempDir);
-                localTmp = customLocalTempDir;
-            }
-            else
-            {
-                localTmp = Path.GetTempPath();
-            }
-
-            filePath = Path.Combine(localTmp, Guid.NewGuid().ToString() + ".json");
-
-
-            HttpWebRequest rq = (HttpWebRequest)WebRequest.Create(url);
-            rq.Credentials = CredentialCache.DefaultCredentials;
-            rq.Method = method;
-            HttpWebResponse resp = (HttpWebResponse)rq.GetResponse();
-            if (resp.StatusCode != HttpStatusCode.OK)
-            {
-                throw new Exception("Status code received was " + resp.StatusCode+", i.e. "+resp.StatusDescription);
-            }
-            using(StreamWriter sw = new StreamWriter(new FileStream(filePath, FileMode.OpenOrCreate)))
-                using(StreamReader sr = new StreamReader(resp.GetResponseStream())){
-                    char[] buff = new char[4096];
-                    int read = 0;
-                    while ((read = sr.ReadBlock(buff, 0, buff.Length)) > 0)
-                        sw.Write(buff, 0, read);
-                }
-
-            return filePath;
         }
 
         public override void PrimeOutput(int outputs, int[] outputIDs, PipelineBuffer[] buffers)

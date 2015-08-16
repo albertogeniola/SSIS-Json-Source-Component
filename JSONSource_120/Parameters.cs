@@ -141,7 +141,7 @@ namespace com.webkingsoft.JSONSource_120
                 HTTPParameter p = new HTTPParameter();
                 p.Name = row.Cells[0].Value.ToString().Trim();
                 p.Binding = (HTTPParamBinding) Enum.Parse(typeof(HTTPParamBinding), row.Cells[1].Value.ToString().Trim());
-                p.Value = row.Cells[2].ToString().Trim();
+                p.Value = row.Cells[2].Value.ToString().Trim();
                 p.Encode = (bool)row.Cells[3].Value;
                 _model.Add(p);
             }

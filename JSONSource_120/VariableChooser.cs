@@ -17,8 +17,13 @@ namespace com.webkingsoft.JSONSource_120
         private Variable _result;
 
 
-        public VariableChooser(Variables vars)
+        public VariableChooser(Variables vars) : this(vars, null, null) { }
+
+        public VariableChooser(Variables vars, IEnumerable<TypeCode> validCodes, IEnumerable<string> validScopes)
         {
+            if (vars == null)
+                throw new ArgumentException("Passed a null variables object to variable chooser.");
+
             _vars = vars;
             InitializeComponent();
             DialogResult = DialogResult.Cancel;
@@ -26,14 +31,32 @@ namespace com.webkingsoft.JSONSource_120
 
             foreach (Variable v in _vars)
             {
+                // Filter by valid codes and validScopes
+                if (validCodes != null && !validCodes.Contains<TypeCode>(v.DataType))
+                {
+                    continue;
+                }
+                
+                if (validScopes!=null && !validScopes.Contains(v.Namespace)) {
+                    continue;
+                }
+
+                varList.Items.Add(v.QualifiedName);
+            }
+
+            if (varList.Items.Count > 0)
+                varList.SelectedIndex = 0;
+        }
+
+        public void FilterByTypes(IEnumerable<TypeCode> validCodes)
+        {
+            foreach (Variable v in _vars)
+            {
                 if (v.DataType == TypeCode.String)
                 {
                     varList.Items.Add(v.QualifiedName);
                 }
             }
-
-            if (varList.Items.Count > 0)
-                varList.SelectedIndex = 0;
         }
 
         private void VariableChooser_Load(object sender, EventArgs e)

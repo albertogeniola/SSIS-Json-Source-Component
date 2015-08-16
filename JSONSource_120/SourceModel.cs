@@ -69,9 +69,9 @@ namespace com.webkingsoft.JSONSource_120
         }
 
         // URL per effettuare la richiesta, in caso di tipo webUrl
-        private string _webUrl;
+        private Uri _webUrl;
         [JsonProperty]
-        public string WebUrl
+        public Uri WebUrl
         {
             get { return _webUrl; }
             set { _webUrl = value; }
