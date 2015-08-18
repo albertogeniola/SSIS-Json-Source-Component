@@ -106,7 +106,7 @@
             this.OutColumnType});
             this.uiIOGrid.Location = new System.Drawing.Point(6, 42);
             this.uiIOGrid.Name = "uiIOGrid";
-            this.uiIOGrid.Size = new System.Drawing.Size(730, 363);
+            this.uiIOGrid.Size = new System.Drawing.Size(730, 284);
             this.uiIOGrid.TabIndex = 6;
             this.uiIOGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.uiIOGrid_CellEndEdit);
             // 

@@ -7,6 +7,7 @@ using JSONSource;
 using Microsoft.SqlServer.Dts.Design;
 using Microsoft.SqlServer.Dts.Runtime.Design;
 using System.Collections.Generic;
+using com.webkingsoft.JSONSource_120.SourceUI;
 
 namespace com.webkingsoft.JSONSource_120
 {
@@ -33,7 +34,9 @@ namespace com.webkingsoft.JSONSource_120
 
         public bool Edit(System.Windows.Forms.IWin32Window parentWindow, Variables vars, Connections cons)
         {
-            JsonSourceUI componentEditor = new JsonSourceUI(parentWindow,vars,_model,_sp);
+            //JsonSourceUI componentEditor = new JsonSourceUI(parentWindow,vars,_model,_sp);
+            SourceAdvancedUI componentEditor = new SourceAdvancedUI(vars,_sp);
+            componentEditor.LoadModel(_model);
 
             DialogResult result = componentEditor.ShowDialog(parentWindow);
 

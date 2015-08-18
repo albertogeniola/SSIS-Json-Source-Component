@@ -90,6 +90,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomControls\AdvancedView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\AdvancedView.Designer.cs">
+      <DependentUpon>AdvancedView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\ColumnView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\ColumnView.Designer.cs">
+      <DependentUpon>ColumnView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\FileSourceControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\FileSourceControl.Designer.cs">
+      <DependentUpon>FileSourceControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\WebSourceControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\WebSourceControl.Designer.cs">
+      <DependentUpon>WebSourceControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\SourceControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\SourceControl.Designer.cs">
+      <DependentUpon>SourceControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="DataModelType.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="HTTPParamBinding.cs" />
@@ -118,6 +148,12 @@
     <Compile Include="Parameters.Designer.cs">
       <DependentUpon>Parameters.cs</DependentUpon>
     </Compile>
+    <Compile Include="SourceUI\SourceAdvancedUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SourceUI\SourceAdvancedUI.Designer.cs">
+      <DependentUpon>SourceAdvancedUI.cs</DependentUpon>
+    </Compile>
     <Compile Include="TransformationModel.cs" />
     <Compile Include="SourceModel.cs" />
     <Compile Include="ModelNotFoundException.cs" />
@@ -136,6 +172,21 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="CustomControls\AdvancedView.resx">
+      <DependentUpon>AdvancedView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\ColumnView.resx">
+      <DependentUpon>ColumnView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\FileSourceControl.resx">
+      <DependentUpon>FileSourceControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\WebSourceControl.resx">
+      <DependentUpon>WebSourceControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\SourceControl.resx">
+      <DependentUpon>SourceControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="JsonTransformUI.resx">
       <DependentUpon>JsonTransformUI.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -150,6 +201,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SourceUI\SourceAdvancedUI.resx">
+      <DependentUpon>SourceAdvancedUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VariableChooser.resx">
       <DependentUpon>VariableChooser.cs</DependentUpon>
@@ -171,6 +225,7 @@
     <EmbeddedResource Include="jsource.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <None Include="Resources\256x256_96x96.png" />
     <Content Include="Resources\modelex.png" />
   </ItemGroup>
   <ItemGroup>
