@@ -37,6 +37,19 @@ namespace com.webkingsoft.JSONSource_120.CustomControls
             uiWebURL.Text = "";
         }
 
+        public string GetHTTPMethod() {
+            if (getRadio.Checked)
+                return "GET";
+            else if (postRadio.Checked)
+                return "POST";
+            else if (putRadio.Checked)
+                return "PUT";
+            else if (delRadio.Checked)
+                return "DELETE";
+            else
+                throw new ArgumentException("Invalid method selection!");
+        }
+
         public SourceType GetSourceType() {
             if (directInputR.Checked)
                 return SourceType.WebUrlPath;

@@ -108,6 +108,12 @@
     <Compile Include="CustomControls\FileSourceControl.Designer.cs">
       <DependentUpon>FileSourceControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="CustomControls\JSONPreview.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CustomControls\JSONPreview.Designer.cs">
+      <DependentUpon>JSONPreview.cs</DependentUpon>
+    </Compile>
     <Compile Include="CustomControls\WebSourceControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -181,6 +187,9 @@
     <EmbeddedResource Include="CustomControls\FileSourceControl.resx">
       <DependentUpon>FileSourceControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\JSONPreview.resx">
+      <DependentUpon>JSONPreview.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CustomControls\WebSourceControl.resx">
       <DependentUpon>WebSourceControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -226,6 +235,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <None Include="Resources\256x256_96x96.png" />
+    <None Include="Resources\folder_explore.png" />
     <Content Include="Resources\modelex.png" />
   </ItemGroup>
   <ItemGroup>

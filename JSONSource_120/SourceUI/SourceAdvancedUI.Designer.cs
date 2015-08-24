@@ -34,11 +34,13 @@
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.cancel = new System.Windows.Forms.Button();
             this.ok = new System.Windows.Forms.Button();
-            this.menulist = new System.Windows.Forms.ListBox();
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.menulist = new System.Windows.Forms.ListBox();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.topPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.bottomPanel.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // topPanel
@@ -54,17 +56,18 @@
             // 
             // richTextBox1
             // 
-            this.richTextBox1.BackColor = System.Drawing.Color.YellowGreen;
+            this.richTextBox1.BackColor = System.Drawing.Color.White;
             this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBox1.Cursor = System.Windows.Forms.Cursors.Default;
             this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBox1.Enabled = false;
-            this.richTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.richTextBox1.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richTextBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.richTextBox1.Location = new System.Drawing.Point(120, 0);
+            this.richTextBox1.ImeMode = System.Windows.Forms.ImeMode.Disable;
+            this.richTextBox1.Location = new System.Drawing.Point(128, 0);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(563, 104);
+            this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+            this.richTextBox1.Size = new System.Drawing.Size(555, 104);
             this.richTextBox1.TabIndex = 1;
             this.richTextBox1.Text = "You may set up the JSON Source component by editing settings in this window. \nDoc" +
     "umentation at http://www.codeplex.com/jsonsource\nAuthor: Alberto Geniola, albert" +
@@ -73,13 +76,13 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackColor = System.Drawing.Color.YellowGreen;
+            this.pictureBox1.BackColor = System.Drawing.Color.White;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Left;
             this.pictureBox1.ErrorImage = null;
             this.pictureBox1.Image = global::com.webkingsoft.JSONSource_120.Properties.Resources._256x256_96x96;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(120, 104);
+            this.pictureBox1.Size = new System.Drawing.Size(128, 104);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -114,36 +117,47 @@
             this.ok.UseVisualStyleBackColor = true;
             this.ok.Click += new System.EventHandler(this.ok_Click);
             // 
+            // mainPanel
+            // 
+            this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.mainPanel.Location = new System.Drawing.Point(128, 104);
+            this.mainPanel.Name = "mainPanel";
+            this.mainPanel.Size = new System.Drawing.Size(545, 390);
+            this.mainPanel.TabIndex = 3;
+            // 
             // menulist
             // 
             this.menulist.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.menulist.Dock = System.Windows.Forms.DockStyle.Left;
+            this.menulist.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.menulist.FormattingEnabled = true;
+            this.menulist.ItemHeight = 19;
             this.menulist.Items.AddRange(new object[] {
             "Settings",
             "Columns",
             "Advanced"});
-            this.menulist.Location = new System.Drawing.Point(0, 104);
+            this.menulist.Location = new System.Drawing.Point(12, 8);
             this.menulist.Name = "menulist";
-            this.menulist.Size = new System.Drawing.Size(120, 409);
+            this.menulist.Size = new System.Drawing.Size(108, 382);
             this.menulist.TabIndex = 2;
             this.menulist.SelectedIndexChanged += new System.EventHandler(this.menulist_SelectedIndexChanged);
             // 
-            // mainPanel
+            // panel1
             // 
-            this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainPanel.Location = new System.Drawing.Point(120, 104);
-            this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(563, 409);
-            this.mainPanel.TabIndex = 3;
+            this.panel1.Controls.Add(this.menulist);
+            this.panel1.Location = new System.Drawing.Point(0, 104);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(128, 409);
+            this.panel1.TabIndex = 0;
             // 
             // SourceAdvancedUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(683, 555);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.mainPanel);
-            this.Controls.Add(this.menulist);
             this.Controls.Add(this.bottomPanel);
             this.Controls.Add(this.topPanel);
             this.Name = "SourceAdvancedUI";
@@ -151,6 +165,7 @@
             this.topPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.bottomPanel.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -159,11 +174,12 @@
 
         private System.Windows.Forms.Panel topPanel;
         private System.Windows.Forms.Panel bottomPanel;
-        private System.Windows.Forms.ListBox menulist;
-        private System.Windows.Forms.Panel mainPanel;
         private System.Windows.Forms.Button cancel;
         private System.Windows.Forms.Button ok;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.Panel mainPanel;
+        private System.Windows.Forms.ListBox menulist;
+        private System.Windows.Forms.Panel panel1;
     }
 }

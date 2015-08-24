@@ -34,8 +34,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.directInputR = new System.Windows.Forms.RadioButton();
             this.variableR = new System.Windows.Forms.RadioButton();
-            this.uiBrowseFilePath = new System.Windows.Forms.Button();
             this.jsonFilePath = new System.Windows.Forms.TextBox();
+            this.uiBrowseFilePath = new System.Windows.Forms.Button();
             this.uiCustomUrlGroup.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,6 +64,7 @@
             this.uiBrowseFilePathVariable.TabIndex = 31;
             this.uiBrowseFilePathVariable.Text = "Browse...";
             this.uiBrowseFilePathVariable.UseVisualStyleBackColor = true;
+            this.uiBrowseFilePathVariable.Visible = false;
             this.uiBrowseFilePathVariable.Click += new System.EventHandler(this.uiBrowseFilePathVariable_Click);
             // 
             // addVarByutton
@@ -74,6 +75,7 @@
             this.addVarByutton.TabIndex = 30;
             this.addVarByutton.Text = "Add new...";
             this.addVarByutton.UseVisualStyleBackColor = true;
+            this.addVarByutton.Visible = false;
             // 
             // label1
             // 
@@ -108,8 +110,17 @@
             this.variableR.UseVisualStyleBackColor = true;
             this.variableR.CheckedChanged += new System.EventHandler(this.variableR_CheckedChanged);
             // 
+            // jsonFilePath
+            // 
+            this.jsonFilePath.Location = new System.Drawing.Point(19, 46);
+            this.jsonFilePath.Multiline = true;
+            this.jsonFilePath.Name = "jsonFilePath";
+            this.jsonFilePath.Size = new System.Drawing.Size(371, 25);
+            this.jsonFilePath.TabIndex = 1;
+            // 
             // uiBrowseFilePath
             // 
+            this.uiBrowseFilePath.Image = global::com.webkingsoft.JSONSource_120.Properties.Resources.folder_explore;
             this.uiBrowseFilePath.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.uiBrowseFilePath.Location = new System.Drawing.Point(19, 77);
             this.uiBrowseFilePath.Name = "uiBrowseFilePath";
@@ -118,14 +129,7 @@
             this.uiBrowseFilePath.Text = "Browse...";
             this.uiBrowseFilePath.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.uiBrowseFilePath.UseVisualStyleBackColor = true;
-            // 
-            // jsonFilePath
-            // 
-            this.jsonFilePath.Location = new System.Drawing.Point(19, 46);
-            this.jsonFilePath.Multiline = true;
-            this.jsonFilePath.Name = "jsonFilePath";
-            this.jsonFilePath.Size = new System.Drawing.Size(371, 25);
-            this.jsonFilePath.TabIndex = 1;
+            this.uiBrowseFilePath.Click += new System.EventHandler(this.uiBrowseFilePath_Click);
             // 
             // FileSourceControl
             // 

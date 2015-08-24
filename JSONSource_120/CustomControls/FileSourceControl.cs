@@ -19,6 +19,7 @@ namespace com.webkingsoft.JSONSource_120.CustomControls
         {
             _vars = vars;
             InitializeComponent();
+            directInputR.Checked = true;
         }
 
         public SourceType GetSourceType()
@@ -77,6 +78,16 @@ namespace com.webkingsoft.JSONSource_120.CustomControls
             {
                 variableR.Checked = true;
                 jsonFilePath.Text = m.FilePathVar;
+            }
+        }
+
+        private void uiBrowseFilePath_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog b = new FolderBrowserDialog();
+            var r = b.ShowDialog();
+            if (r == System.Windows.Forms.DialogResult.OK)
+            {
+                jsonFilePath.Text = b.SelectedPath;
             }
         }
     }

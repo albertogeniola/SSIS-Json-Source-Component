@@ -32,7 +32,10 @@
             this.label5 = new System.Windows.Forms.Label();
             this.uiSourceType = new System.Windows.Forms.ComboBox();
             this.main = new System.Windows.Forms.Panel();
+            this.bottom = new System.Windows.Forms.Panel();
+            this.previewBtn = new System.Windows.Forms.Button();
             this.top.SuspendLayout();
+            this.bottom.SuspendLayout();
             this.SuspendLayout();
             // 
             // top
@@ -69,19 +72,40 @@
             this.main.Dock = System.Windows.Forms.DockStyle.Fill;
             this.main.Location = new System.Drawing.Point(0, 65);
             this.main.Name = "main";
-            this.main.Size = new System.Drawing.Size(689, 298);
+            this.main.Size = new System.Drawing.Size(689, 351);
             this.main.TabIndex = 1;
+            // 
+            // bottom
+            // 
+            this.bottom.Controls.Add(this.previewBtn);
+            this.bottom.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.bottom.Location = new System.Drawing.Point(0, 383);
+            this.bottom.Name = "bottom";
+            this.bottom.Size = new System.Drawing.Size(689, 33);
+            this.bottom.TabIndex = 2;
+            // 
+            // previewBtn
+            // 
+            this.previewBtn.Location = new System.Drawing.Point(17, 3);
+            this.previewBtn.Name = "previewBtn";
+            this.previewBtn.Size = new System.Drawing.Size(120, 23);
+            this.previewBtn.TabIndex = 0;
+            this.previewBtn.Text = "Data Preview...";
+            this.previewBtn.UseVisualStyleBackColor = true;
+            this.previewBtn.Click += new System.EventHandler(this.button1_Click);
             // 
             // SourceControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.bottom);
             this.Controls.Add(this.main);
             this.Controls.Add(this.top);
             this.Name = "SourceControl";
-            this.Size = new System.Drawing.Size(689, 363);
+            this.Size = new System.Drawing.Size(689, 416);
             this.top.ResumeLayout(false);
             this.top.PerformLayout();
+            this.bottom.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -92,6 +116,8 @@
         private System.Windows.Forms.Panel main;
         private System.Windows.Forms.Label label5;
         public System.Windows.Forms.ComboBox uiSourceType;
+        private System.Windows.Forms.Panel bottom;
+        private System.Windows.Forms.Button previewBtn;
 
     }
 }

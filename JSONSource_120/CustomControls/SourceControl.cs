@@ -8,6 +8,8 @@ using System.Text;
 using System.Windows.Forms;
 using JSONSource.webkingsoft.JSONSource_120;
 using Microsoft.SqlServer.Dts.Runtime;
+using Microsoft.SqlServer.Dts.Runtime.Wrapper;
+using Microsoft.SqlServer.Dts.Design;
 
 namespace com.webkingsoft.JSONSource_120.CustomControls
 {
@@ -83,6 +85,117 @@ namespace com.webkingsoft.JSONSource_120.CustomControls
                 default:
                     throw new ApplicationException("Invalid source type given.");
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            previewBtn.Enabled = false;
+            this.Cursor = Cursors.WaitCursor;
+            BackgroundWorker bw = new BackgroundWorker();
+            
+            // Download and Display Data
+            #region
+            bw.DoWork += (object s, DoWorkEventArgs a)=> {
+
+                // Visualizza un'anteprima dei dati.
+                // Per farlo devo acquisire i dati dalla view
+                SourceType st = GetSourceType();
+                string fpath = null;
+                // Download the JSON file...
+                switch (st)
+                {
+                    case SourceType.FilePath:
+                        fpath = _filePathView.jsonFilePath.Text;
+                        break;
+                    case SourceType.FilePathVariable:
+                        Variables vars = null;
+                        try
+                        {
+                            IDtsPipelineEnvironmentService pipelineService = (IDtsPipelineEnvironmentService)_sp.GetService(typeof(IDtsPipelineEnvironmentService));
+                            pipelineService.PipelineTaskHost.VariableDispenser.LockForRead(_filePathView.jsonFilePath.Text);
+                            pipelineService.PipelineTaskHost.VariableDispenser.GetVariables(ref vars);
+                            var v = vars[0];
+                            if (v == null)
+                                throw new Exception("Invalid variable provided.");
+                            if (v.Value == null)
+                                throw new Exception("Variable value is null.");
+                            fpath = v.Value.ToString();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Error: " + ex.Message);
+                            return;
+                        }
+                        finally
+                        {
+                            if (vars != null && vars.Locked)
+                                vars.Unlock();
+                        }
+                        break;
+                    case SourceType.WebUrlPath:
+                    case SourceType.WebUrlVariable:
+                        vars = null;
+                        string method = _webUriView.GetHTTPMethod();
+                        var pars = _webUriView.GetHttpParameters();
+                        string cookievar = _webUriView.cookieVarTb.Text;
+                        string input = _webUriView.uiWebURL.Text;
+                        try
+                        {
+                            IDtsPipelineEnvironmentService pipelineService = (IDtsPipelineEnvironmentService)_sp.GetService(typeof(IDtsPipelineEnvironmentService));
+
+                            if (String.IsNullOrEmpty(input))
+                            {
+                                throw new ArgumentException("Invalid Variable / URL Specified.");
+                            }
+
+                            if (st == SourceType.WebUrlVariable)
+                            {
+                                pipelineService.PipelineTaskHost.VariableDispenser.LockForRead(input);
+                                pipelineService.PipelineTaskHost.VariableDispenser.GetVariables(ref vars);
+                                var v = vars[0];
+                                if (v == null)
+                                    throw new Exception("Invalid variable provided.");
+                                if (v.Value == null)
+                                    throw new Exception("Variable value is null.");
+                                string url = v.Value.ToString();
+                                vars.Unlock();
+                                fpath = Utils.DownloadJson(pipelineService.PipelineTaskHost.VariableDispenser, new Uri(url), method, pars, cookievar);
+                            }
+                            else if (st == SourceType.WebUrlPath)
+                            {
+                                fpath = Utils.DownloadJson(pipelineService.PipelineTaskHost.VariableDispenser, new Uri(input), method, pars, cookievar);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Exception i = ex;
+                            while (i.InnerException != null)
+                                i = i.InnerException;
+                            MessageBox.Show("Inner Error: " + i.Message);
+                            return;
+                        }
+                        finally
+                        {
+                            if (vars != null && vars.Locked)
+                                vars.Unlock();
+                        }
+                        break;
+                }
+                a.Result = fpath;
+            };
+            bw.RunWorkerCompleted += (object s, RunWorkerCompletedEventArgs a)=> {
+                previewBtn.Enabled = true;
+                Cursor = Cursors.Default;
+
+                if (a.Result != null)
+                {
+                    JSONPreview p = new JSONPreview();
+                    p.Parse(a.Result as string);
+                    p.ShowDialog();
+                }
+            };
+            bw.RunWorkerAsync();
+            #endregion
         }
     }
 }
