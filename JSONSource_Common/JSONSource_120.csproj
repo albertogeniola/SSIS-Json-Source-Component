@@ -1,0 +1,254 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{437A876F-AD81-46FF-8B3A-B1BCB87E93B1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>com.webkingsoft.JSONSource_120</RootNamespace>
+    <AssemblyName>com.webkingsoft.JSONSource_120</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\..\..\Desktop\Publish\120\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\..\..\Desktop\Publish\120\</OutputPath>
+    <DefineConstants>TRACE;DTS120; LINQ_SUPPORTED</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>JSONSource.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SqlServer.Dts.Design, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\120\SDK\Assemblies\Microsoft.SqlServer.Dts.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.DTSPipelineWrap, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\120\SDK\Assemblies\Microsoft.SqlServer.DTSPipelineWrap.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SQLServer.DTSRuntimeWrap, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\120\SDK\Assemblies\Microsoft.SQLServer.DTSRuntimeWrap.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\120\SDK\Assemblies\Microsoft.SQLServer.ManagedDTS.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.PipelineHost, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\120\SDK\Assemblies\Microsoft.SqlServer.PipelineHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ComponentConstants.cs" />
+    <Compile Include="CustomControls\AdvancedView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\AdvancedView.Designer.cs">
+      <DependentUpon>AdvancedView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\ColumnView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\ColumnView.Designer.cs">
+      <DependentUpon>ColumnView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\FileSourceControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\FileSourceControl.Designer.cs">
+      <DependentUpon>FileSourceControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\JSONPreview.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CustomControls\JSONPreview.Designer.cs">
+      <DependentUpon>JSONPreview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\SourceControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\SourceControl.Designer.cs">
+      <DependentUpon>SourceControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\WebSourceControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\WebSourceControl.Designer.cs">
+      <DependentUpon>WebSourceControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataModelType.cs" />
+    <Compile Include="Enum.cs" />
+    <Compile Include="HTTPParamBinding.cs" />
+    <Compile Include="HTTPParameter.cs" />
+    <Compile Include="IOMapEntry.cs" />
+    <Compile Include="JSONSourceComponent.cs" />
+    <Compile Include="JSONSourceComponentUI.cs" />
+    <Compile Include="JsonSourceUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="JsonSourceUI.Designer.cs">
+      <DependentUpon>JsonSourceUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JSONTransformComponent.cs" />
+    <Compile Include="JSONTransformComponentUI.cs" />
+    <Compile Include="JsonTransformUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="JsonTransformUI.Designer.cs">
+      <DependentUpon>JsonTransformUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JsonTypes.cs" />
+    <Compile Include="ModelNotFoundException.cs" />
+    <Compile Include="Parameters.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Parameters.Designer.cs">
+      <DependentUpon>Parameters.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="SourceModel.cs" />
+    <Compile Include="SourceUI\SourceAdvancedUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SourceUI\SourceAdvancedUI.Designer.cs">
+      <DependentUpon>SourceAdvancedUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TransformationModel.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="VariableChooser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VariableChooser.Designer.cs">
+      <DependentUpon>VariableChooser.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CustomControls\AdvancedView.resx">
+      <DependentUpon>AdvancedView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\ColumnView.resx">
+      <DependentUpon>ColumnView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\FileSourceControl.resx">
+      <DependentUpon>FileSourceControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\JSONPreview.resx">
+      <DependentUpon>JSONPreview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\SourceControl.resx">
+      <DependentUpon>SourceControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\WebSourceControl.resx">
+      <DependentUpon>WebSourceControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JsonSourceUI.resx">
+      <DependentUpon>JsonSourceUI.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JsonTransformUI.resx">
+      <DependentUpon>JsonTransformUI.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Parameters.resx">
+      <DependentUpon>Parameters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SourceUI\SourceAdvancedUI.resx">
+      <DependentUpon>SourceAdvancedUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VariableChooser.resx">
+      <DependentUpon>VariableChooser.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="deploy.bat" />
+    <None Include="JSONSource.snk" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Resources\256x256_96x96.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder_explore.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\modelex.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="jsource.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <Content Include="Resources\modelex.png" />
+    <None Include="Resources\Untitled.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Net40.csproj">
+      <Project>{a9ae40ff-1a21-414a-9fe7-3be13644cc6d}</Project>
+      <Name>Newtonsoft.Json.Net40</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
