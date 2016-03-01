@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace com.webkingsoft.JSONSource_100.Properties {
+namespace com.webkingsoft.JSONSource_110.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace com.webkingsoft.JSONSource_100.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("com.webkingsoft.JSONSource_100.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("com.webkingsoft.JSONSource_110.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,16 @@ namespace com.webkingsoft.JSONSource_100.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon jsource {
+            get {
+                object obj = ResourceManager.GetObject("jsource", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
     }
