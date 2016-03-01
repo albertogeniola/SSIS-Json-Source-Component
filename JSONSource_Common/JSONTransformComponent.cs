@@ -20,11 +20,8 @@ using System.Linq;
 
 namespace com.webkingsoft.JSONSource_Common
 {
-#if DTS120
-    [DtsPipelineComponent(DisplayName = "JSON Filter", Description = "Parses json data from an input column", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONTransformComponentUI,com.webkingsoft.JSONSource_Common,Version=1.0.120.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_Common.jsource.ico")]
-#elif DTS110
-    [DtsPipelineComponent(DisplayName = "JSON Filter", Description = "Parses json data from an input column", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONTransformComponentUI,com.webkingsoft.JSONSource_Common,Version=1.0.110.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_Common.jsource.ico")]
-#endif
+    //IconResource = "com.webkingsoft.JSONSource_Common.jsource.ico"
+    [DtsPipelineComponent(DisplayName = "JSON Filter", Description = "Parses json data from an input column", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONTransformComponentUI,com.webkingsoft.JSONSource_Common,Version=1.0.200.0,Culture=neutral")]
     public class JSONTransformComponent : PipelineComponent
     {
         public const string JSON_SOURCE_DEBUG_VAR = "wk_debug";
