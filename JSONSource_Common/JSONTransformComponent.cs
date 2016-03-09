@@ -522,15 +522,7 @@ namespace com.webkingsoft.JSONSource_Common
             return count;
         }
         
-        public override System.Collections.ObjectModel.Collection<int> GetDependentInputs(int blockedInputID)
-        {
-            return base.GetDependentInputs(blockedInputID);
-        }
-
-        public override IDTSExternalMetadataColumn100 InsertExternalMetadataColumnAt(int iID, int iExternalMetadataColumnIndex, string strName, string strDescription)
-        {
-            return base.InsertExternalMetadataColumnAt(iID, iExternalMetadataColumnIndex, strName, strDescription);
-        }
+        
 
         public override IDTSExternalMetadataColumn100 MapInputColumn(int iInputID, int iInputColumnID, int iExternalMetadataColumnID)
         {
