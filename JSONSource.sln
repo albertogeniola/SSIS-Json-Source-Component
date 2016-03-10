@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONSource_Common", "JSONSource_Common\JSONSource_Common.csproj", "{C0592AE0-67CA-4558-9813-A227175BD7BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONSource_120", "JSONSource_Common\JSONSource_120.csproj", "{437A876F-AD81-46FF-8B3A-B1BCB87E93B1}"
@@ -10,6 +12,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{B19BC1BA-3B31-4A56-97C2-824A21B50E15}"
 	ProjectSection(SolutionItems) = preProject
 		Installation.md = Installation.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer Script", "Installer Script", "{D219B7F5-C8D8-4F38-9EE4-E0941B2BDF8A}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Desktop\Setup.iss = ..\..\..\Desktop\Setup.iss
 	EndProjectSection
 EndProject
 Global
