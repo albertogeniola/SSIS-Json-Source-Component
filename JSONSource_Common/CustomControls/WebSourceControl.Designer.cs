@@ -128,6 +128,7 @@
             // 
             // uiTestWebURL
             // 
+            this.uiTestWebURL.Enabled = false;
             this.uiTestWebURL.Location = new System.Drawing.Point(358, 133);
             this.uiTestWebURL.Name = "uiTestWebURL";
             this.uiTestWebURL.Size = new System.Drawing.Size(152, 40);

@@ -19,6 +19,7 @@ namespace com.webkingsoft.JSONSource_Common
             InitializeComponent();
             _model = new SourceModel();
             (uiIOGrid.Columns["OutColumnType"] as DataGridViewComboBoxColumn).DataSource = Enum.GetNames(typeof(JsonTypes));
+            uiRootType.DataSource = Enum.GetNames(typeof(RootType));
         }
 
         private void uiIOGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)
@@ -55,10 +56,10 @@ namespace com.webkingsoft.JSONSource_Common
             uiIOGrid.Rows.Clear();
             _model = m;
 
-            if (!string.IsNullOrEmpty(uiPathToArray.Text))
-                _model.JsonObjectRelativePath = uiPathToArray.Text;
-            else
-                _model.JsonObjectRelativePath = null;
+            if (!string.IsNullOrEmpty(_model.JsonObjectRelativePath))
+                 uiPathToArray.Text=uiPathToArray.Text;
+
+            uiRootType.SelectedText = Enum.GetName(typeof(RootType), m.RootType);
 
             if (m != null)
             {
@@ -71,6 +72,16 @@ namespace com.webkingsoft.JSONSource_Common
                     uiIOGrid.Rows[index].Cells[3].Value = Enum.GetName(typeof(JsonTypes), e.OutputJsonColumnType);
                 }
             }
+        }
+
+        private void uiPathToArray_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

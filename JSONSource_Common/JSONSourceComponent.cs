@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 #if LINQ_SUPPORTED
 using System.Threading.Tasks;
+using System.Windows.Forms;
 #endif
 
 namespace com.webkingsoft.JSONSource_Common
@@ -211,7 +212,8 @@ namespace com.webkingsoft.JSONSource_Common
         private IOMapEntry[] _iomap;
         private Dictionary<string, int> _outColsMaps;
         private string _pathToArray = null;
-        ParallelOptions _opt;
+        private ParallelOptions _opt;
+        private RootType _rootType;
 
         public override void PreExecute()
         {
@@ -244,6 +246,8 @@ namespace com.webkingsoft.JSONSource_Common
                 ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "Invalid Metadata for this component.", null, 0, out cancel);
                 return;
             }
+
+            _rootType = m.RootType;
 
             // Ottenimento della sorgente: scaricarla da web oppure leggerla da file
             // Essendo passato per il validate, non effettuo nuovamente i controlli a questo livello.
@@ -381,10 +385,12 @@ namespace com.webkingsoft.JSONSource_Common
         {
             IDTSOutput100 output = ComponentMetaData.OutputCollection[0];
             PipelineBuffer buffer = buffers[0];
-            
+
+            //MessageBox.Show("When ready...");
+
             try
             {
-                ProcessInMemory(_sr, buffer);
+                ProcessInMemory(_sr, buffer, _rootType);
                 buffer.SetEndOfRowset();
             }
             catch (Exception e)
@@ -398,24 +404,36 @@ namespace com.webkingsoft.JSONSource_Common
         /**
          * Executes the navigation+parsing operation for the given json, putting results into the buffer.
          */
-        private void ProcessInMemory(StreamReader _sr, PipelineBuffer buffer)
+        private void ProcessInMemory(StreamReader _sr, PipelineBuffer buffer, RootType rootType)
         {
             using (_sr)
             {
                 bool cancel = false;
                 ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Loading whole model into memory and deserializing...", null, 0, ref cancel);
 
-                // Navigate to the relative Root.
+                dynamic o = null;
+                
                 try
                 {
-                    // Load all the Array so we can navigate it quickly.
-                    JObject o = JObject.Load(new JsonTextReader(_sr));
-                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Object loaded.", null, 0, ref cancel);
+                    // Load the whole json in memory.
+                    using (var reader = new JsonTextReader(_sr))
+                    {
+                        if (rootType == RootType.JsonObject)
+                        {
+                            o = JObject.Load(new JsonTextReader(_sr));
+                            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Object loaded.", null, 0, ref cancel);
+                        }
+                        else {
+                            o = JArray.Load(new JsonTextReader(_sr));
+                            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Array loaded.", null, 0, ref cancel);
+                        }
+                    }
 
                     // Get all the tokens returned by the XPath string specified
                     if (_pathToArray == null)
                         _pathToArray = "";
 
+                    // Navigate to the relative Root.
                     IEnumerable<JToken> els =  o.SelectTokens(_pathToArray);
                     int rootEls = els.Count();
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Array: loaded " + rootEls + " tokens.", null, 0, ref cancel);

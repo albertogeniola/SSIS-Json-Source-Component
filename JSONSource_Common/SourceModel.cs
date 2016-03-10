@@ -19,7 +19,7 @@ namespace com.webkingsoft.JSONSource_Common
     [JsonObject(MemberSerialization.OptIn)]
     public class SourceModel
     {
-        
+
         [JsonProperty]
         public Microsoft.SqlServer.Dts.Pipeline.ComponentType ComponentType {
             get {
@@ -29,6 +29,13 @@ namespace com.webkingsoft.JSONSource_Common
 
         [JsonProperty]
         public IEnumerable<HTTPParameter> HttpParameters
+        {
+            get;
+            set;
+        }
+
+        [JsonProperty]
+        public RootType RootType
         {
             get;
             set;

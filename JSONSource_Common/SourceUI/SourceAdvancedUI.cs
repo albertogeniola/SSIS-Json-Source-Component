@@ -116,6 +116,11 @@ namespace com.webkingsoft.JSONSource_Common
                     cm.EndCurrentEdit();
                 }
 
+                RootType root;
+                Enum.TryParse<RootType>(_columnView.uiRootType.SelectedValue.ToString(), out root);
+
+                _model.RootType = root;
+
                 int row = 1;
                 foreach (DataGridViewRow r in _columnView.uiIOGrid.Rows)
                 {

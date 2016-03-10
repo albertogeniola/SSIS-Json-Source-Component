@@ -155,10 +155,11 @@ namespace com.webkingsoft.JSONSource_Common
         public void SetModel(IEnumerable<HTTPParameter> pars) {
             _model.Clear();
             dataGridView1.Rows.Clear();
-            foreach (HTTPParameter p in pars) {
-                dataGridView1.Rows.Add(new object[] { p.Name, Enum.GetName(typeof(HTTPParamBinding),p.Binding), p.Value, p.Encode });
-                _model.Add(p);
-            }
+            if (pars!=null)
+                foreach (HTTPParameter p in pars) {
+                    dataGridView1.Rows.Add(new object[] { p.Name, Enum.GetName(typeof(HTTPParamBinding),p.Binding), p.Value, p.Encode });
+                    _model.Add(p);
+                }
         }
 
         private void delButton_Click(object sender, EventArgs e)

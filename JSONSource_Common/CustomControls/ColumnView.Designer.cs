@@ -29,19 +29,21 @@
         private void InitializeComponent()
         {
             this.top = new System.Windows.Forms.Panel();
+            this.uiRootType = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.uiPathToArray = new System.Windows.Forms.TextBox();
             this.uiIOGrid = new System.Windows.Forms.DataGridView();
             this.JSONFieldName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.JSONMaxLen = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.OutColName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.OutColumnType = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.label2 = new System.Windows.Forms.Label();
-            this.uiPathToArray = new System.Windows.Forms.TextBox();
             this.top.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.uiIOGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // top
             // 
+            this.top.Controls.Add(this.uiRootType);
             this.top.Controls.Add(this.label2);
             this.top.Controls.Add(this.uiPathToArray);
             this.top.Dock = System.Windows.Forms.DockStyle.Top;
@@ -49,6 +51,33 @@
             this.top.Name = "top";
             this.top.Size = new System.Drawing.Size(723, 42);
             this.top.TabIndex = 0;
+            // 
+            // uiRootType
+            // 
+            this.uiRootType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.uiRootType.FormattingEnabled = true;
+            this.uiRootType.Location = new System.Drawing.Point(450, 8);
+            this.uiRootType.Name = "uiRootType";
+            this.uiRootType.Size = new System.Drawing.Size(105, 21);
+            this.uiRootType.TabIndex = 12;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(14, 12);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(83, 13);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Json Root Path:";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // uiPathToArray
+            // 
+            this.uiPathToArray.Location = new System.Drawing.Point(105, 9);
+            this.uiPathToArray.Name = "uiPathToArray";
+            this.uiPathToArray.Size = new System.Drawing.Size(339, 20);
+            this.uiPathToArray.TabIndex = 10;
+            this.uiPathToArray.TextChanged += new System.EventHandler(this.uiPathToArray_TextChanged);
             // 
             // uiIOGrid
             // 
@@ -86,22 +115,6 @@
             this.OutColumnType.HeaderText = "Column Type";
             this.OutColumnType.Name = "OutColumnType";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(14, 12);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(85, 13);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "Array Root Path:";
-            // 
-            // uiPathToArray
-            // 
-            this.uiPathToArray.Location = new System.Drawing.Point(105, 9);
-            this.uiPathToArray.Name = "uiPathToArray";
-            this.uiPathToArray.Size = new System.Drawing.Size(615, 20);
-            this.uiPathToArray.TabIndex = 10;
-            // 
             // ColumnView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -127,5 +140,6 @@
         private System.Windows.Forms.Label label2;
         public System.Windows.Forms.DataGridView uiIOGrid;
         public System.Windows.Forms.TextBox uiPathToArray;
+        public System.Windows.Forms.ComboBox uiRootType;
     }
 }

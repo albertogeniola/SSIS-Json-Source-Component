@@ -1,10 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Net40", "Newtonsoft.Json\Newtonsoft.Json.Net40.csproj", "{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}"
-EndProject
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONSource_Common", "JSONSource_Common\JSONSource_Common.csproj", "{C0592AE0-67CA-4558-9813-A227175BD7BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONSource_120", "JSONSource_Common\JSONSource_120.csproj", "{437A876F-AD81-46FF-8B3A-B1BCB87E93B1}"
@@ -15,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{B19BC1BA-3
 	ProjectSection(SolutionItems) = preProject
 		Installation.md = Installation.md
 	EndProjectSection
-EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Setup", "Setup\Setup.wixproj", "{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,18 +24,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|Win32.ActiveCfg = Release|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|x86.ActiveCfg = Release|Any CPU
 		{C0592AE0-67CA-4558-9813-A227175BD7BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C0592AE0-67CA-4558-9813-A227175BD7BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0592AE0-67CA-4558-9813-A227175BD7BA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -77,20 +59,6 @@ Global
 		{E670B60F-1392-4620-B629-CDAF7267E9B1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{E670B60F-1392-4620-B629-CDAF7267E9B1}.Release|Win32.ActiveCfg = Release|Any CPU
 		{E670B60F-1392-4620-B629-CDAF7267E9B1}.Release|x86.ActiveCfg = Release|Any CPU
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Debug|Win32.ActiveCfg = Debug|x86
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Debug|Win32.Build.0 = Debug|x86
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Debug|x86.ActiveCfg = Debug|x86
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Debug|x86.Build.0 = Debug|x86
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Release|Any CPU.ActiveCfg = Release|x86
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Release|Mixed Platforms.Build.0 = Release|x86
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Release|Win32.ActiveCfg = Release|x86
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Release|Win32.Build.0 = Release|x86
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Release|x86.ActiveCfg = Release|x86
-		{B3F3E1A2-6031-4F9D-99F3-66582DF867D3}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
