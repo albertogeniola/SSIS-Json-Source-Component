@@ -147,12 +147,6 @@
     <Compile Include="IOMapEntry.cs" />
     <Compile Include="JSONSourceComponent.cs" />
     <Compile Include="JSONSourceComponentUI.cs" />
-    <Compile Include="JsonSourceUI.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="JsonSourceUI.Designer.cs">
-      <DependentUpon>JsonSourceUI.cs</DependentUpon>
-    </Compile>
     <Compile Include="JSONTransformComponent.cs" />
     <Compile Include="JSONTransformComponentUI.cs" />
     <Compile Include="JsonTransformUI.cs">
@@ -215,10 +209,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CustomControls\WebSourceControl.resx">
       <DependentUpon>WebSourceControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="JsonSourceUI.resx">
-      <DependentUpon>JsonSourceUI.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="JsonTransformUI.resx">
       <DependentUpon>JsonTransformUI.cs</DependentUpon>
