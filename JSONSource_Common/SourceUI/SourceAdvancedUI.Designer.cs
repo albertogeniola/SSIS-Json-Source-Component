@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SourceAdvancedUI));
             this.topPanel = new System.Windows.Forms.Panel();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -45,13 +46,13 @@
             // 
             // topPanel
             // 
-            this.topPanel.BackColor = System.Drawing.Color.YellowGreen;
+            this.topPanel.BackColor = System.Drawing.Color.White;
             this.topPanel.Controls.Add(this.richTextBox1);
             this.topPanel.Controls.Add(this.pictureBox1);
             this.topPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.topPanel.Location = new System.Drawing.Point(0, 0);
             this.topPanel.Name = "topPanel";
-            this.topPanel.Size = new System.Drawing.Size(683, 104);
+            this.topPanel.Size = new System.Drawing.Size(792, 104);
             this.topPanel.TabIndex = 0;
             // 
             // richTextBox1
@@ -59,19 +60,17 @@
             this.richTextBox1.BackColor = System.Drawing.Color.White;
             this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBox1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox1.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richTextBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
             this.richTextBox1.ImeMode = System.Windows.Forms.ImeMode.Disable;
-            this.richTextBox1.Location = new System.Drawing.Point(128, 0);
+            this.richTextBox1.Location = new System.Drawing.Point(134, 12);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            this.richTextBox1.Size = new System.Drawing.Size(555, 104);
+            this.richTextBox1.Size = new System.Drawing.Size(648, 86);
             this.richTextBox1.TabIndex = 1;
             this.richTextBox1.Text = "You may set up the JSON Source component by editing settings in this window. \nDoc" +
-    "umentation at http://www.codeplex.com/jsonsource\nAuthor: Alberto Geniola, albert" +
-    "ogeniola@gmail.com";
+    "umentation at http://www.codeplex.com/jsonsource\nAuthor: Alberto Geniola.";
             this.richTextBox1.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
             // 
             // pictureBox1
@@ -79,6 +78,8 @@
             this.pictureBox1.BackColor = System.Drawing.Color.White;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Left;
             this.pictureBox1.ErrorImage = null;
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.InitialImage")));
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(128, 104);
@@ -93,12 +94,12 @@
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.bottomPanel.Location = new System.Drawing.Point(0, 513);
             this.bottomPanel.Name = "bottomPanel";
-            this.bottomPanel.Size = new System.Drawing.Size(683, 42);
+            this.bottomPanel.Size = new System.Drawing.Size(792, 42);
             this.bottomPanel.TabIndex = 1;
             // 
             // cancel
             // 
-            this.cancel.Location = new System.Drawing.Point(483, 3);
+            this.cancel.Location = new System.Drawing.Point(599, 3);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(92, 36);
             this.cancel.TabIndex = 10;
@@ -108,7 +109,7 @@
             // 
             // ok
             // 
-            this.ok.Location = new System.Drawing.Point(581, 3);
+            this.ok.Location = new System.Drawing.Point(697, 3);
             this.ok.Name = "ok";
             this.ok.Size = new System.Drawing.Size(92, 36);
             this.ok.TabIndex = 9;
@@ -123,7 +124,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainPanel.Location = new System.Drawing.Point(128, 104);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(545, 390);
+            this.mainPanel.Size = new System.Drawing.Size(664, 390);
             this.mainPanel.TabIndex = 3;
             // 
             // menulist
@@ -154,7 +155,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(683, 555);
+            this.ClientSize = new System.Drawing.Size(792, 555);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.bottomPanel);

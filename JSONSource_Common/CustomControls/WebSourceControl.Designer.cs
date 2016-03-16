@@ -34,7 +34,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.directInputR = new System.Windows.Forms.RadioButton();
             this.variableR = new System.Windows.Forms.RadioButton();
-            this.uiTestWebURL = new System.Windows.Forms.Button();
             this.httpparams = new System.Windows.Forms.Button();
             this.cookieGroup = new System.Windows.Forms.GroupBox();
             this.cookieVarTb = new System.Windows.Forms.TextBox();
@@ -58,7 +57,6 @@
             this.uiCustomUrlGroup.Controls.Add(this.label1);
             this.uiCustomUrlGroup.Controls.Add(this.directInputR);
             this.uiCustomUrlGroup.Controls.Add(this.variableR);
-            this.uiCustomUrlGroup.Controls.Add(this.uiTestWebURL);
             this.uiCustomUrlGroup.Controls.Add(this.httpparams);
             this.uiCustomUrlGroup.Controls.Add(this.cookieGroup);
             this.uiCustomUrlGroup.Controls.Add(this.groupBox1);
@@ -126,22 +124,12 @@
             this.variableR.UseVisualStyleBackColor = true;
             this.variableR.CheckedChanged += new System.EventHandler(this.variableR_CheckedChanged);
             // 
-            // uiTestWebURL
-            // 
-            this.uiTestWebURL.Enabled = false;
-            this.uiTestWebURL.Location = new System.Drawing.Point(358, 133);
-            this.uiTestWebURL.Name = "uiTestWebURL";
-            this.uiTestWebURL.Size = new System.Drawing.Size(152, 40);
-            this.uiTestWebURL.TabIndex = 23;
-            this.uiTestWebURL.Text = "Test...";
-            this.uiTestWebURL.UseVisualStyleBackColor = true;
-            // 
             // httpparams
             // 
             this.httpparams.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.httpparams.Location = new System.Drawing.Point(358, 68);
             this.httpparams.Name = "httpparams";
-            this.httpparams.Size = new System.Drawing.Size(152, 64);
+            this.httpparams.Size = new System.Drawing.Size(152, 108);
             this.httpparams.TabIndex = 22;
             this.httpparams.Text = "HTTP Parameters...";
             this.httpparams.UseVisualStyleBackColor = true;
@@ -161,7 +149,6 @@
             // 
             // cookieVarTb
             // 
-            this.cookieVarTb.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.cookieVarTb.Location = new System.Drawing.Point(7, 18);
             this.cookieVarTb.Name = "cookieVarTb";
             this.cookieVarTb.ReadOnly = true;
@@ -248,7 +235,6 @@
             // 
             // uiWebURL
             // 
-            this.uiWebURL.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.uiWebURL.Location = new System.Drawing.Point(13, 37);
             this.uiWebURL.Multiline = true;
             this.uiWebURL.Name = "uiWebURL";
@@ -280,7 +266,6 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button httpparams;
-        private System.Windows.Forms.Button uiTestWebURL;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.RadioButton directInputR;
         private System.Windows.Forms.RadioButton variableR;
