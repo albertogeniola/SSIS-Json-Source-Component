@@ -56,7 +56,7 @@
             // 
             this.uiRootType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.uiRootType.FormattingEnabled = true;
-            this.uiRootType.Location = new System.Drawing.Point(539, 8);
+            this.uiRootType.Location = new System.Drawing.Point(497, 9);
             this.uiRootType.Name = "uiRootType";
             this.uiRootType.Size = new System.Drawing.Size(158, 21);
             this.uiRootType.TabIndex = 12;
@@ -75,7 +75,7 @@
             // 
             this.uiPathToArray.Location = new System.Drawing.Point(105, 9);
             this.uiPathToArray.Name = "uiPathToArray";
-            this.uiPathToArray.Size = new System.Drawing.Size(428, 20);
+            this.uiPathToArray.Size = new System.Drawing.Size(386, 20);
             this.uiPathToArray.TabIndex = 10;
             this.uiPathToArray.TextChanged += new System.EventHandler(this.uiPathToArray_TextChanged);
             // 
