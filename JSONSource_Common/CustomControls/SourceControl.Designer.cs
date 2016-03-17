@@ -45,7 +45,7 @@
             this.top.Dock = System.Windows.Forms.DockStyle.Top;
             this.top.Location = new System.Drawing.Point(0, 0);
             this.top.Name = "top";
-            this.top.Size = new System.Drawing.Size(689, 65);
+            this.top.Size = new System.Drawing.Size(720, 65);
             this.top.TabIndex = 0;
             // 
             // label5
@@ -72,7 +72,7 @@
             this.main.Dock = System.Windows.Forms.DockStyle.Fill;
             this.main.Location = new System.Drawing.Point(0, 65);
             this.main.Name = "main";
-            this.main.Size = new System.Drawing.Size(689, 351);
+            this.main.Size = new System.Drawing.Size(720, 351);
             this.main.TabIndex = 1;
             // 
             // bottom
@@ -81,7 +81,7 @@
             this.bottom.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.bottom.Location = new System.Drawing.Point(0, 383);
             this.bottom.Name = "bottom";
-            this.bottom.Size = new System.Drawing.Size(689, 33);
+            this.bottom.Size = new System.Drawing.Size(720, 33);
             this.bottom.TabIndex = 2;
             // 
             // previewBtn
@@ -102,7 +102,7 @@
             this.Controls.Add(this.main);
             this.Controls.Add(this.top);
             this.Name = "SourceControl";
-            this.Size = new System.Drawing.Size(689, 416);
+            this.Size = new System.Drawing.Size(720, 416);
             this.top.ResumeLayout(false);
             this.top.PerformLayout();
             this.bottom.ResumeLayout(false);

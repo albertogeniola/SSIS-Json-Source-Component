@@ -49,16 +49,16 @@
             this.top.Dock = System.Windows.Forms.DockStyle.Top;
             this.top.Location = new System.Drawing.Point(0, 0);
             this.top.Name = "top";
-            this.top.Size = new System.Drawing.Size(700, 42);
+            this.top.Size = new System.Drawing.Size(589, 42);
             this.top.TabIndex = 0;
             // 
             // uiRootType
             // 
             this.uiRootType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.uiRootType.FormattingEnabled = true;
-            this.uiRootType.Location = new System.Drawing.Point(497, 9);
+            this.uiRootType.Location = new System.Drawing.Point(438, 9);
             this.uiRootType.Name = "uiRootType";
-            this.uiRootType.Size = new System.Drawing.Size(158, 21);
+            this.uiRootType.Size = new System.Drawing.Size(142, 21);
             this.uiRootType.TabIndex = 12;
             // 
             // label2
@@ -75,7 +75,7 @@
             // 
             this.uiPathToArray.Location = new System.Drawing.Point(105, 9);
             this.uiPathToArray.Name = "uiPathToArray";
-            this.uiPathToArray.Size = new System.Drawing.Size(386, 20);
+            this.uiPathToArray.Size = new System.Drawing.Size(327, 20);
             this.uiPathToArray.TabIndex = 10;
             this.uiPathToArray.TextChanged += new System.EventHandler(this.uiPathToArray_TextChanged);
             // 
@@ -91,7 +91,7 @@
             this.uiIOGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.uiIOGrid.Location = new System.Drawing.Point(0, 42);
             this.uiIOGrid.Name = "uiIOGrid";
-            this.uiIOGrid.Size = new System.Drawing.Size(700, 412);
+            this.uiIOGrid.Size = new System.Drawing.Size(589, 412);
             this.uiIOGrid.TabIndex = 7;
             this.uiIOGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.uiIOGrid_CellEndEdit);
             // 
@@ -122,7 +122,7 @@
             this.Controls.Add(this.uiIOGrid);
             this.Controls.Add(this.top);
             this.Name = "ColumnView";
-            this.Size = new System.Drawing.Size(700, 454);
+            this.Size = new System.Drawing.Size(589, 454);
             this.top.ResumeLayout(false);
             this.top.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.uiIOGrid)).EndInit();
