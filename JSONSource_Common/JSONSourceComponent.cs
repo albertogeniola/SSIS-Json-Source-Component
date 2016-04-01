@@ -27,42 +27,36 @@ namespace com.webkingsoft.JSONSource_Common
 #endif
     public class JSONSourceComponent : PipelineComponent
     {
+        // TODO for next version: 
+        // model serialization with custom properties
+        // support one input line for parameters
+        // support output error line
+        // add httpparams support
+        // oauth?
+        // datatype guessing
+        // jsonpath parser-highlighter
+        // Parallel options into gui
+        // Implement runtime debug option
+
         public override void ProvideComponentProperties()
         {
-            // Pulisco gli input, output e le custom properties
+            // Clear all inputs and custom props, plus setup outputs
             base.RemoveAllInputsOutputsAndCustomProperties();
-            // Configuro gli output (per default nessun output presente)
             var output = ComponentMetaData.OutputCollection.New();
-            output.Name = "Parsed Json lines";            
-
-            SourceModel m = null;
-            try
-            {
-                m = GetModel();
-            }
-            catch (ModelNotFoundException e)
-            {
-                // Non l'ho trovato. Aggiungi la proprietà, salvando l'oggetto MODEL serializzato
-                // in XML. 
-                var model = ComponentMetaData.CustomPropertyCollection.New();
-                model.Description = "Contains information about the confiuguration of the item.";
-                model.Name = ComponentConstants.PROPERTY_KEY_MODEL;
-                model.Value = new SourceModel().ToJsonConfig();
-            }
+            output.Name = "Parsed Json lines";
         }
 
-        /**
-         * Questo metodo è invocato diverse volte durante il designtime. Al suo interno verifico che i metadati siano 
-         * coerenti e consistenti. In caso di ambiguità o lacune, segnalo al designer le situazioni di inconsistenza,
-         * generando opportunamente Warning o Errors.
-        **/
+        /// <summary>
+        /// This method is invoked multiple times at design time. It is in charge of metadata checks. If some metadata is missing
+        /// or inconsistent, Warnings and Errors will be thrown, so the user can fix them and the IDE will refuse running with bad metadata.
+        /// </summary>
+        /// <returns></returns>
         public override Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus Validate()
         {
             bool fireAgain = false;
-
-            // Validazione di base
-            // - Una sola linea di output.
-            // - Nessuna linea di input.
+            // basic component validation
+            // - We do not support anyinput line
+            // - We only support only one output line
             if (ComponentMetaData.InputCollection.Count > 0)
             {
                 ComponentMetaData.FireError(ComponentConstants.ERROR_NO_INPUT_SUPPORTED, ComponentMetaData.Name, "This component doesn't support any input lane. Please detach or remove those inputs.", null, 0, out fireAgain);
@@ -74,7 +68,8 @@ namespace com.webkingsoft.JSONSource_Common
                 return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
             }
 
-            SourceModel m = null;
+            // The rest of the validation process is provided by the MODEL object itself
+            JSONSourceComponentModel m = null;
             try
             {
                 m = GetModel();
@@ -84,130 +79,64 @@ namespace com.webkingsoft.JSONSource_Common
                 return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
             }
 
-            // Controlla la validità di ogni elemento del MODEL
-            // Sorgente: controlla la validità di tutti i campi in base al tipo di sorgente specificato.
-            switch (m.SourceType)
-            { 
-                case SourceType.FilePath:
-                    // l'URL deve essere corretto. Se non lo è, lancia un warning. Non faccio fallire il componente,
-                    // pochè potrebbe essere interessante scaricare o posizionare il file a runtime.
-                    if (string.IsNullOrEmpty(m.FilePath))
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.ERROR_FILE_PATH_MISSING, ComponentMetaData.Name, "The filepath has not been set.", null, 0, out fireAgain);
-                        return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
-                    }
-                    if (!File.Exists(m.FilePath))
-                        ComponentMetaData.FireWarning(ComponentConstants.WARNING_FILE_MISSING, ComponentMetaData.Name, "The file " + m.FilePath + " doesn't exist. Make sure it will at runtime.", null, 0);
-                    break;
-                case SourceType.FilePathVariable:
-                    // La variabile deve esistere. Se non esiste, produci un errore
-                    if (string.IsNullOrEmpty(m.FilePathVar) || !VariableDispenser.Contains(m.FilePathVar))
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.ERROR_FILE_VARIABLE_WRONG, ComponentMetaData.Name, "The variable " + m.FilePathVar + " doesn't exist.", null, 0, out fireAgain);
-                        return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
-                    }
-                    break;
-                case SourceType.WebUrlPath:
-                    if (m.WebUrl==null)
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.ERROR_WEB_URL_MISSING, ComponentMetaData.Name, "Web URL has not been set.", null, 0, out fireAgain);
-                        return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
-                    }
-                    break;
-                case SourceType.WebUrlVariable:
-                    if (string.IsNullOrEmpty(m.WebUrlVariable))
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.ERROR_WEB_URL_VARIABLE_MISSING, ComponentMetaData.Name, "Variable value can't be empty.", null, 0, out fireAgain);
-                        return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
-                    }
-                    if (!VariableDispenser.Contains(m.WebUrlVariable))
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.ERROR_WEB_URL_VARIABLE_MISSING, ComponentMetaData.Name, "Variable " + m.WebUrlVariable + " isn't valid.", null, 0, out fireAgain);
-                        return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
-                    }
-                    break;
-                
-                default:
-                    return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
-            }
+            // Validation is left to the model object
+            string err = null;
+            string warn = null;
 
-            // Controlla la tabella di IO
-            // Il modello è vuoto?
-            if (m.IoMap == null || m.IoMap.Count() == 0)
-            {
-                ComponentMetaData.FireError(ComponentConstants.ERROR_IOMAP_EMPTY, ComponentMetaData.Name, "This component must at least have one output column.", null, 0, out fireAgain);
+            m.Validate(out err, out warn);
+
+            if (!string.IsNullOrEmpty(warn)) {
+                // Fire the warning, but do not return any invalid state
+                // Fire the error and return an invalid state
+                bool cancel;
+                ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, err, null, 0);
                 return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
             }
 
-            // Assicurati di avere tutte le informazioni per ogni colonna
-            foreach (IOMapEntry e in m.IoMap)
+            if (!string.IsNullOrEmpty(err))
             {
-                // FieldName and outputFiledName cannot be null, empty and must be unique.
-                if (string.IsNullOrEmpty(e.InputFieldPath))
-                {
-                    ComponentMetaData.FireError(ComponentConstants.ERROR_IOMAP_ENTRY_ERROR, ComponentMetaData.Name, "One row of the Input-Output mapping is invalid: null or empty input field name. Please review IO configuration.", null, 0, out fireAgain);
-                    return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
-                }
-                if (string.IsNullOrEmpty(e.OutputColName))
-                {
-                    ComponentMetaData.FireError(ComponentConstants.ERROR_IOMAP_ENTRY_ERROR, ComponentMetaData.Name, "One row of the Input-Output mapping is invalid: null or empty output field name. Please review IO configuration.", null, 0, out fireAgain);
-                    return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
-                }
-                // Checks for unique cols
-                foreach (IOMapEntry e1 in m.IoMap)
-                {
-                    if (!ReferenceEquals(e, e1) && e.InputFieldPath == e1.InputFieldPath)
-                    {
-                        // Not unique!
-                        ComponentMetaData.FireError(ComponentConstants.ERROR_IOMAP_ENTRY_ERROR, ComponentMetaData.Name, "There are two or more rows with same InputFieldName. This is not allowed.", null, 0, out fireAgain);
-                        return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
-                    }
-                    if (!ReferenceEquals(e, e1) && e.OutputColName == e1.OutputColName)
-                    {
-                        // Not unique!
-                        ComponentMetaData.FireError(ComponentConstants.ERROR_IOMAP_ENTRY_ERROR, ComponentMetaData.Name, "There are two or more rows with same OutputColName. This is not allowed.", null, 0, out fireAgain);
-                        return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
-                    }
-                }
+                // Fire the error and return an invalid state
+                bool cancel;
+                ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, err, null, 0, out cancel);
+                return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
             }
 
-            // Controllo i parametri avanzati
-            if (!string.IsNullOrEmpty(m.CustomLocalTempDir))
-            { 
-                // Give warning only if the user specified a custom value and that one is invalid
-                if (!Directory.Exists(m.CustomLocalTempDir))
-                {
-                    ComponentMetaData.FireWarning(ComponentConstants.WARNING_CUSTOM_TEMP_DIR_INVALID, ComponentMetaData.Name, "The path to " + m.CustomLocalTempDir + " doesn't exists on this FS. If you're going to deploy the package on another server, make sure the path is correct and the service has write permission on it.", null, 0);
-                    return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
-                }
-            }
-
+            // Everything seems ok.
             return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISVALID;
         }
 
-        private SourceModel GetModel()
+        /// <summary>
+        /// This function takes care of deserializing the model from the configuration metadata.
+        /// If no model has been previously defined, it creates a new one and adds it to the metadata.
+        /// </summary>
+        /// <returns></returns>
+        private JSONSourceComponentModel GetModel(bool fail_if_not_found=false)
         {
-            SourceModel m = null;
-            bool found = false;
-            // Recupera i metadati. Se non sono presenti, ritorna uno stato di invalido
-            foreach (dynamic prop in ComponentMetaData.CustomPropertyCollection)
-                if (prop.Name == ComponentConstants.PROPERTY_KEY_MODEL)
-                {
-                    // Trovato!
-                    found = true;
-                    m = SourceModel.LoadFromJson((string)prop.Value);    
-                    break;
-                }
+            var m = ComponentMetaData.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL];
+            JSONSourceComponentModel model = null;
+            // If no model was set, add it now. The model is then serialized into a json string so it's easier to keep track of it.
+            // TODO: align with best practices and use built-in props, so we do not break AdvancedView
+            if (m == null || m.Value == null)
+            {
+                model = new JSONSourceComponentModel();
+                m = ComponentMetaData.CustomPropertyCollection.New();
+                m.Description = "Contains information about the confiuguration of the item.";
+                m.Name = ComponentConstants.PROPERTY_KEY_MODEL;
+                m.Value = model.ToJsonConfig();
+            }
+            else {
+                if (fail_if_not_found)
+                    throw new Exception("No model found");
+                model = JSONSourceComponentModel.LoadFromJson(m.Value);
+            }
 
-            if (!found)
-                throw new ModelNotFoundException();
-            else
-                return m;
+            return model;
         }
 
 
-        // Le seguenti variabili contengono gli oggetti da usare a runtime, instanziati dal metodo seguente,
-        // invocato appena prima di processare l'input.
+        // The following variables are used as temporary storage when the validation has been finished and
+        // the data process is happening at runtime. Their goal is to provide a fast way to lookup important
+        // data while processing data.
         private StreamReader _sr = null;
         private IOMapEntry[] _iomap;
         private Dictionary<string, int> _outColsMaps;
@@ -215,178 +144,104 @@ namespace com.webkingsoft.JSONSource_Common
         private ParallelOptions _opt;
         private RootType _rootType;
 
+        /// <summary>
+        /// This function is invoked by the environment once, before data processing happens. So it's a great time to configure the basics
+        /// before starting to process data. Basically, we'll fill up the fast-lookup variables defined above.
+        /// </summary>
         public override void PreExecute()
         {
-
-            _opt = new ParallelOptions();
-            _opt.MaxDegreeOfParallelism = 4;
-
-            bool cancel = false;
-            // Carico i dettagli dal model
-            SourceModel m = null;
-            bool found = false;
-            foreach (dynamic prop in ComponentMetaData.CustomPropertyCollection)
-                if (prop.Name == ComponentConstants.PROPERTY_KEY_MODEL)
-                {
-                    // Trovato!
-                    found = true;
-                    try
-                    {
-                        m = SourceModel.LoadFromJson((string)prop.Value);
-                    }
-                    catch (Exception e)
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "Invalid Metadata for this component.", null, 0, out cancel);
-                        return;
-                    }
-                    break;
-                }
-            if (!found)
+            try
             {
-                ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "Invalid Metadata for this component.", null, 0, out cancel);
-                return;
-            }
+                _opt = new ParallelOptions();
+                _opt.MaxDegreeOfParallelism = 4;
 
-            _rootType = m.RootType;
+                bool cancel = false;
 
-            // Ottenimento della sorgente: scaricarla da web oppure leggerla da file
-            // Essendo passato per il validate, non effettuo nuovamente i controlli a questo livello.
-            // Un utente folle potrebbe aprire il pacchetto ssis e modificare a mano l'XML serializzato
-            // cui attinge il model, rendendolo inutilizzabile. Però se l'è andata a cercare!
-            switch (m.SourceType)
-            { 
-                case SourceType.FilePath:
-                    // Provo ad aprire il file
-                    if (!File.Exists(m.FilePath))
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "File " + m.FilePath + " doesn't exist.", null, 0, out cancel);
-                        return;
-                    }
-                    try
-                    {
-                        _sr = new StreamReader(new FileStream(m.FilePath, FileMode.Open));
-                    }
-                    catch (Exception e)
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "Cannot open file stream to " + m.FilePath + ". Check if the file exists and you have permission to read it.", null, 0, out cancel);
-                        return;
-                    }
-                    break;
-                case SourceType.FilePathVariable:
-                    // Assumo che la variabile esista e non sia nulla. Me lo conferma la corretta esecuzione del metodo VALIDATE.
-                    // Provo ad aprire il file
-                    IDTSVariables100 vars = null;
-                    VariableDispenser.LockOneForRead(m.FilePathVar, ref vars);
-                    string filePath = vars[m.FilePathVar].Value.ToString();
-                    vars.Unlock();
+                // Load the model and fail if no model is found
+                JSONSourceComponentModel m = GetModel(true);
 
-                    if (!File.Exists(filePath))
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "File " + filePath + " doesn't exist.", null, 0, out cancel);
-                        return;
-                    }
-                    try
-                    {
-                        _sr = new StreamReader(new FileStream(filePath, FileMode.Open));
-                    }
-                    catch (Exception e)
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "Cannot open file stream to " + filePath + ". Check if the file exists and you have permission to read it.", null, 0, out cancel);
-                        return;
-                    }
-                    break;
-                case SourceType.WebUrlPath:
-                    // Tento di scaricare il file. Se è stato specificato un percorso temporaneo dove appoggiarsi,
-                    // utilizzo quel path.
+                // Save the root type
+                _rootType = m.DataMapping.RootType;
+
+                // If the uri depends on a variable, get it now.
+                Uri uri = null;
+                if (m.DataSource.FromVariable)
+                {
+                    DataType type;
+                    object varval = Utils.GetVariable(this.VariableDispenser, m.DataSource.VariableName, out type);
+                    var uristr = varval.ToString();
+
+                    // Parse the uri
+                    uri = new Uri(uristr);
+                }
+                else {
+                    uri = m.DataSource.SourceUri;
+                }
+
+                // Validation alredy happended. We just double check for some more runtime elements, such as variables mapped values or file presence/existance.
+                if (uri.IsFile)
+                {
+                    if (!File.Exists(uri.LocalPath))
+                        throw new Exception(String.Format("File {0} does not exist.", uri.LocalPath));
+
+                    // Setup the stream reader
+                    _sr = new StreamReader(new FileStream(uri.LocalPath, FileMode.Open));
+                }
+                else {
+                    // Download the file and setup the stream reader
                     string fName = null;
-                    try
-                    {
-                        fName = Utils.DownloadJson(VariableDispenser, m.WebUrl,m.WebMethod,m.HttpParameters,m.CookieVariable,m.CustomLocalTempDir);
-                        _sr = new StreamReader(new FileStream(fName, FileMode.Open));
-                    }
-                    catch(Exception ex)
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, ex.Message, null, 0, out cancel);
-                        return;
-                    }
-                    
-                    break;
-                case SourceType.WebUrlVariable:
+                    _sr = new StreamReader(new FileStream(fName, FileMode.Open));    
+                }
 
-                    Uri r = null;
-                    vars = null;
-                    try
-                    {
-                        VariableDispenser.LockOneForRead(m.WebUrlVariable, ref vars);
-                        string url = vars[m.WebUrlVariable].Value.ToString();
-                        r = new Uri(url, UriKind.Absolute);
-                    }
-                    catch (Exception e)
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "Invalid URI into variable \"" + m.WebUrlVariable + "\" or invalid variable.", null, 0, out cancel);
-                        throw new Exception("Invalid URL");
-                    }
-                    finally { 
-                        if (vars!=null)
-                            vars.Unlock(); 
-                    }
 
-                    filePath = Utils.DownloadJson(VariableDispenser, r, m.WebMethod, m.HttpParameters,m.CookieVariable, m.CustomLocalTempDir);
-
-                    if (!File.Exists(filePath))
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "File " + filePath + " doesn't exist.", null, 0, out cancel);
-                        return;
-                    }
-                    try
-                    {
-                        _sr = new StreamReader(new FileStream(filePath, FileMode.Open));
-                    }
-                    catch (Exception e)
-                    {
-                        ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "Cannot open file stream to " + filePath + ". Check if the file exists and you have permission to read it.", null, 0, out cancel);
-                        return;
-                    }
-                    
-                    break;
-            }
-
-            // Salva il mapping in un array locale
-            _iomap = m.IoMap.ToArray<IOMapEntry>();
-            // Genera un dizionario ad accesso veloce per il nome della colonna: mappo nome colonna - Indice della colonna nella riga
-            _outColsMaps = new Dictionary<string, int>();
-            foreach (IOMapEntry e in _iomap)
-            {
-                found = false;
-                foreach(IDTSOutputColumn100 col in base.ComponentMetaData.OutputCollection[0].OutputColumnCollection)
+                // Now perform the IO mapping for fast lookup during JSON Reading
+                // Dictionary<name_of_column, index_of_column_in_pipeline_row>
+                _iomap = m.DataMapping.IoMap.ToArray<IOMapEntry>();                
+                _outColsMaps = new Dictionary<string, int>();
+                foreach (IOMapEntry e in _iomap)
                 {
-                    
-                    if (col.Name == e.OutputColName)
+                    bool found = false;
+                    foreach (IDTSOutputColumn100 col in base.ComponentMetaData.OutputCollection[0].OutputColumnCollection)
                     {
-                        found =true;
-                        int colIndex = BufferManager.FindColumnByLineageID(ComponentMetaData.OutputCollection[0].Buffer, col.LineageID);
-                        _outColsMaps.Add(e.OutputColName,colIndex);
-                        break;
+                        if (col.Name == e.OutputColName)
+                        {
+                            found = true;
+                            int colIndex = BufferManager.FindColumnByLineageID(ComponentMetaData.OutputCollection[0].Buffer, col.LineageID);
+                            _outColsMaps.Add(e.OutputColName, colIndex);
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        // Inconsistency. Throw an error
+                        throw new Exception(string.Format("The component is unable to locate the column named {0} inside the component metadata. Please review the component.", e.OutputColName));
                     }
                 }
-                if (!found)
-                {
-                    // Una colonna del model non ha trovato il corrispettivo nel componente attuale
-                    ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, "The component is unable to locate the column named " + e.OutputColName + " inside the component metadata. Please review the component.", null, 0, out cancel);
-                    return;
-                }
-            }
 
-            // Salva una copia locale del percorso cui attingere l'array
-            _pathToArray = m.JsonObjectRelativePath;
+                // Save a local copy where to get the json path
+                _pathToArray = m.DataMapping.JsonRootPath;
+            }
+            catch (Exception e) {
+                // TODO!
+                bool cancel;
+                ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, e.Message, null, 0, out cancel);
+            }
         }
 
+        /// <summary>
+        /// From MS Documentation:
+        /// The PrimeOutput method is called when a component has at least one output, attached to a downstream component through an IDTSPath100 object, and the SynchronousInputID property of the output is zero. 
+        /// The PrimeOutput method is called for source components and for transformations with asynchronous outputs. 
+        /// Unlike the ProcessInput method described below, the PrimeOutput method is only called once for each component that requires it.
+        /// Being an asynch source component, we process inputs here.
+        /// </summary>
+        /// <param name="outputs"></param>
+        /// <param name="outputIDs"></param>
+        /// <param name="buffers"></param>
         public override void PrimeOutput(int outputs, int[] outputIDs, PipelineBuffer[] buffers)
         {
             IDTSOutput100 output = ComponentMetaData.OutputCollection[0];
             PipelineBuffer buffer = buffers[0];
-
-            //MessageBox.Show("When ready...");
 
             try
             {
@@ -534,7 +389,6 @@ namespace com.webkingsoft.JSONSource_Common
             return count;
         }
 
-
         public override IDTSExternalMetadataColumn100 InsertExternalMetadataColumnAt(int iID, int iExternalMetadataColumnIndex, string strName, string strDescription)
         {
             return base.InsertExternalMetadataColumnAt(iID, iExternalMetadataColumnIndex, strName, strDescription);
@@ -546,7 +400,6 @@ namespace com.webkingsoft.JSONSource_Common
         }
 
         
-
         public override void OnInputPathAttached(int inputID)
         {
             throw new Exception("This component is a source adapter and doesn't support any input.");
