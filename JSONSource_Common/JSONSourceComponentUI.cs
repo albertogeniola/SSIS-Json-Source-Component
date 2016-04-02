@@ -40,7 +40,7 @@ namespace com.webkingsoft.JSONSource_Common
         /// <returns></returns>
         public bool Edit(System.Windows.Forms.IWin32Window parentWindow, Variables vars, Connections cons)
         {
-            SourceAdvancedUI componentEditor = new SourceAdvancedUI(vars,_sp);
+            SourceAdvancedUI componentEditor = new SourceAdvancedUI(vars,_sp,_md);
             componentEditor.LoadModel(_model);
 
             DialogResult result = componentEditor.ShowDialog(parentWindow);
@@ -49,11 +49,13 @@ namespace com.webkingsoft.JSONSource_Common
             {
                 // Serialize the configuration.
                 // TODO: use a standard way to do that
-                _md.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL].Value = _model.ToJsonConfig();
+                _md.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL].Value = componentEditor.SavedModel.ToJsonConfig();
                 
                 // Setup the column output accordingly
                 // TODO: Is the right place where to do that?
                 AddOutputColumns(_model.DataMapping.IoMap);
+
+                _model = componentEditor.SavedModel;
                 return true;
             }
             return false;
@@ -93,15 +95,20 @@ namespace com.webkingsoft.JSONSource_Common
             _md = dtsComponentMetadata;
 
             // Check model: if no model was specified, add it one now.
-            IDTSCustomProperty100 model = _md.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL];
-            if (model.Value == null)
+            IDTSCustomProperty100 model = null;
+            try
             {
+                model = dtsComponentMetadata.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL];
+                _model = JSONSourceComponentModel.LoadFromJson(model.Value.ToString());
+            }
+            catch (Exception e) {
+                // No model found. Add a new now.
                 _model = new JSONSourceComponentModel();
+                model = dtsComponentMetadata.CustomPropertyCollection.New();
+                model.Name = ComponentConstants.PROPERTY_KEY_MODEL;
                 model.Value = _model.ToJsonConfig();
             }
-            else
-                _model = JSONSourceComponentModel.LoadFromJson(model.Value.ToString());
-
+                
             if (_md == null)
                 _md = (IDTSComponentMetaData100)_md.Instantiate();
 

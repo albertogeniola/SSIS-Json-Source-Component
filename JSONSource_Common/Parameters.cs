@@ -17,8 +17,9 @@ namespace com.webkingsoft.JSONSource_Common
     {
         private List<HTTPParameter> _model;
         private Microsoft.SqlServer.Dts.Runtime.Variables _vars;
+        private object[] _input_options;
 
-        public Parameters(Microsoft.SqlServer.Dts.Runtime.Variables vars)
+        public Parameters(Microsoft.SqlServer.Dts.Runtime.Variables vars, object[] inputHttpCols = null)
         {
             _vars = vars;
             InitializeComponent();
@@ -26,6 +27,7 @@ namespace com.webkingsoft.JSONSource_Common
             dataGridView1.CellBeginEdit += dataGridView1_CellBeginEdit;
             dataGridView1.CellValueChanged += dataGridView1_CellValueChanged;
             dataGridView1.RowValidating += dataGridView1_RowValidating;
+            _input_options = inputHttpCols; // May be null and it's ok.
             _model = new List<HTTPParameter>();
             
         }
@@ -86,15 +88,33 @@ namespace com.webkingsoft.JSONSource_Common
                 }
             }
         }
-
         
-
         void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            // If the binding type has changed, change the column relative to its possible value.
+            // If binding type is either variable or custom, just leave it as textbox, otherwise keep it as combobox
             if (e.ColumnIndex == 1) {
                 DataGridView d = (DataGridView)sender;
-                // Se è cambiatoil tipo di binding, occorre resettare il valore del valore associato.
-                d.Rows[e.RowIndex].Cells[2].Value = null;
+                HTTPParamBinding b = (HTTPParamBinding)Enum.Parse(typeof(HTTPParamBinding), d.Rows[e.RowIndex].Cells[1].Value.ToString());
+
+                if (b == HTTPParamBinding.Variable || b == HTTPParamBinding.CustomValue)
+                {
+                    d.Rows[e.RowIndex].Cells[2].Value = null;
+                    d.Rows[e.RowIndex].Cells[2] = new DataGridViewTextBoxCell();
+
+                } else if (b == HTTPParamBinding.InputField) {
+                    if (_input_options == null || _input_options.Length < 1) {
+                        throw new Exception("There is no input attached to this lane. First attach an input, then you'll be able to select a vale from this box.");
+                    }
+                    d.Rows[e.RowIndex].Cells[2].ValueType = typeof(HTTPParamBinding);
+                    var cbox = new DataGridViewComboBoxCell();
+                    cbox.DataSource = _input_options;
+                    d.Rows[e.RowIndex].Cells[2] = cbox;
+
+                } else {
+                    throw new Exception("Invalid or inconsistent HTTP binding type");
+                }
+                
             }
         }
 
@@ -104,8 +124,9 @@ namespace com.webkingsoft.JSONSource_Common
             // Se si sta per modificare il valore del parametro...
             if (e.ColumnIndex == 2) {
                 HTTPParamBinding b = (HTTPParamBinding)Enum.Parse(typeof(HTTPParamBinding), d.Rows[e.RowIndex].Cells[1].Value.ToString());
-                // Se la riga corrente si riferisce ad un parametro variable-bound...
-                if (b == HTTPParamBinding.Variable) { 
+                // Se la riga corrente si riferisce ad un parametro variable-bound, fai in modo che si apra il popup della scelta delle variabili.
+                if (b == HTTPParamBinding.Variable)
+                {
                     // Mostra il dialog di scelta delle variabili
                     VariableChooser vc = new VariableChooser(_vars);
                     DialogResult dr = vc.ShowDialog();
@@ -180,6 +201,11 @@ namespace com.webkingsoft.JSONSource_Common
         {
             DataGridView v = (DataGridView)sender;
             delButton.Enabled = v.SelectedRows.Count > 0;
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }

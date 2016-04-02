@@ -10,6 +10,7 @@ namespace com.webkingsoft.JSONSource_Common
     public enum HTTPParamBinding
     {
         Variable,
-        CustomValue
+        CustomValue,
+        InputField
     }
 }

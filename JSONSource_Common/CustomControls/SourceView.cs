@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using Microsoft.SqlServer.Dts.Runtime;
 using Microsoft.SqlServer.Dts.Runtime.Design;
+using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 #if LINQ_SUPPORTED
 using System.Linq;
 #endif
@@ -18,24 +19,16 @@ namespace com.webkingsoft.JSONSource_Common
         private Variables _vars;
         private IServiceProvider _sp;
         private JSONSourceComponentModel _model;
+        private IDTSComponentMetaData100 _md;
 
-        public SourceView(Variables vars, IServiceProvider sp)
+        public SourceView(Variables vars, IServiceProvider sp, IDTSComponentMetaData100 md)
         {
             _sp = sp;
             _vars = vars;
+            _md = md;
+
             _tmpParams = new List<HTTPParameter>();
-
             InitializeComponent();
-        }
-
-        private void directInputR_CheckedChanged(object sender, EventArgs e)
-        {
-            browseButton.Visible = variableR.Checked;
-            browseButton.Enabled = variableR.Checked;
-            addButton.Visible = variableR.Checked;
-            addButton.Enabled = variableR.Checked;
-            uiWebURL.ReadOnly = variableR.Checked;
-            uiWebURL.Text = "";
         }
         
         public string GetHTTPMethod() {
@@ -59,16 +52,12 @@ namespace com.webkingsoft.JSONSource_Common
             else throw new ApplicationException("INVALID SOURCE TYPE");
         }
 
-        private void variableR_CheckedChanged(object sender, EventArgs e)
+        private void direct_variable_check_change(object sender, EventArgs e)
         {
-            browseButton.Visible = variableR.Checked;
-            browseButton.Enabled = variableR.Checked;
             addButton.Visible = variableR.Checked;
             addButton.Enabled = variableR.Checked;
             uiWebURL.ReadOnly = variableR.Checked;
             uiWebURL.Text = "";
-
-            addButton.Enabled = variableR.Checked;
         }
 
         private void browseButton_Click(object sender, EventArgs e)
@@ -155,7 +144,20 @@ namespace com.webkingsoft.JSONSource_Common
         private IEnumerable<HTTPParameter> _tmpParams = null;
         private void httpparams_Click(object sender, EventArgs e)
         {
-            Parameters p = new Parameters(_vars);
+            // Collect the variables currently available to the component alongside the input colums available at the moment
+            object[] inputs = null;
+            var inputlane = _md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
+            if (inputlane.IsAttached) {
+                inputs = new object[inputlane.InputColumnCollection.Count];
+                var enumerator = inputlane.InputColumnCollection.GetEnumerator();
+                int count = 0;
+                while (enumerator.MoveNext()) {
+                    inputs[count] = enumerator.Current;
+                    count++;
+                }
+            }
+
+            Parameters p = new Parameters(_vars, inputs);
             p.SetModel(_tmpParams);
             var res = p.ShowDialog();
             if (res == System.Windows.Forms.DialogResult.OK)
@@ -191,7 +193,27 @@ namespace com.webkingsoft.JSONSource_Common
                 uiWebURL.Text = m.VariableName;
             }
             else {
-                uiWebURL.Text = m.SourceUri.ToString();
+                if (m.SourceUri != null)
+                    uiWebURL.Text = m.SourceUri.ToString();
+                else
+                    uiWebURL.Text = "";
+            }
+            switch (m.WebMethod) {
+                case "GET":
+                    getRadio.Checked = true;
+                    break;
+                case "POST":
+                    postRadio.Checked = true;
+                    break;
+                case "PUT":
+                    putRadio.Checked = true;
+                    break;
+                case "DELETE":
+                    delRadio.Checked = true;
+                    break;
+                default:
+                    getRadio.Checked = true;
+                    break;
             }
 
             if (String.IsNullOrEmpty(m.CookieVariable))

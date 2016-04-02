@@ -54,9 +54,9 @@ namespace com.webkingsoft.JSONSource_Common
             uiIOGrid.Rows.Clear();
 
             if (!string.IsNullOrEmpty(m.JsonRootPath))
-                 uiPathToArray.Text=uiPathToArray.Text;
+                 uiPathToArray.Text= m.JsonRootPath;
 
-            uiRootType.SelectedText = Enum.GetName(typeof(RootType), m.RootType);
+            uiRootType.SelectedItem = Enum.GetName(typeof(RootType), m.RootType);
 
             if (m != null)
             {

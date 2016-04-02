@@ -29,5 +29,8 @@ namespace com.webkingsoft.JSONSource_Common
         public const int RUNTIME_GENERIC_ERROR = 0;
 
         public static readonly string PROPERTY_KEY_MODEL = "CONFIGURATION_MODEL_OBJECT";
+
+
+        public const string NAME_INPUT_LANE_PARAMS = "Http Parameters Lane";
     }
 }

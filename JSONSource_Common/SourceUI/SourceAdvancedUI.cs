@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 #if LINQ_SUPPORTED
 using System.Linq;
 #endif
@@ -22,13 +23,15 @@ namespace com.webkingsoft.JSONSource_Common
         private ColumnView _columnView;
         private AdvancedView _advancedView;
         private JSONSourceComponentModel _savedModel;
+        private IDTSComponentMetaData100 _md;
 
-        public SourceAdvancedUI(Variables vars,IServiceProvider sp)
+        public SourceAdvancedUI(Variables vars,IServiceProvider sp, IDTSComponentMetaData100 md)
         {
             _vars = vars;
             _sp = sp;
+            _md = md;
             
-            _sourceView = new SourceView(_vars,_sp);
+            _sourceView = new SourceView(_vars,_sp,_md);
             _sourceView.Visible = false;
 
             _columnView = new ColumnView();

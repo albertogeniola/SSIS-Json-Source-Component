@@ -31,14 +31,14 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SourceView));
             this.uiWebURL = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.postRadio = new System.Windows.Forms.RadioButton();
-            this.putRadio = new System.Windows.Forms.RadioButton();
-            this.getRadio = new System.Windows.Forms.RadioButton();
             this.delRadio = new System.Windows.Forms.RadioButton();
+            this.getRadio = new System.Windows.Forms.RadioButton();
+            this.putRadio = new System.Windows.Forms.RadioButton();
+            this.postRadio = new System.Windows.Forms.RadioButton();
             this.cookieGroup = new System.Windows.Forms.GroupBox();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
             this.cookieVarTb = new System.Windows.Forms.TextBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.httpparams = new System.Windows.Forms.Button();
             this.variableR = new System.Windows.Forms.RadioButton();
             this.directInputR = new System.Windows.Forms.RadioButton();
@@ -68,37 +68,25 @@
             this.groupBox1.Controls.Add(this.getRadio);
             this.groupBox1.Controls.Add(this.putRadio);
             this.groupBox1.Controls.Add(this.postRadio);
-            this.groupBox1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(19, 280);
+            this.groupBox1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.Location = new System.Drawing.Point(19, 267);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(164, 108);
+            this.groupBox1.Size = new System.Drawing.Size(213, 108);
             this.groupBox1.TabIndex = 20;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Method";
             // 
-            // postRadio
+            // delRadio
             // 
-            this.postRadio.AutoSize = true;
-            this.postRadio.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.postRadio.Location = new System.Drawing.Point(6, 42);
-            this.postRadio.Name = "postRadio";
-            this.postRadio.Size = new System.Drawing.Size(51, 17);
-            this.postRadio.TabIndex = 15;
-            this.postRadio.TabStop = true;
-            this.postRadio.Text = "POST";
-            this.postRadio.UseVisualStyleBackColor = true;
-            // 
-            // putRadio
-            // 
-            this.putRadio.AutoSize = true;
-            this.putRadio.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.putRadio.Location = new System.Drawing.Point(6, 65);
-            this.putRadio.Name = "putRadio";
-            this.putRadio.Size = new System.Drawing.Size(44, 17);
-            this.putRadio.TabIndex = 16;
-            this.putRadio.TabStop = true;
-            this.putRadio.Text = "PUT";
-            this.putRadio.UseVisualStyleBackColor = true;
+            this.delRadio.AutoSize = true;
+            this.delRadio.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.delRadio.Location = new System.Drawing.Point(6, 88);
+            this.delRadio.Name = "delRadio";
+            this.delRadio.Size = new System.Drawing.Size(61, 17);
+            this.delRadio.TabIndex = 17;
+            this.delRadio.TabStop = true;
+            this.delRadio.Text = "DELETE";
+            this.delRadio.UseVisualStyleBackColor = true;
             // 
             // getRadio
             // 
@@ -113,17 +101,29 @@
             this.getRadio.Text = "GET";
             this.getRadio.UseVisualStyleBackColor = true;
             // 
-            // delRadio
+            // putRadio
             // 
-            this.delRadio.AutoSize = true;
-            this.delRadio.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delRadio.Location = new System.Drawing.Point(6, 88);
-            this.delRadio.Name = "delRadio";
-            this.delRadio.Size = new System.Drawing.Size(61, 17);
-            this.delRadio.TabIndex = 17;
-            this.delRadio.TabStop = true;
-            this.delRadio.Text = "DELETE";
-            this.delRadio.UseVisualStyleBackColor = true;
+            this.putRadio.AutoSize = true;
+            this.putRadio.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.putRadio.Location = new System.Drawing.Point(6, 65);
+            this.putRadio.Name = "putRadio";
+            this.putRadio.Size = new System.Drawing.Size(44, 17);
+            this.putRadio.TabIndex = 16;
+            this.putRadio.TabStop = true;
+            this.putRadio.Text = "PUT";
+            this.putRadio.UseVisualStyleBackColor = true;
+            // 
+            // postRadio
+            // 
+            this.postRadio.AutoSize = true;
+            this.postRadio.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.postRadio.Location = new System.Drawing.Point(6, 42);
+            this.postRadio.Name = "postRadio";
+            this.postRadio.Size = new System.Drawing.Size(51, 17);
+            this.postRadio.TabIndex = 15;
+            this.postRadio.TabStop = true;
+            this.postRadio.Text = "POST";
+            this.postRadio.UseVisualStyleBackColor = true;
             // 
             // cookieGroup
             // 
@@ -131,23 +131,20 @@
             this.cookieGroup.Controls.Add(this.button3);
             this.cookieGroup.Controls.Add(this.button4);
             this.cookieGroup.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cookieGroup.Location = new System.Drawing.Point(189, 280);
+            this.cookieGroup.Location = new System.Drawing.Point(238, 267);
             this.cookieGroup.Name = "cookieGroup";
             this.cookieGroup.Size = new System.Drawing.Size(169, 108);
             this.cookieGroup.TabIndex = 21;
             this.cookieGroup.TabStop = false;
             this.cookieGroup.Text = "COOKIE Variable";
             // 
-            // button4
+            // cookieVarTb
             // 
-            this.button4.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button4.Location = new System.Drawing.Point(9, 46);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(71, 31);
-            this.button4.TabIndex = 15;
-            this.button4.Text = "Browse...";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.cookieVarTb.Location = new System.Drawing.Point(7, 18);
+            this.cookieVarTb.Name = "cookieVarTb";
+            this.cookieVarTb.ReadOnly = true;
+            this.cookieVarTb.Size = new System.Drawing.Size(152, 21);
+            this.cookieVarTb.TabIndex = 17;
             // 
             // button3
             // 
@@ -160,13 +157,16 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // cookieVarTb
+            // button4
             // 
-            this.cookieVarTb.Location = new System.Drawing.Point(7, 18);
-            this.cookieVarTb.Name = "cookieVarTb";
-            this.cookieVarTb.ReadOnly = true;
-            this.cookieVarTb.Size = new System.Drawing.Size(152, 21);
-            this.cookieVarTb.TabIndex = 17;
+            this.button4.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button4.Location = new System.Drawing.Point(9, 46);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(71, 31);
+            this.button4.TabIndex = 15;
+            this.button4.Text = "Browse...";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // httpparams
             // 
@@ -189,7 +189,7 @@
             this.variableR.TabIndex = 24;
             this.variableR.Text = "Variable";
             this.variableR.UseVisualStyleBackColor = true;
-            this.variableR.CheckedChanged += new System.EventHandler(this.variableR_CheckedChanged);
+            this.variableR.CheckedChanged += new System.EventHandler(this.direct_variable_check_change);
             // 
             // directInputR
             // 
@@ -203,15 +203,15 @@
             this.directInputR.TabStop = true;
             this.directInputR.Text = "Direct Input";
             this.directInputR.UseVisualStyleBackColor = true;
-            this.directInputR.CheckedChanged += new System.EventHandler(this.directInputR_CheckedChanged);
+            this.directInputR.CheckedChanged += new System.EventHandler(this.direct_variable_check_change);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(16, 108);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(37, 13);
+            this.label1.Size = new System.Drawing.Size(41, 13);
             this.label1.TabIndex = 26;
             this.label1.Text = "Mode:";
             // 
@@ -224,7 +224,6 @@
             this.browseButton.TabIndex = 27;
             this.browseButton.Text = "Browse...";
             this.browseButton.UseVisualStyleBackColor = true;
-            this.browseButton.Visible = false;
             this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
             // 
             // addButton
@@ -277,12 +276,12 @@
             this.openFileDialog1.Filter = "JSON File|*.json|Txt files|*.txt|All files|*.*";
             this.openFileDialog1.ShowReadOnly = true;
             // 
-            // WebSourceControl
+            // SourceView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.uiCustomUrlGroup);
-            this.Name = "WebSourceControl";
+            this.Name = "SourceView";
             this.Size = new System.Drawing.Size(600, 400);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

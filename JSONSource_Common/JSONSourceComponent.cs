@@ -21,9 +21,9 @@ using System.Windows.Forms;
 namespace com.webkingsoft.JSONSource_Common
 {
 #if DTS120
-    [DtsPipelineComponent(DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.SourceAdapter, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.0.200.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
+    [DtsPipelineComponent(DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.0.200.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
 #elif DTS110
-    [DtsPipelineComponent(DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.SourceAdapter, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.0.200.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
+    [DtsPipelineComponent(DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.0.200.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
 #endif
     public class JSONSourceComponent : PipelineComponent
     {
@@ -38,12 +38,42 @@ namespace com.webkingsoft.JSONSource_Common
         // Parallel options into gui
         // Implement runtime debug option
 
+        /// Some implementation notes.
+        /// This component is now a Transformation component, because we want to use Inputs as HTTP parameters. 
+        /// So, the PrimeOutput method won't be called by the envirnment, instead ProcessInput is. Being an async component,
+        /// the ide calls ProcessInputs asynch while data is received via the input stream. So here we basically keep track of inputs
+        /// and process them later in the PrimeOutput method.
+        /// -> inputs are passed to the ProcessInput()
+        /// -> PrimeOutput() is then invoked
+
+        /// Remember the lifecycle!
+        /// AcquireConnections()
+        /// Validate()
+        /// ReleaseConnections()
+        /// PrepareForExecute()
+        /// AcquireConnections()
+        /// PreExecute()
+        /// PrimeOutput()
+        /// ProcessInput()
+        /// PostExecute()
+        /// ReleaseConnections()
+        /// Cleanup()
+
         public override void ProvideComponentProperties()
         {
             // Clear all inputs and custom props, plus setup outputs
             base.RemoveAllInputsOutputsAndCustomProperties();
             var output = ComponentMetaData.OutputCollection.New();
             output.Name = "Parsed Json lines";
+
+            // Set the output as asynchronous. This will allow us to use a single buffer between input and output.
+            output.SynchronousInputID = 0;
+
+            // Prepare the input lane for possible httpparams
+            var params_lane = ComponentMetaData.InputCollection.New();
+            params_lane.Name = ComponentConstants.NAME_INPUT_LANE_PARAMS;
+
+            // TODO: initialize here custom properties for the model. It would be clearer and follows the MS Specs.
         }
 
         /// <summary>
@@ -55,11 +85,11 @@ namespace com.webkingsoft.JSONSource_Common
         {
             bool fireAgain = false;
             // basic component validation
-            // - We do not support anyinput line
+            // - We only support up to 1 input lane
             // - We only support only one output line
-            if (ComponentMetaData.InputCollection.Count > 0)
+            if (ComponentMetaData.InputCollection.Count > 1)
             {
-                ComponentMetaData.FireError(ComponentConstants.ERROR_NO_INPUT_SUPPORTED, ComponentMetaData.Name, "This component doesn't support any input lane. Please detach or remove those inputs.", null, 0, out fireAgain);
+                ComponentMetaData.FireError(ComponentConstants.ERROR_NO_INPUT_SUPPORTED, ComponentMetaData.Name, "This component only supports one input lane, for parameters.", null, 0, out fireAgain);
                 return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
             }
             if (ComponentMetaData.OutputCollection.Count != 1)
@@ -137,12 +167,11 @@ namespace com.webkingsoft.JSONSource_Common
         // The following variables are used as temporary storage when the validation has been finished and
         // the data process is happening at runtime. Their goal is to provide a fast way to lookup important
         // data while processing data.
-        private StreamReader _sr = null;
         private IOMapEntry[] _iomap;
         private Dictionary<string, int> _outColsMaps;
-        private string _pathToArray = null;
         private ParallelOptions _opt;
-        private RootType _rootType;
+        private int _inputColIndex;
+        private JSONSourceComponentModel _model;
 
         /// <summary>
         /// This function is invoked by the environment once, before data processing happens. So it's a great time to configure the basics
@@ -159,9 +188,6 @@ namespace com.webkingsoft.JSONSource_Common
 
                 // Load the model and fail if no model is found
                 JSONSourceComponentModel m = GetModel(true);
-
-                // Save the root type
-                _rootType = m.DataMapping.RootType;
 
                 // If the uri depends on a variable, get it now.
                 Uri uri = null;
@@ -183,16 +209,8 @@ namespace com.webkingsoft.JSONSource_Common
                 {
                     if (!File.Exists(uri.LocalPath))
                         throw new Exception(String.Format("File {0} does not exist.", uri.LocalPath));
-
-                    // Setup the stream reader
-                    _sr = new StreamReader(new FileStream(uri.LocalPath, FileMode.Open));
+                    
                 }
-                else {
-                    // Download the file and setup the stream reader
-                    string fName = null;
-                    _sr = new StreamReader(new FileStream(fName, FileMode.Open));    
-                }
-
 
                 // Now perform the IO mapping for fast lookup during JSON Reading
                 // Dictionary<name_of_column, index_of_column_in_pipeline_row>
@@ -218,8 +236,10 @@ namespace com.webkingsoft.JSONSource_Common
                     }
                 }
 
-                // Save a local copy where to get the json path
-                _pathToArray = m.DataMapping.JsonRootPath;
+                _model = m;
+
+                // Save the input column index, used to parse parameters for web-requests
+                _inputColIndex = BufferManager.FindColumnByLineageID(ComponentMetaData.InputCollection[0].Buffer, ComponentMetaData.InputCollection[0].InputColumnCollection[0].LineageID);
             }
             catch (Exception e) {
                 // TODO!
@@ -228,25 +248,73 @@ namespace com.webkingsoft.JSONSource_Common
             }
         }
 
+        private PipelineBuffer _outputBuffer;
         /// <summary>
         /// From MS Documentation:
         /// The PrimeOutput method is called when a component has at least one output, attached to a downstream component through an IDTSPath100 object, and the SynchronousInputID property of the output is zero. 
         /// The PrimeOutput method is called for source components and for transformations with asynchronous outputs. 
         /// Unlike the ProcessInput method described below, the PrimeOutput method is only called once for each component that requires it.
-        /// Being an asynch source component, we process inputs here.
         /// </summary>
         /// <param name="outputs"></param>
         /// <param name="outputIDs"></param>
         /// <param name="buffers"></param>
         public override void PrimeOutput(int outputs, int[] outputIDs, PipelineBuffer[] buffers)
         {
-            IDTSOutput100 output = ComponentMetaData.OutputCollection[0];
-            PipelineBuffer buffer = buffers[0];
+            if (buffers.Length != 0)
+                _outputBuffer = buffers[0];
+        }
 
+        public override void ProcessInput(int inputID, PipelineBuffer buffer)
+        {
+            bool cancel = false;
+            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Processing inputs...", null, 0, ref cancel);
             try
             {
-                ProcessInMemory(_sr, buffer, _rootType);
-                buffer.SetEndOfRowset();
+                // If the HTTPParameters input is attached, execute one request per input. 
+                // Otherwise simply execute one single request.
+                if (ComponentMetaData.InputCollection[_inputColIndex].IsAttached)
+                {
+                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Detected HTTP Params lane attached. Executing in BATCH mode.", null, 0, ref cancel);
+                    while (buffer.NextRow())
+                    {
+                        // Perform the request with appropriate inputs as HTTP params...
+                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _model.DataSource.SourceUri.ToString()), null, 0, ref cancel);
+
+                        // TODO: adjust the model parameter set according with the input. 
+                        var fname = Utils.DownloadJson(this.VariableDispenser, _model.DataSource.SourceUri, _model.DataSource.WebMethod, _model.DataSource.HttpParameters, _model.DataSource.CookieVariable);
+                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
+
+                        // Process data according to IOMappings
+                        using (StreamReader sr = new StreamReader(File.Open(fname, FileMode.Open)))
+                            ProcessInMemory(sr, _outputBuffer, _model.DataMapping.RootType);
+
+                        File.Delete(fname);
+
+                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Json parsed correctly.", null, 0, ref cancel);
+                    }
+                }
+                else {
+                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "HTTP Params lane is not attached. Executing in SINGLE mode.", null, 0, ref cancel);
+                    // Perform the request with appropriate inputs as HTTP params...
+                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _model.DataSource.SourceUri.ToString()), null, 0, ref cancel);
+
+                    // TODO: adjust the model parameter set according with the input.
+                    var fname = Utils.DownloadJson(this.VariableDispenser, _model.DataSource.SourceUri, _model.DataSource.WebMethod, _model.DataSource.HttpParameters, _model.DataSource.CookieVariable);
+                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
+
+                    // Process data according to IOMappings
+                    using (StreamReader sr = new StreamReader(File.Open(fname, FileMode.Open)))
+                        ProcessInMemory(sr, _outputBuffer, _model.DataMapping.RootType);
+
+                    File.Delete(fname);
+
+                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Json parsed correctly.", null, 0, ref cancel);
+                }
+                
+                if (buffer.EndOfRowset)
+                    _outputBuffer.SetEndOfRowset();
+
+                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "All inputs processed.", null, 0, ref cancel);
             }
             catch (Exception e)
             {
@@ -259,9 +327,9 @@ namespace com.webkingsoft.JSONSource_Common
         /**
          * Executes the navigation+parsing operation for the given json, putting results into the buffer.
          */
-        private void ProcessInMemory(StreamReader _sr, PipelineBuffer buffer, RootType rootType)
+        private void ProcessInMemory(StreamReader sr, PipelineBuffer buffer, RootType rootType)
         {
-            using (_sr)
+            using (sr)
             {
                 bool cancel = false;
                 ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Loading whole model into memory and deserializing...", null, 0, ref cancel);
@@ -271,25 +339,25 @@ namespace com.webkingsoft.JSONSource_Common
                 try
                 {
                     // Load the whole json in memory.
-                    using (var reader = new JsonTextReader(_sr))
+                    using (var reader = new JsonTextReader(sr))
                     {
                         if (rootType == RootType.JsonObject)
                         {
-                            o = JObject.Load(new JsonTextReader(_sr));
+                            o = JObject.Load(new JsonTextReader(sr));
                             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Object loaded.", null, 0, ref cancel);
                         }
                         else {
-                            o = JArray.Load(new JsonTextReader(_sr));
+                            o = JArray.Load(new JsonTextReader(sr));
                             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Array loaded.", null, 0, ref cancel);
                         }
                     }
 
                     // Get all the tokens returned by the XPath string specified
-                    if (_pathToArray == null)
-                        _pathToArray = "";
+                    if (_model.DataMapping.JsonRootPath == null)
+                        _model.DataMapping.JsonRootPath = "";
 
                     // Navigate to the relative Root.
-                    IEnumerable<JToken> els =  o.SelectTokens(_pathToArray);
+                    IEnumerable<JToken> els =  o.SelectTokens(_model.DataMapping.JsonRootPath);
                     int rootEls = els.Count();
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Array: loaded " + rootEls + " tokens.", null, 0, ref cancel);
 
@@ -397,12 +465,6 @@ namespace com.webkingsoft.JSONSource_Common
         public override IDTSExternalMetadataColumn100 MapInputColumn(int iInputID, int iInputColumnID, int iExternalMetadataColumnID)
         {
             return base.MapInputColumn(iInputID, iInputColumnID, iExternalMetadataColumnID);
-        }
-
-        
-        public override void OnInputPathAttached(int inputID)
-        {
-            throw new Exception("This component is a source adapter and doesn't support any input.");
         }
 
         public override IDTSOutput100 InsertOutput(DTSInsertPlacement insertPlacement, int outputID)
