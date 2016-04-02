@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentConstants.cs" />
+    <Compile Include="IComponentModel.cs" />
     <Compile Include="CustomControls\AdvancedView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -107,31 +108,18 @@
     <Compile Include="CustomControls\ColumnView.Designer.cs">
       <DependentUpon>ColumnView.cs</DependentUpon>
     </Compile>
-    <Compile Include="CustomControls\FileSourceControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CustomControls\FileSourceControl.Designer.cs">
-      <DependentUpon>FileSourceControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="CustomControls\JSONPreview.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="CustomControls\JSONPreview.Designer.cs">
       <DependentUpon>JSONPreview.cs</DependentUpon>
     </Compile>
-    <Compile Include="CustomControls\SourceControl.cs">
+    <Compile Include="CustomControls\SourceView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="CustomControls\SourceControl.Designer.cs">
-      <DependentUpon>SourceControl.cs</DependentUpon>
+    <Compile Include="CustomControls\SourceView.Designer.cs">
+      <DependentUpon>SourceView.cs</DependentUpon>
     </Compile>
-    <Compile Include="CustomControls\WebSourceControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CustomControls\WebSourceControl.Designer.cs">
-      <DependentUpon>WebSourceControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DataModelType.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="HTTPParamBinding.cs" />
     <Compile Include="HTTPParameter.cs" />
@@ -166,7 +154,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="RootType.cs" />
-    <Compile Include="SourceModel.cs" />
+    <Compile Include="JSONSourceComponentModel.cs" />
     <Compile Include="SourceUI\SourceAdvancedUI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -189,17 +177,11 @@
     <EmbeddedResource Include="CustomControls\ColumnView.resx">
       <DependentUpon>ColumnView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\FileSourceControl.resx">
-      <DependentUpon>FileSourceControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="CustomControls\JSONPreview.resx">
       <DependentUpon>JSONPreview.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\SourceControl.resx">
-      <DependentUpon>SourceControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\WebSourceControl.resx">
-      <DependentUpon>WebSourceControl.cs</DependentUpon>
+    <EmbeddedResource Include="CustomControls\SourceView.resx">
+      <DependentUpon>SourceView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="JsonTransformUI.resx">
       <DependentUpon>JsonTransformUI.cs</DependentUpon>
@@ -222,7 +204,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="deploy.bat" />
     <None Include="JSONSource.snk" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

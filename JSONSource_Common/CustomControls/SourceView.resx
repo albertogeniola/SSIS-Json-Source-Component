@@ -117,4 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="richTextBox1.Text" xml:space="preserve">
+    <value>Use this window to define HOW this component should gather data. It is possible to gather data directly from a webservice via HTTP requests, or the component can retrieve data by reading a local json file.  Either the cases, you have to put an URI into the URI the blank field below. A file uri starts as file:/// while a URL URI starts as http:// or https://. In addition, the URI can be hardcoded by direct input or can be linked to a variable.</value>
+  </data>
+  <metadata name="openFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
 </root>

@@ -13,13 +13,13 @@ using System.Linq;
 
 namespace com.webkingsoft.JSONSource_Common
 {
-    public partial class WebSourceControl : UserControl
+    public partial class SourceView : UserControl
     {
         private Variables _vars;
         private IServiceProvider _sp;
-        private SourceModel _model;
+        private JSONSourceComponentModel _model;
 
-        public WebSourceControl(Variables vars, IServiceProvider sp)
+        public SourceView(Variables vars, IServiceProvider sp)
         {
             _sp = sp;
             _vars = vars;
@@ -37,7 +37,7 @@ namespace com.webkingsoft.JSONSource_Common
             uiWebURL.ReadOnly = variableR.Checked;
             uiWebURL.Text = "";
         }
-
+        
         public string GetHTTPMethod() {
             if (getRadio.Checked)
                 return "GET";
@@ -67,18 +67,63 @@ namespace com.webkingsoft.JSONSource_Common
             addButton.Enabled = variableR.Checked;
             uiWebURL.ReadOnly = variableR.Checked;
             uiWebURL.Text = "";
-            
+
+            addButton.Enabled = variableR.Checked;
         }
 
         private void browseButton_Click(object sender, EventArgs e)
         {
-            VariableChooser vc = new VariableChooser(_vars,new TypeCode[]{TypeCode.String},null);
-            DialogResult dr = vc.ShowDialog();
-            if (dr == DialogResult.OK)
+            // If variable is selected, open the variable browser, otherwise open the file browser
+            if (variableR.Checked)
             {
-                Microsoft.SqlServer.Dts.Runtime.Variable v = vc.GetResult();
-                uiWebURL.Text = v.QualifiedName;
+                VariableChooser vc = new VariableChooser(_vars, new TypeCode[] { TypeCode.String }, null);
+                DialogResult dr = vc.ShowDialog();
+                if (dr == DialogResult.OK)
+                {
+                    Microsoft.SqlServer.Dts.Runtime.Variable v = vc.GetResult();
+                    uiWebURL.Text = v.QualifiedName;
+                }
             }
+            else {
+                var res = openFileDialog1.ShowDialog(this);
+                if (res == DialogResult.OK) {
+                    // Update the textedit with the file path
+                    uiWebURL.Text = openFileDialog1.FileName;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns the current view configuration into a model object
+        /// </summary>
+        /// <returns></returns>
+        public JSONDataSourceModel SaveToModel()
+        {
+            JSONDataSourceModel result = new JSONDataSourceModel();
+
+            if (variableR.Checked)
+            {
+                result.FromVariable = true;
+                result.VariableName = uiWebURL.Text;
+            }
+            else {
+                result.FromVariable = false;
+                result.SourceUri = new Uri(uiWebURL.Text);
+            }
+            
+            if (getRadio.Checked)
+                result.WebMethod = "GET";
+            else if (postRadio.Checked)
+                result.WebMethod = "POST";
+            else if (putRadio.Checked)
+                result.WebMethod = "PUT";
+            else if (delRadio.Checked)
+                result.WebMethod = "DELETE";
+
+            result.HttpParameters = GetHttpParameters();
+            result.CookieVariable = String.IsNullOrEmpty(cookieVarTb.Text) ? null : cookieVarTb.Text;
+
+            return result;
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -125,27 +170,28 @@ namespace com.webkingsoft.JSONSource_Common
 
         private void addButton_Click(object sender, EventArgs e)
         {
-            IDtsVariableService vservice = (IDtsVariableService)_sp.GetService(typeof(IDtsVariableService));
-            Microsoft.SqlServer.Dts.Runtime.Variable vv = vservice.PromptAndCreateVariable(this, null, null, "User", typeof(string));
-            if (vv != null)
-                uiWebURL.Text = vv.QualifiedName;
+            if (variableR.Checked)
+            {
+                IDtsVariableService vservice = (IDtsVariableService)_sp.GetService(typeof(IDtsVariableService));
+                Microsoft.SqlServer.Dts.Runtime.Variable vv = vservice.PromptAndCreateVariable(this, null, null, "User", typeof(string));
+                if (vv != null)
+                    uiWebURL.Text = vv.QualifiedName;
+            }
         }
 
-        public void LoadModel(SourceModel m)
+        public void LoadModel(JSONDataSourceModel m)
         {
-            _model = m;
+            // Keep all the http parameters locally, we will need them in order to provide the custom HTTP parameter dialog
             _tmpParams = m.HttpParameters;
 
-            // Web URL
-            if (m.SourceType == SourceType.WebUrlVariable)
+            // Fill in the rest of the view using model data
+            variableR.Checked = m.FromVariable; // TODO: Make sure this puts the edit text as readonly
+            if (m.FromVariable)
             {
-                variableR.Checked = true;
-                uiWebURL.Text = m.WebUrlVariable;
+                uiWebURL.Text = m.VariableName;
             }
-            if (m.SourceType == SourceType.WebUrlPath)
-            {
-                directInputR.Checked = true;   
-                uiWebURL.Text = m.WebUrl == null ? "" : m.WebUrl.ToString();
+            else {
+                uiWebURL.Text = m.SourceUri.ToString();
             }
 
             if (String.IsNullOrEmpty(m.CookieVariable))

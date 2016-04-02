@@ -79,6 +79,6 @@
 
         private System.Windows.Forms.Button tmpBrowse;
         private System.Windows.Forms.Label label3;
-        public System.Windows.Forms.TextBox uiTempDir;
+        private System.Windows.Forms.TextBox uiTempDir;
     }
 }

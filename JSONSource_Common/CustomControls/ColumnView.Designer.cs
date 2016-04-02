@@ -69,7 +69,6 @@
             this.label2.Size = new System.Drawing.Size(83, 13);
             this.label2.TabIndex = 11;
             this.label2.Text = "Json Root Path:";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // uiPathToArray
             // 
@@ -77,7 +76,6 @@
             this.uiPathToArray.Name = "uiPathToArray";
             this.uiPathToArray.Size = new System.Drawing.Size(327, 20);
             this.uiPathToArray.TabIndex = 10;
-            this.uiPathToArray.TextChanged += new System.EventHandler(this.uiPathToArray_TextChanged);
             // 
             // uiIOGrid
             // 
@@ -138,8 +136,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn OutColName;
         private System.Windows.Forms.DataGridViewComboBoxColumn OutColumnType;
         private System.Windows.Forms.Label label2;
-        public System.Windows.Forms.DataGridView uiIOGrid;
-        public System.Windows.Forms.TextBox uiPathToArray;
-        public System.Windows.Forms.ComboBox uiRootType;
+        private System.Windows.Forms.DataGridView uiIOGrid;
+        private System.Windows.Forms.TextBox uiPathToArray;
+        private System.Windows.Forms.ComboBox uiRootType;
     }
 }

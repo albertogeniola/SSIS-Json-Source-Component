@@ -28,5 +28,25 @@ namespace com.webkingsoft.JSONSource_Common
                 uiTempDir.Text = b.SelectedPath;
             }
         }
+
+        public void LoadModel(JSONAdvancedSettingsModel advancedSettings)
+        {
+            if (advancedSettings.CustomLocalTempDir != null)
+            {
+                uiTempDir.Text = advancedSettings.CustomLocalTempDir;
+            }
+        }
+
+        public JSONAdvancedSettingsModel SaveToModel()
+        {
+            JSONAdvancedSettingsModel result = new JSONAdvancedSettingsModel();
+
+            if (!string.IsNullOrEmpty(uiTempDir.Text))
+                result.CustomLocalTempDir = uiTempDir.Text;
+            else
+                result.CustomLocalTempDir = null;
+            
+            return result;
+        }
     }
 }

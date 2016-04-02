@@ -26,7 +26,7 @@ namespace com.webkingsoft.JSONSource_Common
 
         public const int RUNTIME_ERROR_MODEL_INVALID = 100;
 
-        public const int RUNTIME_GENERIC_ERROR = 1000;
+        public const int RUNTIME_GENERIC_ERROR = 0;
 
         public static readonly string PROPERTY_KEY_MODEL = "CONFIGURATION_MODEL_OBJECT";
     }

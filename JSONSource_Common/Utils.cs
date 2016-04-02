@@ -33,7 +33,6 @@ namespace com.webkingsoft.JSONSource_Common
             }
         }
 
-
         public static string DownloadJson(IDTSVariableDispenser100 vd, Uri url, string method, IEnumerable<HTTPParameter> pars, string cookievar, string customLocalTempDir = null)
         {
             // Recupera la variabie di cookiecontainer, se specificata

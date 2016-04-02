@@ -13,11 +13,9 @@ namespace com.webkingsoft.JSONSource_Common
 {
     public partial class ColumnView : UserControl
     {
-        private SourceModel _model;
         public ColumnView()
         {
             InitializeComponent();
-            _model = new SourceModel();
             (uiIOGrid.Columns["OutColumnType"] as DataGridViewComboBoxColumn).DataSource = Enum.GetNames(typeof(JsonTypes));
             uiRootType.DataSource = Enum.GetNames(typeof(RootType));
         }
@@ -51,12 +49,11 @@ namespace com.webkingsoft.JSONSource_Common
             }
         }
 
-        public void LoadModel(SourceModel m)
+        public void LoadModel(JSONDataMappingModel m)
         {
             uiIOGrid.Rows.Clear();
-            _model = m;
 
-            if (!string.IsNullOrEmpty(_model.JsonObjectRelativePath))
+            if (!string.IsNullOrEmpty(m.JsonRootPath))
                  uiPathToArray.Text=uiPathToArray.Text;
 
             uiRootType.SelectedText = Enum.GetName(typeof(RootType), m.RootType);
@@ -74,14 +71,88 @@ namespace com.webkingsoft.JSONSource_Common
             }
         }
 
-        private void uiPathToArray_TextChanged(object sender, EventArgs e)
+        public JSONDataMappingModel SaveToModel()
         {
+            JSONDataMappingModel result = new JSONDataMappingModel();
 
-        }
+            // Json root and type
+            RootType root;
+            Enum.TryParse<RootType>(uiRootType.SelectedValue.ToString(), out root);
+            result.RootType = root;
 
-        private void label2_Click(object sender, EventArgs e)
-        {
+            if (!string.IsNullOrEmpty(uiPathToArray.Text))
+                result.JsonRootPath = uiPathToArray.Text;
+            else
+                result.JsonRootPath = null;
 
+            // IO columns mapping
+            result.ClearMapping();
+            if (uiIOGrid.IsCurrentCellDirty || uiIOGrid.IsCurrentRowDirty)
+            {
+                uiIOGrid.CurrentRow.DataGridView.EndEdit();
+                uiIOGrid.EndEdit();
+                CurrencyManager cm = (CurrencyManager)uiIOGrid.BindingContext[uiIOGrid.DataSource, uiIOGrid.DataMember];
+                cm.EndCurrentEdit();
+            }
+
+            // In case of error, rewrite the exception for user friendliness
+            int row = 1;
+            foreach (DataGridViewRow r in uiIOGrid.Rows)
+            {
+                if (r.IsNewRow)
+                    continue;
+                string inputName = null;
+                try
+                {
+                    inputName = (string)r.Cells[0].Value;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("JSON Field Name on row " + row);
+                }
+                int maxLen = -1;
+                try
+                {
+                    maxLen = int.Parse((string)r.Cells[1].Value.ToString());
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Maximum length is invalid on row " + row);
+                }
+
+                string outName = null;
+                try
+                {
+                    outName = (string)r.Cells[2].Value;
+                    if (string.IsNullOrEmpty(outName))
+                        throw new ArgumentException();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Output Column name is invalid on row " + row);
+                }
+
+                JsonTypes dataType = 0;
+                try
+                {
+                    dataType = (JsonTypes)Enum.Parse(typeof(JsonTypes), (string)r.Cells[3].Value);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Column type is invalid on row " + row);
+                }
+
+                IOMapEntry map = new IOMapEntry();
+                map.InputFieldPath = inputName;
+                map.OutputColName = outName;
+                map.OutputJsonColumnType = dataType;
+                map.InputFieldLen = maxLen;
+
+                result.AddMapping(map);
+                row++;
+            }
+
+            return result;
         }
     }
 }
