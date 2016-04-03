@@ -34,7 +34,7 @@ namespace com.webkingsoft.JSONSource_Common
             _sourceView = new SourceView(_vars,_sp,_md);
             _sourceView.Visible = false;
 
-            _columnView = new ColumnView();
+            _columnView = new ColumnView(_md);
             _columnView.Visible = false;
 
             _advancedView = new AdvancedView();

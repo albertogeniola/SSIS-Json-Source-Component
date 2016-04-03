@@ -92,7 +92,7 @@
             this.bottomPanel.Controls.Add(this.cancel);
             this.bottomPanel.Controls.Add(this.ok);
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bottomPanel.Location = new System.Drawing.Point(0, 513);
+            this.bottomPanel.Location = new System.Drawing.Point(0, 531);
             this.bottomPanel.Name = "bottomPanel";
             this.bottomPanel.Size = new System.Drawing.Size(792, 42);
             this.bottomPanel.TabIndex = 1;
@@ -124,7 +124,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainPanel.Location = new System.Drawing.Point(128, 104);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(664, 390);
+            this.mainPanel.Size = new System.Drawing.Size(664, 400);
             this.mainPanel.TabIndex = 3;
             // 
             // menulist
@@ -155,7 +155,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(792, 555);
+            this.ClientSize = new System.Drawing.Size(792, 573);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.bottomPanel);

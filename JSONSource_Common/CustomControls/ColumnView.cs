@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 #if LINQ_SUPPORTED
 using System.Linq;
 #endif
@@ -13,9 +14,34 @@ namespace com.webkingsoft.JSONSource_Common
 {
     public partial class ColumnView : UserControl
     {
-        public ColumnView()
+        private class InputColumnWrapper
         {
+            public InputColumnWrapper(IDTSVirtualInputColumn100 col) {
+                Column = col;
+            }
+            public IDTSVirtualInputColumn100 Column { get; }
+            public override string ToString()
+            {
+                return Column.Name;
+            }
+        }
+
+        private IDTSComponentMetaData100 _md;
+
+        public ColumnView(IDTSComponentMetaData100 md)
+        {
+            _md = md;
+
             InitializeComponent();
+
+            // Add input columns as selectable output. As default, all of them will be selected.
+            var inputLane = md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
+            if (inputLane.IsAttached) {
+                foreach (IDTSVirtualInputColumn100 inputCol in inputLane.GetVirtualInput().VirtualInputColumnCollection) {
+                    int index = inputsCb.Items.Add(new InputColumnWrapper(inputCol), CheckState.Checked);
+                }
+            }
+
             (uiIOGrid.Columns["OutColumnType"] as DataGridViewComboBoxColumn).DataSource = Enum.GetNames(typeof(JsonTypes));
             uiRootType.DataSource = Enum.GetNames(typeof(RootType));
         }
@@ -53,22 +79,39 @@ namespace com.webkingsoft.JSONSource_Common
         {
             uiIOGrid.Rows.Clear();
 
+            // Rootpath + json response type
             if (!string.IsNullOrEmpty(m.JsonRootPath))
                  uiPathToArray.Text= m.JsonRootPath;
 
             uiRootType.SelectedItem = Enum.GetName(typeof(RootType), m.RootType);
 
-            if (m != null)
+            // IoMap for json derived columns
+            foreach (IOMapEntry e in m.IoMap)
             {
-                foreach (IOMapEntry e in m.IoMap)
-                {
-                    int index = uiIOGrid.Rows.Add();
-                    uiIOGrid.Rows[index].Cells[0].Value = e.InputFieldPath;
-                    uiIOGrid.Rows[index].Cells[1].Value = e.InputFieldLen;
-                    uiIOGrid.Rows[index].Cells[2].Value = e.OutputColName;
-                    uiIOGrid.Rows[index].Cells[3].Value = Enum.GetName(typeof(JsonTypes), e.OutputJsonColumnType);
-                }
+                int index = uiIOGrid.Rows.Add();
+                uiIOGrid.Rows[index].Cells[0].Value = e.InputFieldPath;
+                uiIOGrid.Rows[index].Cells[1].Value = e.InputFieldLen;
+                uiIOGrid.Rows[index].Cells[2].Value = e.OutputColName;
+                uiIOGrid.Rows[index].Cells[3].Value = Enum.GetName(typeof(JsonTypes), e.OutputJsonColumnType);
             }
+
+            // Set all items check status to false
+            for (var j = 0; j < inputsCb.Items.Count; j++)
+                inputsCb.SetItemChecked(j, false);
+
+            if (m.CopyInputsLineageIds != null)
+                // Input columns to be copied as output
+                foreach (var i in m.CopyInputsLineageIds) {
+                    // Note that the input might have changed here. 
+                    // If we do not find the given lineage id among ours inputs, we simply skip them.
+                    for (var j=0;j<inputsCb.Items.Count;j++) {
+                        InputColumnWrapper col = inputsCb.Items[j] as InputColumnWrapper;
+                        if (i == col.Column.LineageID) {
+                            // Ok this column is available. Check it.
+                            inputsCb.SetItemChecked(j, true);
+                        }
+                    }
+                }
         }
 
         public JSONDataMappingModel SaveToModel()
@@ -152,10 +195,23 @@ namespace com.webkingsoft.JSONSource_Common
                 row++;
             }
 
+            // Save the InputColumns to be copied as output
+            var ids = new int[inputsCb.CheckedItems.Count];
+            for (var i=0;i<inputsCb.CheckedItems.Count;i++) {
+                ids[i] = (inputsCb.CheckedItems[i] as InputColumnWrapper).Column.LineageID;
+            }
+
+            result.CopyInputsLineageIds = ids;
+
             return result;
         }
 
         private void uiIOGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
         {
 
         }
