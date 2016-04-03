@@ -18,6 +18,8 @@ namespace com.webkingsoft.JSONSource_Common
         private IDTSComponentMetaData100 _md;
         private IServiceProvider _sp;
         private JSONSourceComponentModel _model;
+        private IDTSVirtualInputColumnCollection100 _virtualInputs;
+
         public void Help(System.Windows.Forms.IWin32Window parentWindow)
         {
         }
@@ -40,7 +42,8 @@ namespace com.webkingsoft.JSONSource_Common
         /// <returns></returns>
         public bool Edit(System.Windows.Forms.IWin32Window parentWindow, Variables vars, Connections cons)
         {
-            SourceAdvancedUI componentEditor = new SourceAdvancedUI(vars,_sp,_md);
+            _virtualInputs = _md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].GetVirtualInput().VirtualInputColumnCollection;
+            SourceAdvancedUI componentEditor = new SourceAdvancedUI(vars,_sp, _virtualInputs);
             componentEditor.LoadModel(_model);
 
             DialogResult result = componentEditor.ShowDialog(parentWindow);
@@ -50,10 +53,17 @@ namespace com.webkingsoft.JSONSource_Common
                 // Serialize the configuration.
                 // TODO: use a standard way to do that
                 _md.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL].Value = componentEditor.SavedModel.ToJsonConfig();
-                
+
                 // Setup the column output accordingly
                 // TODO: Is the right place where to do that?
-                AddOutputColumns(componentEditor.SavedModel.DataMapping.IoMap);
+                var simpleCopyCols = componentEditor.SavedModel.DataMapping.CopyColumnsIOIDs;
+
+                int[] inputIds = new int[simpleCopyCols.Keys.Count];
+                simpleCopyCols.Keys.CopyTo(inputIds, 0);
+
+                AddInputColumn(inputIds);
+                AddOutputColumns(componentEditor.SavedModel.DataMapping.IoMap, ref simpleCopyCols);
+                componentEditor.SavedModel.DataMapping.CopyColumnsIOIDs = simpleCopyCols;
 
                 _model = componentEditor.SavedModel;
                 return true;
@@ -61,13 +71,40 @@ namespace com.webkingsoft.JSONSource_Common
             return false;
         }
 
-        private void AddOutputColumns(IEnumerable<IOMapEntry> IoMap)
+        private void AddInputColumn(int[] inputIds)
+        {
+            var input = _md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
+            
+            // Clear inputs
+            input.InputColumnCollection.RemoveAll();
+
+            // For each virtual input selected, add a physical input
+            foreach (var input_lineage_id in inputIds) {
+                var incol = input.InputColumnCollection.New();
+                incol.LineageID = input_lineage_id;
+            }
+        }
+
+        private void AddOutputColumns(IEnumerable<IOMapEntry> IoMap, ref Dictionary<int,int> copyIOIds)
         {
             // Reconfigure outputs: 
             _md.OutputCollection[0].Name = "JSON Source Output";
             _md.OutputCollection[0].OutputColumnCollection.RemoveAll();
 
-            // For each espected outputcolumn, add the equivalent.
+            // Add simple copy columns
+            int[] keys = new int[copyIOIds.Keys.Count];
+            copyIOIds.Keys.CopyTo(keys, 0);
+            for (var i=0;i<keys.Length;i++) {
+                int input_lieage_id = keys[i];
+                // Copy that column
+                var input = _virtualInputs.GetVirtualInputColumnByLineageID(input_lieage_id);
+                IDTSOutputColumn100 output = _md.OutputCollection[0].OutputColumnCollection.New();
+                output.SetDataTypeProperties(input.DataType, input.Length, input.Precision, input.Scale, input.CodePage);
+                output.MappedColumnID = input.LineageID;
+                output.Name = input.Name;
+            }
+
+            // For each espected outputcolumn json derived, add the equivalent.
             foreach (IOMapEntry e in IoMap)
             {
                 if (e.InputFieldLen < 0)

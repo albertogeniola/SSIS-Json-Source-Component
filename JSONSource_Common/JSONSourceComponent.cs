@@ -164,7 +164,6 @@ namespace com.webkingsoft.JSONSource_Common
             return model;
         }
 
-
         // The following variables are used as temporary storage when the validation has been finished and
         // the data process is happening at runtime. Their goal is to provide a fast way to lookup important
         // data while processing data.

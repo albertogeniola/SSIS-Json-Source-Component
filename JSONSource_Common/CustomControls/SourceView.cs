@@ -20,12 +20,13 @@ namespace com.webkingsoft.JSONSource_Common
         private IServiceProvider _sp;
         private JSONSourceComponentModel _model;
         private IDTSComponentMetaData100 _md;
+        private IDTSVirtualInputColumnCollection100 _inputs;
 
-        public SourceView(Variables vars, IServiceProvider sp, IDTSComponentMetaData100 md)
+        public SourceView(Variables vars, IServiceProvider sp, IDTSVirtualInputColumnCollection100 inputs)
         {
             _sp = sp;
             _vars = vars;
-            _md = md;
+            _inputs = inputs;
 
             _tmpParams = new List<HTTPParameter>();
             InitializeComponent();
@@ -146,18 +147,16 @@ namespace com.webkingsoft.JSONSource_Common
         {
             // Collect the variables currently available to the component alongside the input colums available at the moment
             HttpInputBinding[] inputs = null;
-            var inputlane = _md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
-            if (inputlane.IsAttached) {
-                inputs = new HttpInputBinding[inputlane.GetVirtualInput().VirtualInputColumnCollection.Count];
-                int count = 0;
-                foreach (IDTSVirtualInputColumn100 vcol in inputlane.GetVirtualInput().VirtualInputColumnCollection)
-                {
-                    inputs[count] = new HttpInputBinding();
-                    inputs[count].Name = vcol.Name;
-                    inputs[count].LineageID = vcol.LineageID;
-                    count++;
-                }
+            inputs = new HttpInputBinding[_inputs.Count];
+            int count = 0;
+            foreach (IDTSVirtualInputColumn100 vcol in _inputs)
+            {
+                inputs[count] = new HttpInputBinding();
+                inputs[count].Name = vcol.Name;
+                inputs[count].LineageID = vcol.LineageID;
+                count++;
             }
+            
 
             Parameters p = new Parameters(_vars, inputs);
             p.SetModel(_tmpParams);

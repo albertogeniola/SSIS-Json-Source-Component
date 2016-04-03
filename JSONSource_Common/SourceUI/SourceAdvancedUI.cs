@@ -23,18 +23,18 @@ namespace com.webkingsoft.JSONSource_Common
         private ColumnView _columnView;
         private AdvancedView _advancedView;
         private JSONSourceComponentModel _savedModel;
-        private IDTSComponentMetaData100 _md;
+        private IDTSVirtualInputColumnCollection100 _inputs;
 
-        public SourceAdvancedUI(Variables vars,IServiceProvider sp, IDTSComponentMetaData100 md)
+        public SourceAdvancedUI(Variables vars,IServiceProvider sp, IDTSVirtualInputColumnCollection100 virtualInputs)
         {
             _vars = vars;
             _sp = sp;
-            _md = md;
-            
-            _sourceView = new SourceView(_vars,_sp,_md);
+            _inputs = virtualInputs;
+
+            _sourceView = new SourceView(_vars,_sp, _inputs);
             _sourceView.Visible = false;
 
-            _columnView = new ColumnView(_md);
+            _columnView = new ColumnView(_inputs);
             _columnView.Visible = false;
 
             _advancedView = new AdvancedView();
