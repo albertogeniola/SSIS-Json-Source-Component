@@ -15,6 +15,15 @@ namespace com.webkingsoft.JSONSource_Common
             set;
         }
 
+        public bool IsInputMapped {
+            get { return Binding == HTTPParamBinding.InputField; }
+        }
+
+        public int InputColumnLineageId {
+            get;
+            set;
+        }
+
         public string Value
         {
             get;
@@ -33,5 +42,9 @@ namespace com.webkingsoft.JSONSource_Common
             set;
         }
 
+    }
+    public class HttpInputBinding {
+        public int LineageID { get; set; }
+        public string Name { get; set; }
     }
 }

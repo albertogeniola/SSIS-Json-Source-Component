@@ -148,6 +148,9 @@ namespace com.webkingsoft.JSONSource_Common
             // TODO: align with best practices and use built-in props, so we do not break AdvancedView
             if (m == null || m.Value == null)
             {
+                if (fail_if_not_found)
+                    throw new Exception("No model found");
+
                 model = new JSONSourceComponentModel();
                 m = ComponentMetaData.CustomPropertyCollection.New();
                 m.Description = "Contains information about the confiuguration of the item.";
@@ -155,9 +158,7 @@ namespace com.webkingsoft.JSONSource_Common
                 m.Value = model.ToJsonConfig();
             }
             else {
-                if (fail_if_not_found)
-                    throw new Exception("No model found");
-                model = JSONSourceComponentModel.LoadFromJson(m.Value);
+                model = JSONSourceComponentModel.LoadFromJson(m.Value);    
             }
 
             return model;
@@ -170,7 +171,7 @@ namespace com.webkingsoft.JSONSource_Common
         private IOMapEntry[] _iomap;
         private Dictionary<string, int> _outColsMaps;
         private ParallelOptions _opt;
-        private int _inputColIndex;
+        private IDTSInput100 _parametersInputLane;
         private JSONSourceComponentModel _model;
 
         /// <summary>
@@ -179,6 +180,7 @@ namespace com.webkingsoft.JSONSource_Common
         /// </summary>
         public override void PreExecute()
         {
+            MessageBox.Show("Attach the debugger now! PID: " + System.Diagnostics.Process.GetCurrentProcess().Id);
             try
             {
                 _opt = new ParallelOptions();
@@ -239,7 +241,7 @@ namespace com.webkingsoft.JSONSource_Common
                 _model = m;
 
                 // Save the input column index, used to parse parameters for web-requests
-                _inputColIndex = BufferManager.FindColumnByLineageID(ComponentMetaData.InputCollection[0].Buffer, ComponentMetaData.InputCollection[0].InputColumnCollection[0].LineageID);
+                _parametersInputLane = ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
             }
             catch (Exception e) {
                 // TODO!
@@ -272,7 +274,7 @@ namespace com.webkingsoft.JSONSource_Common
             {
                 // If the HTTPParameters input is attached, execute one request per input. 
                 // Otherwise simply execute one single request.
-                if (ComponentMetaData.InputCollection[_inputColIndex].IsAttached)
+                if (_parametersInputLane.IsAttached)
                 {
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Detected HTTP Params lane attached. Executing in BATCH mode.", null, 0, ref cancel);
                     while (buffer.NextRow())
@@ -281,7 +283,10 @@ namespace com.webkingsoft.JSONSource_Common
                         ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _model.DataSource.SourceUri.ToString()), null, 0, ref cancel);
 
                         // TODO: adjust the model parameter set according with the input. 
-                        var fname = Utils.DownloadJson(this.VariableDispenser, _model.DataSource.SourceUri, _model.DataSource.WebMethod, _model.DataSource.HttpParameters, _model.DataSource.CookieVariable);
+                        var tmp = _model.DataSource.HttpParameters.ToArray();
+                        fillParams(ref tmp, ref buffer);
+
+                        var fname = Utils.DownloadJson(this.VariableDispenser, _model.DataSource.SourceUri, _model.DataSource.WebMethod, tmp, _model.DataSource.CookieVariable);
                         ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
 
                         // Process data according to IOMappings
@@ -310,7 +315,7 @@ namespace com.webkingsoft.JSONSource_Common
 
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Json parsed correctly.", null, 0, ref cancel);
                 }
-                
+
                 if (buffer.EndOfRowset)
                     _outputBuffer.SetEndOfRowset();
 
@@ -321,6 +326,21 @@ namespace com.webkingsoft.JSONSource_Common
                 bool fireAgain = false;
                 ComponentMetaData.FireError(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, "An error has occurred: " + e.Message + ". \n" + e.StackTrace, null, 0, out fireAgain);
                 return;
+            }
+        }
+
+        /// <summary>
+        /// Given a list of parameters and the input buffer, lookup for input bind paramenters and retrieve their value from the input buffer.
+        /// </summary>
+        /// <param name="httpParameters"></param>
+        /// <param name="buffer"></param>
+        private void fillParams(ref HTTPParameter[] httpParameters, ref PipelineBuffer buffer)
+        {
+            foreach (var p in httpParameters) {
+                if (p.IsInputMapped) {
+                    int colIndex = BufferManager.FindColumnByLineageID(_parametersInputLane.Buffer, p.InputColumnLineageId);
+                    p.Value = buffer[colIndex].ToString();
+                }
             }
         }
 

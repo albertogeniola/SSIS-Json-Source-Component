@@ -145,14 +145,16 @@ namespace com.webkingsoft.JSONSource_Common
         private void httpparams_Click(object sender, EventArgs e)
         {
             // Collect the variables currently available to the component alongside the input colums available at the moment
-            object[] inputs = null;
+            HttpInputBinding[] inputs = null;
             var inputlane = _md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
             if (inputlane.IsAttached) {
-                inputs = new object[inputlane.InputColumnCollection.Count];
-                var enumerator = inputlane.InputColumnCollection.GetEnumerator();
+                inputs = new HttpInputBinding[inputlane.GetVirtualInput().VirtualInputColumnCollection.Count];
                 int count = 0;
-                while (enumerator.MoveNext()) {
-                    inputs[count] = enumerator.Current;
+                foreach (IDTSVirtualInputColumn100 vcol in inputlane.GetVirtualInput().VirtualInputColumnCollection)
+                {
+                    inputs[count] = new HttpInputBinding();
+                    inputs[count].Name = vcol.Name;
+                    inputs[count].LineageID = vcol.LineageID;
                     count++;
                 }
             }

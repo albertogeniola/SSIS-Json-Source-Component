@@ -53,7 +53,7 @@ namespace com.webkingsoft.JSONSource_Common
                 
                 // Setup the column output accordingly
                 // TODO: Is the right place where to do that?
-                AddOutputColumns(_model.DataMapping.IoMap);
+                AddOutputColumns(componentEditor.SavedModel.DataMapping.IoMap);
 
                 _model = componentEditor.SavedModel;
                 return true;
@@ -72,13 +72,24 @@ namespace com.webkingsoft.JSONSource_Common
             {
                 if (e.InputFieldLen < 0)
                 {
-                    // FIXME TODO
+                    // FIXME TODO: this must be done directly within the UI
                     _md.FireWarning(0, _md.Name, "A row of the IO configuration presents a negative value, which is forbidden.", null, 0);
                 }
 
                 IDTSOutputColumn100 col = _md.OutputCollection[0].OutputColumnCollection.New();
                 col.Name = e.OutputColName;
-                col.SetDataTypeProperties(e.OutputColumnType, e.InputFieldLen, 0, 0, 0);
+
+                // There might be some possible errors regarding data lenght. We try to correct them here.
+                if (e.OutputColumnType == Microsoft.SqlServer.Dts.Runtime.Wrapper.DataType.DT_WSTR && e.InputFieldLen > 4000)
+                {
+                    // FIXME TODO: this must be done directly within the UI
+                    // e.OutputColumnType = Microsoft.SqlServer.Dts.Runtime.Wrapper.DataType.DT_NTEXT;
+                    _md.FireWarning(0, _md.Name, string.Format("Column {0} is supposed to be longer than 4000 chars, so DT_WSTR is not a suitable column type. Instead, DT_NTEXT has been selected.", e.OutputColName), null, 0);
+                    col.SetDataTypeProperties(Microsoft.SqlServer.Dts.Runtime.Wrapper.DataType.DT_NTEXT, e.InputFieldLen, 0, 0, 0);
+                }
+                else {
+                    col.SetDataTypeProperties(e.OutputColumnType, e.InputFieldLen, 0, 0, 0);
+                }
             }
         }
 

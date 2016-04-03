@@ -17,9 +17,9 @@ namespace com.webkingsoft.JSONSource_Common
     {
         private List<HTTPParameter> _model;
         private Microsoft.SqlServer.Dts.Runtime.Variables _vars;
-        private object[] _input_options;
+        private HttpInputBinding[] _input_options;
 
-        public Parameters(Microsoft.SqlServer.Dts.Runtime.Variables vars, object[] inputHttpCols = null)
+        public Parameters(Microsoft.SqlServer.Dts.Runtime.Variables vars, HttpInputBinding[] inputHttpCols = null)
         {
             _vars = vars;
             InitializeComponent();
@@ -71,11 +71,14 @@ namespace com.webkingsoft.JSONSource_Common
             }
 
             // 3. Valore: se è di tipo bound, controlla che la variabile specificata esista. Se no, accetta tutto. Per noi un parametro HTTP può anche essere nullo.
-            if (bin == HTTPParamBinding.Variable) {
+            if (bin == HTTPParamBinding.Variable)
+            {
                 string var = value.Value.ToString().Trim();
                 bool valid = false;
-                foreach (Variable v in _vars) {
-                    if (v.QualifiedName == var) {
+                foreach (Variable v in _vars)
+                {
+                    if (v.QualifiedName == var)
+                    {
                         valid = true;
                         break;
                     }
@@ -83,6 +86,31 @@ namespace com.webkingsoft.JSONSource_Common
                 if (!valid)
                 {
                     d.Rows[e.RowIndex].Cells[2].ErrorText = "Invalid variable choosen";
+                    e.Cancel = true;
+                    return;
+                }
+            }
+            else if (bin == HTTPParamBinding.InputField) {
+                if (value.Value == null)
+                {
+                    d.Rows[e.RowIndex].Cells[2].ErrorText = "Invalid input choosen";
+                    e.Cancel = true;
+                    return;
+                }
+
+                int id = (int)value.Value;
+                bool valid = false;
+                foreach (var item in _input_options)
+                {
+                    if (item.LineageID == id)
+                    {
+                        valid = true;
+                        break;
+                    }
+                }
+                if (!valid)
+                {
+                    d.Rows[e.RowIndex].Cells[2].ErrorText = "Invalid input choosen";
                     e.Cancel = true;
                     return;
                 }
@@ -103,18 +131,17 @@ namespace com.webkingsoft.JSONSource_Common
                     d.Rows[e.RowIndex].Cells[2] = new DataGridViewTextBoxCell();
 
                 } else if (b == HTTPParamBinding.InputField) {
-                    if (_input_options == null || _input_options.Length < 1) {
-                        throw new Exception("There is no input attached to this lane. First attach an input, then you'll be able to select a vale from this box.");
-                    }
                     d.Rows[e.RowIndex].Cells[2].ValueType = typeof(HTTPParamBinding);
                     var cbox = new DataGridViewComboBoxCell();
                     cbox.DataSource = _input_options;
+                    cbox.DisplayMember = "Name";
+                    cbox.ValueMember = "LineageID";
                     d.Rows[e.RowIndex].Cells[2] = cbox;
 
                 } else {
-                    throw new Exception("Invalid or inconsistent HTTP binding type");
+                    MessageBox.Show("Invalid or inconsistent HTTP binding type");
+                    return;
                 }
-                
             }
         }
 
@@ -138,13 +165,20 @@ namespace com.webkingsoft.JSONSource_Common
                         //d.EndEdit();
                     }
                 }
+                else if (b == HTTPParamBinding.InputField) {
+                    if (_input_options == null || _input_options.Length < 1)
+                    {
+                        MessageBox.Show("There is no input attached to this lane. First attach an input, then you'll be able to select a vale from this box.");
+                        e.Cancel = true;
+                    }
+                }
             }
         }
-
 
         public IEnumerable<HTTPParameter> GetModel() {
             return _model;
         }
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -157,6 +191,7 @@ namespace com.webkingsoft.JSONSource_Common
             dataGridView1.BeginEdit(true);
         }
 
+
         private void button2_Click(object sender, EventArgs e)
         {
             // Prepare model
@@ -165,7 +200,16 @@ namespace com.webkingsoft.JSONSource_Common
                 HTTPParameter p = new HTTPParameter();
                 p.Name = row.Cells[0].Value.ToString().Trim();
                 p.Binding = (HTTPParamBinding) Enum.Parse(typeof(HTTPParamBinding), row.Cells[1].Value.ToString().Trim());
-                p.Value = row.Cells[2].Value.ToString().Trim();
+
+                if (p.Binding == HTTPParamBinding.InputField) {
+                    p.Value = null;
+                    p.InputColumnLineageId = (int)row.Cells[2].Value;
+                } else
+                {
+                    p.InputColumnLineageId = -1;
+                    p.Value = row.Cells[2].Value.ToString().Trim();
+                }
+                
                 p.Encode = (bool)row.Cells[3].Value;
                 _model.Add(p);
             }
@@ -178,34 +222,68 @@ namespace com.webkingsoft.JSONSource_Common
             dataGridView1.Rows.Clear();
             if (pars!=null)
                 foreach (HTTPParameter p in pars) {
-                    dataGridView1.Rows.Add(new object[] { p.Name, Enum.GetName(typeof(HTTPParamBinding),p.Binding), p.Value, p.Encode });
+                    if (p.Binding == HTTPParamBinding.InputField)
+                    {
+                        HttpInputBinding bind = null;
+                        // Check if the input column is available
+                        if (_input_options == null)
+                            // Column might have been deleted
+                            bind = null;
+                        else {
+                            foreach (var i in _input_options)
+                            {
+                                // TODO: by name or lineageid?
+                                if (i.LineageID == p.InputColumnLineageId && i.Name == p.Name)
+                                {
+                                    bind = i;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (bind == null)
+                        {
+                            //TODO: firewarning?
+                            
+                        }
+
+                        int index = dataGridView1.Rows.Add();
+                        var cbox = new DataGridViewComboBoxCell();
+                        cbox.DataSource = _input_options;
+                        cbox.DisplayMember = "Name";
+                        cbox.ValueMember = "LineageID";
+                        
+                        dataGridView1.Rows[index].Cells[2] = cbox;
+
+                        dataGridView1.Rows[index].Cells[0].Value = p.Name;
+                        dataGridView1.Rows[index].Cells[1].Value = Enum.GetName(typeof(HTTPParamBinding), p.Binding);
+                        if (bind != null)
+                            dataGridView1.Rows[index].Cells[2].Value = bind.LineageID;
+                        else
+                            dataGridView1.Rows[index].Cells[2].ErrorText = "Inputs have changed. Please update this mapping.";
+
+                        dataGridView1.Rows[index].Cells[3].Value = p.Encode;
+                    }
+                    else {
+                        dataGridView1.Rows.Add(new object[] { p.Name, Enum.GetName(typeof(HTTPParamBinding), p.Binding), p.Value, p.Encode });
+                    }
                     _model.Add(p);
                 }
-        }
-
-        private void delButton_Click(object sender, EventArgs e)
-        {
-            if (dataGridView1.SelectedRows.Count < 1)
-            {
-                MessageBox.Show("No row has been selected.");
-                return;
-            }
-            else {
-                for (int i=0;i<dataGridView1.SelectedRows.Count;i++) {
-                    dataGridView1.Rows.Remove(dataGridView1.SelectedRows[i]);
-                }
-            }
         }
 
         private void dataGridView1_SelectionChanged(object sender, EventArgs e)
         {
             DataGridView v = (DataGridView)sender;
-            delButton.Enabled = v.SelectedRows.Count > 0;
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+
+        private void dataGridView1_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBox.Show(e.Exception.Message);
         }
     }
 }

@@ -67,6 +67,13 @@ namespace com.webkingsoft.JSONSource_Common
                         DataType type;
                         val = GetVariable(vd, param.Value, out type).ToString();
                     }
+                    else if (param.Binding == HTTPParamBinding.InputField)
+                    {
+                        val = param.Value;
+                    }
+                    else {
+                        throw new Exception("Unespected binding type");
+                    }
 
                     if (param.Encode)
                         val = Uri.EscapeUriString(val);

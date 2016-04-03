@@ -154,5 +154,10 @@ namespace com.webkingsoft.JSONSource_Common
 
             return result;
         }
+
+        private void uiIOGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }

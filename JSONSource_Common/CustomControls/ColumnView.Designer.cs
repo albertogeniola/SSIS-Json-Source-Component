@@ -91,6 +91,7 @@
             this.uiIOGrid.Name = "uiIOGrid";
             this.uiIOGrid.Size = new System.Drawing.Size(589, 412);
             this.uiIOGrid.TabIndex = 7;
+            this.uiIOGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.uiIOGrid_CellContentClick);
             this.uiIOGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.uiIOGrid_CellEndEdit);
             // 
             // JSONFieldName
