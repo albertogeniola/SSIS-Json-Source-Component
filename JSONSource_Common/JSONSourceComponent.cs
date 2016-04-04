@@ -169,6 +169,7 @@ namespace com.webkingsoft.JSONSource_Common
         // data while processing data.
         private IOMapEntry[] _iomap;
         private Dictionary<string, int> _outColsMaps;
+        private Dictionary<int, int> _inputCopyToOutputMaps;
         private ParallelOptions _opt;
         private IDTSInput100 _parametersInputLane;
         private JSONSourceComponentModel _model;
@@ -213,6 +214,9 @@ namespace com.webkingsoft.JSONSource_Common
                     
                 }
 
+                // Save the input column index, used to parse parameters for web-requests
+                _parametersInputLane = ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
+
                 // Now perform the IO mapping for fast lookup during JSON Reading
                 // Dictionary<name_of_column, index_of_column_in_pipeline_row>
                 _iomap = m.DataMapping.IoMap.ToArray<IOMapEntry>();                
@@ -237,10 +241,21 @@ namespace com.webkingsoft.JSONSource_Common
                     }
                 }
 
+                _inputCopyToOutputMaps = new Dictionary<int, int>();
+                // Fill the fast dictionary for Input to output cols
+                foreach (var inputColName in m.DataMapping.InputColumnsToCopy) {
+                    
+                    // Retrieve the index of the input column and use it as key for the fast dict. Note that for our implementation, input column names matech output column names
+                    // Input column index <-> OutputColumnIndex
+                    int input_index = BufferManager.FindColumnByLineageID(ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].Buffer, ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].InputColumnCollection[inputColName].LineageID);
+                    int output_index = BufferManager.FindColumnByLineageID(ComponentMetaData.OutputCollection[0].Buffer, ComponentMetaData.OutputCollection[0].OutputColumnCollection[inputColName].LineageID);
+                    // Map the input index to the output index
+                    _inputCopyToOutputMaps[input_index] = output_index;
+                }
+
                 _model = m;
 
-                // Save the input column index, used to parse parameters for web-requests
-                _parametersInputLane = ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
+                
             }
             catch (Exception e) {
                 // TODO!
@@ -265,7 +280,19 @@ namespace com.webkingsoft.JSONSource_Common
                 _outputBuffer = buffers[0];
         }
 
-        public override void ProcessInput(int inputID, PipelineBuffer buffer)
+
+        private PipelineBuffer AddOutputRow(PipelineBuffer inputbuffer) {
+            // Add A row and pre-fill it
+            _outputBuffer.AddRow();
+
+            foreach (var input_output in _inputCopyToOutputMaps)
+            {
+                _outputBuffer[input_output.Value] = inputbuffer[input_output.Key];
+            }
+            return _outputBuffer;
+        }
+
+        public override void ProcessInput(int inputID, PipelineBuffer inputbuffer)
         {
             bool cancel = false;
             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Processing inputs...", null, 0, ref cancel);
@@ -276,21 +303,20 @@ namespace com.webkingsoft.JSONSource_Common
                 if (_parametersInputLane.IsAttached)
                 {
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Detected HTTP Params lane attached. Executing in BATCH mode.", null, 0, ref cancel);
-                    while (buffer.NextRow())
+                    while (inputbuffer.NextRow())
                     {
                         // Perform the request with appropriate inputs as HTTP params...
                         ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _model.DataSource.SourceUri.ToString()), null, 0, ref cancel);
-
-                        // TODO: adjust the model parameter set according with the input. 
+                        
                         var tmp = _model.DataSource.HttpParameters.ToArray();
-                        fillParams(ref tmp, ref buffer);
+                        fillParams(ref tmp, ref inputbuffer);
 
                         var fname = Utils.DownloadJson(this.VariableDispenser, _model.DataSource.SourceUri, _model.DataSource.WebMethod, tmp, _model.DataSource.CookieVariable);
                         ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
 
                         // Process data according to IOMappings
                         using (StreamReader sr = new StreamReader(File.Open(fname, FileMode.Open)))
-                            ProcessInMemory(sr, _outputBuffer, _model.DataMapping.RootType);
+                            ProcessInMemory(sr, _model.DataMapping.RootType, inputbuffer);
 
                         File.Delete(fname);
 
@@ -302,20 +328,19 @@ namespace com.webkingsoft.JSONSource_Common
                     // Perform the request with appropriate inputs as HTTP params...
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _model.DataSource.SourceUri.ToString()), null, 0, ref cancel);
 
-                    // TODO: adjust the model parameter set according with the input.
                     var fname = Utils.DownloadJson(this.VariableDispenser, _model.DataSource.SourceUri, _model.DataSource.WebMethod, _model.DataSource.HttpParameters, _model.DataSource.CookieVariable);
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
 
                     // Process data according to IOMappings
                     using (StreamReader sr = new StreamReader(File.Open(fname, FileMode.Open)))
-                        ProcessInMemory(sr, _outputBuffer, _model.DataMapping.RootType);
+                        ProcessInMemory(sr, _model.DataMapping.RootType, inputbuffer);
 
                     File.Delete(fname);
 
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Json parsed correctly.", null, 0, ref cancel);
                 }
 
-                if (buffer.EndOfRowset)
+                if (inputbuffer.EndOfRowset)
                     _outputBuffer.SetEndOfRowset();
 
                 ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "All inputs processed.", null, 0, ref cancel);
@@ -333,12 +358,12 @@ namespace com.webkingsoft.JSONSource_Common
         /// </summary>
         /// <param name="httpParameters"></param>
         /// <param name="buffer"></param>
-        private void fillParams(ref HTTPParameter[] httpParameters, ref PipelineBuffer buffer)
+        private void fillParams(ref HTTPParameter[] httpParameters, ref PipelineBuffer inputbuffer)
         {
             foreach (var p in httpParameters) {
                 if (p.IsInputMapped) {
                     int colIndex = BufferManager.FindColumnByLineageID(_parametersInputLane.Buffer, p.InputColumnLineageId);
-                    p.Value = buffer[colIndex].ToString();
+                    p.Value = inputbuffer[colIndex].ToString();
                 }
             }
         }
@@ -346,7 +371,7 @@ namespace com.webkingsoft.JSONSource_Common
         /**
          * Executes the navigation+parsing operation for the given json, putting results into the buffer.
          */
-        private void ProcessInMemory(StreamReader sr, PipelineBuffer buffer, RootType rootType)
+        private void ProcessInMemory(StreamReader sr, RootType rootType, PipelineBuffer inputbuffer)
         {
             using (sr)
             {
@@ -384,10 +409,10 @@ namespace com.webkingsoft.JSONSource_Common
                     // For each root element we got...
                     foreach (JToken t in els) {
                         if (t.Type == JTokenType.Array) {
-                            count+=ProcessArray(t as JArray, buffer);
+                            count+=ProcessArray(t as JArray, inputbuffer);
                         }
                         else if (t.Type == JTokenType.Object) {
-                            count+=ProcessObject(t as JObject, buffer);
+                            count+=ProcessObject(t as JObject, inputbuffer);
                         }
                         else {
                             throw new Exception("Invalid token returned by RootPath query: "+t.Type.ToString());
@@ -404,12 +429,12 @@ namespace com.webkingsoft.JSONSource_Common
 
         }
 
-        private int ProcessObject(JObject obj, PipelineBuffer buffer)
+        private int ProcessObject(JObject obj, PipelineBuffer inputbuffer)
         {
             bool cancel=false;
             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Processing Object...", null, 0, ref cancel);
             // Each objects corresponds to an output row.
-            buffer.AddRow();
+            var buffer = AddOutputRow(inputbuffer);
 
             // For each column requested from metadata, look for data into the object we parsed
             Parallel.ForEach<IOMapEntry>(_iomap, _opt, delegate(IOMapEntry e)
@@ -454,7 +479,7 @@ namespace com.webkingsoft.JSONSource_Common
             return 1;
         }
 
-        private int ProcessArray(JArray arr, PipelineBuffer buffer)
+        private int ProcessArray(JArray arr, PipelineBuffer inputbuffer)
         {
             bool cancel = false;
             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Processing Array...", null, 0, ref cancel);
@@ -462,7 +487,7 @@ namespace com.webkingsoft.JSONSource_Common
             foreach (JObject obj in arr)
             {
                 // Each objects corresponds to an output row.
-                buffer.AddRow();
+                var buffer = AddOutputRow(inputbuffer);
 
                 // For each column requested from metadata, look for data into the object we parsed
                 Parallel.ForEach<IOMapEntry>(_iomap, _opt, delegate(IOMapEntry e)

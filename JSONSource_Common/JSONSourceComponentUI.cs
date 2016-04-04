@@ -50,28 +50,22 @@ namespace com.webkingsoft.JSONSource_Common
 
             if (result == DialogResult.OK)
             {
+                _model = componentEditor.SavedModel;
+
+                // Setup the column output accordingly
+                AddInputColumns(_model.DataMapping.InputColumnsToCopy);
+                AddOutputColumns(componentEditor.SavedModel.DataMapping.IoMap, _model.DataMapping.InputColumnsToCopy);
+
                 // Serialize the configuration.
                 // TODO: use a standard way to do that
                 _md.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL].Value = componentEditor.SavedModel.ToJsonConfig();
 
-                // Setup the column output accordingly
-                // TODO: Is the right place where to do that?
-                var simpleCopyCols = componentEditor.SavedModel.DataMapping.CopyColumnsIOIDs;
-
-                int[] inputIds = new int[simpleCopyCols.Keys.Count];
-                simpleCopyCols.Keys.CopyTo(inputIds, 0);
-
-                AddInputColumn(inputIds);
-                AddOutputColumns(componentEditor.SavedModel.DataMapping.IoMap, ref simpleCopyCols);
-                componentEditor.SavedModel.DataMapping.CopyColumnsIOIDs = simpleCopyCols;
-
-                _model = componentEditor.SavedModel;
                 return true;
             }
             return false;
         }
 
-        private void AddInputColumn(int[] inputIds)
+        private void AddInputColumns(IEnumerable<string> inputColNames)
         {
             var input = _md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
             
@@ -79,25 +73,22 @@ namespace com.webkingsoft.JSONSource_Common
             input.InputColumnCollection.RemoveAll();
 
             // For each virtual input selected, add a physical input
-            foreach (var input_lineage_id in inputIds) {
+            foreach (var colname in inputColNames) {
                 var incol = input.InputColumnCollection.New();
-                incol.LineageID = input_lineage_id;
+                incol.LineageID = _virtualInputs[colname].LineageID;
             }
         }
 
-        private void AddOutputColumns(IEnumerable<IOMapEntry> IoMap, ref Dictionary<int,int> copyIOIds)
+        private void AddOutputColumns(IEnumerable<IOMapEntry> IoMap, IEnumerable<string> copyColNames)
         {
             // Reconfigure outputs: 
             _md.OutputCollection[0].Name = "JSON Source Output";
             _md.OutputCollection[0].OutputColumnCollection.RemoveAll();
 
             // Add simple copy columns
-            int[] keys = new int[copyIOIds.Keys.Count];
-            copyIOIds.Keys.CopyTo(keys, 0);
-            for (var i=0;i<keys.Length;i++) {
-                int input_lieage_id = keys[i];
+            foreach (var colname in copyColNames) {                
                 // Copy that column
-                var input = _virtualInputs.GetVirtualInputColumnByLineageID(input_lieage_id);
+                var input = _md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].InputColumnCollection[colname];
                 IDTSOutputColumn100 output = _md.OutputCollection[0].OutputColumnCollection.New();
                 output.SetDataTypeProperties(input.DataType, input.Length, input.Precision, input.Scale, input.CodePage);
                 output.MappedColumnID = input.LineageID;

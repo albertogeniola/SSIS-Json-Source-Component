@@ -14,18 +14,6 @@ namespace com.webkingsoft.JSONSource_Common
 {
     public partial class ColumnView : UserControl
     {
-        private class InputColumnWrapper
-        {
-            public InputColumnWrapper(IDTSVirtualInputColumn100 col) {
-                Column = col;
-            }
-            public IDTSVirtualInputColumn100 Column { get; }
-            public override string ToString()
-            {
-                return Column.Name;
-            }
-        }
-
         private IDTSVirtualInputColumnCollection100 _inputs;
 
         public ColumnView(IDTSVirtualInputColumnCollection100 inputs)
@@ -36,7 +24,7 @@ namespace com.webkingsoft.JSONSource_Common
 
             // Add input columns as selectable output. As default, all of them will be selected.
             foreach (IDTSVirtualInputColumn100 inputCol in _inputs) {
-                int index = inputsCb.Items.Add(new InputColumnWrapper(inputCol), CheckState.Checked);
+                int index = inputsCb.Items.Add(inputCol.Name, CheckState.Checked);
 
             }
 
@@ -97,14 +85,14 @@ namespace com.webkingsoft.JSONSource_Common
             for (var j = 0; j < inputsCb.Items.Count; j++)
                 inputsCb.SetItemChecked(j, false);
 
-            if (m.CopyColumnsIOIDs != null)
+            if (m.InputColumnsToCopy != null)
                 // Input columns to be copied as output
-                foreach (var i in m.CopyColumnsIOIDs) {
+                foreach (var i in m.InputColumnsToCopy) {
                     // Note that the input might have changed here. 
                     // If we do not find the given lineage id among ours inputs, we simply skip them.
                     for (var j=0;j<inputsCb.Items.Count;j++) {
-                        InputColumnWrapper col = inputsCb.Items[j] as InputColumnWrapper;
-                        if (i.Key == col.Column.LineageID) {
+                        string col = inputsCb.Items[j] as string;
+                        if (i == col) {
                             // Ok this column is available. Check it.
                             inputsCb.SetItemChecked(j, true);
                         }
@@ -194,13 +182,13 @@ namespace com.webkingsoft.JSONSource_Common
             }
 
             // Save the InputColumns to be copied as output
-            var ids = new Dictionary<int, int>();
+            var columnsToCopy = new List<string>();
             for (var i=0;i<inputsCb.CheckedItems.Count;i++) {
                 // Setup a placemark. The UI will feed this after outputcolumns are added.
-                ids[(inputsCb.CheckedItems[i] as InputColumnWrapper).Column.LineageID]=-1;
+                columnsToCopy.Add(inputsCb.CheckedItems[i] as string);
             }
 
-            result.CopyColumnsIOIDs = ids;
+            result.InputColumnsToCopy = columnsToCopy;
 
             return result;
         }
