@@ -17,9 +17,9 @@ namespace com.webkingsoft.JSONSource_Common
     {
         private List<HTTPParameter> _model;
         private Microsoft.SqlServer.Dts.Runtime.Variables _vars;
-        private HttpInputBinding[] _input_options;
+        private string[] _input_options;
 
-        public Parameters(Microsoft.SqlServer.Dts.Runtime.Variables vars, HttpInputBinding[] inputHttpCols = null)
+        public Parameters(Microsoft.SqlServer.Dts.Runtime.Variables vars, string[] inputHttpCols = null)
         {
             _vars = vars;
             InitializeComponent();
@@ -98,17 +98,8 @@ namespace com.webkingsoft.JSONSource_Common
                     return;
                 }
 
-                int id = (int)value.Value;
-                bool valid = false;
-                foreach (var item in _input_options)
-                {
-                    if (item.LineageID == id)
-                    {
-                        valid = true;
-                        break;
-                    }
-                }
-                if (!valid)
+                string colname = (string)value.Value;
+                if (!_input_options.Contains(colname))
                 {
                     d.Rows[e.RowIndex].Cells[2].ErrorText = "Invalid input choosen";
                     e.Cancel = true;
@@ -134,8 +125,6 @@ namespace com.webkingsoft.JSONSource_Common
                     d.Rows[e.RowIndex].Cells[2].ValueType = typeof(HTTPParamBinding);
                     var cbox = new DataGridViewComboBoxCell();
                     cbox.DataSource = _input_options;
-                    cbox.DisplayMember = "Name";
-                    cbox.ValueMember = "LineageID";
                     d.Rows[e.RowIndex].Cells[2] = cbox;
 
                 } else {
@@ -203,10 +192,10 @@ namespace com.webkingsoft.JSONSource_Common
 
                 if (p.Binding == HTTPParamBinding.InputField) {
                     p.Value = null;
-                    p.InputColumnLineageId = (int)row.Cells[2].Value;
+                    p.InputColumnName = (string)row.Cells[2].Value;
                 } else
                 {
-                    p.InputColumnLineageId = -1;
+                    p.InputColumnName = null;
                     p.Value = row.Cells[2].Value.ToString().Trim();
                 }
                 
@@ -224,41 +213,31 @@ namespace com.webkingsoft.JSONSource_Common
                 foreach (HTTPParameter p in pars) {
                     if (p.Binding == HTTPParamBinding.InputField)
                     {
-                        HttpInputBinding bind = null;
+                        string bind = null;
                         // Check if the input column is available
                         if (_input_options == null)
                             // Column might have been deleted
                             bind = null;
                         else {
-                            foreach (var i in _input_options)
-                            {
-                                // TODO: by name or lineageid?
-                                if (i.LineageID == p.InputColumnLineageId && i.Name == p.Name)
-                                {
-                                    bind = i;
-                                    break;
-                                }
-                            }
+                            if (_input_options.Contains(p.InputColumnName))
+                                bind = p.InputColumnName;
                         }
 
                         if (bind == null)
                         {
                             //TODO: firewarning?
-                            
                         }
 
                         int index = dataGridView1.Rows.Add();
                         var cbox = new DataGridViewComboBoxCell();
                         cbox.DataSource = _input_options;
-                        cbox.DisplayMember = "Name";
-                        cbox.ValueMember = "LineageID";
-                        
+                                                
                         dataGridView1.Rows[index].Cells[2] = cbox;
 
                         dataGridView1.Rows[index].Cells[0].Value = p.Name;
                         dataGridView1.Rows[index].Cells[1].Value = Enum.GetName(typeof(HTTPParamBinding), p.Binding);
                         if (bind != null)
-                            dataGridView1.Rows[index].Cells[2].Value = bind.LineageID;
+                            dataGridView1.Rows[index].Cells[2].Value = bind;
                         else
                             dataGridView1.Rows[index].Cells[2].ErrorText = "Inputs have changed. Please update this mapping.";
 

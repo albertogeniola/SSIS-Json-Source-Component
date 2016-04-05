@@ -52,9 +52,22 @@ namespace com.webkingsoft.JSONSource_Common
             {
                 _model = componentEditor.SavedModel;
 
-                // Setup the column output accordingly
-                AddInputColumns(_model.DataMapping.InputColumnsToCopy);
-                AddOutputColumns(componentEditor.SavedModel.DataMapping.IoMap, _model.DataMapping.InputColumnsToCopy);
+                // Map the virtual input columns with physical lanes. We need to add both parameter neede columns and copycolumns. 
+                // Use an hashset because we do not want to add duplicates
+                HashSet<string> inputColumnsToAdd = new HashSet<string>();
+                foreach (var incol in _model.DataMapping.InputColumnsToCopy) {
+                    inputColumnsToAdd.Add(incol);
+                }
+                foreach (var p in _model.DataSource.HttpParameters) {
+                    if (p.IsInputMapped) {
+                        inputColumnsToAdd.Add(p.InputColumnName);
+                    }
+                }
+
+                AddInputColumns(inputColumnsToAdd);
+
+                // About the output, add an output for each IOMap entry (json derived) and for each CopyColumn. HttpParameters are not added as output if not explicitly said so.
+                AddOutputColumns(_model.DataMapping.IoMap, _model.DataMapping.InputColumnsToCopy);
 
                 // Serialize the configuration.
                 // TODO: use a standard way to do that
@@ -68,7 +81,12 @@ namespace com.webkingsoft.JSONSource_Common
         private void AddInputColumns(IEnumerable<string> inputColNames)
         {
             var input = _md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
-            
+            // Only add them if the inputlan is connected.
+            if (!input.IsAttached) {
+                _md.FireWarning(0, _md.Name, "Cannot add inputs because input lane is not attached.", null, 0);
+                return;
+            }
+
             // Clear inputs
             input.InputColumnCollection.RemoveAll();
 
@@ -85,14 +103,22 @@ namespace com.webkingsoft.JSONSource_Common
             _md.OutputCollection[0].Name = "JSON Source Output";
             _md.OutputCollection[0].OutputColumnCollection.RemoveAll();
 
+            var input = _md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
             // Add simple copy columns
-            foreach (var colname in copyColNames) {                
+            foreach (var colname in copyColNames) {
+                // Only add them if the inputlan is connected.
+                if (!input.IsAttached)
+                {
+                    _md.FireWarning(0, _md.Name, string.Format("Cannot add outputcolumn for input {0} because input lane is not attached.",colname), null, 0);
+                    return;
+                }
+
                 // Copy that column
-                var input = _md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].InputColumnCollection[colname];
+                var incol=input.InputColumnCollection[colname];
                 IDTSOutputColumn100 output = _md.OutputCollection[0].OutputColumnCollection.New();
-                output.SetDataTypeProperties(input.DataType, input.Length, input.Precision, input.Scale, input.CodePage);
-                output.MappedColumnID = input.LineageID;
-                output.Name = input.Name;
+                output.SetDataTypeProperties(incol.DataType, incol.Length, incol.Precision, incol.Scale, incol.CodePage);
+                output.MappedColumnID = incol.LineageID;
+                output.Name = incol.Name;
             }
 
             // For each espected outputcolumn json derived, add the equivalent.

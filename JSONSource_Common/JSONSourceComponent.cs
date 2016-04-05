@@ -131,6 +131,49 @@ namespace com.webkingsoft.JSONSource_Common
                 return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
             }
 
+            // Although model is consistent, we must make sure the input columns it is refferring to are connected end existing.
+            // Possible references to inputs are:
+            // HTTP Params
+            // CopyColumns
+            foreach (var param in m.DataSource.HttpParameters) {
+                if (param.IsInputMapped)
+                {
+                    bool found = false;
+                    foreach (IDTSInputColumn100 inputcol in ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].InputColumnCollection) {
+                        if (inputcol.Name == param.InputColumnName) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        bool cancel;
+                        // This column is not mapped. This will cause an error
+                        ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, String.Format("HTTP parameter {0} requires input column {1} to be defined/connected. However there is no {1} column input attached.",param.Name,param.InputColumnName), err, null, 0, out cancel);
+                        return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
+                    }
+                }
+            }
+
+            // Also make sure copy columns are available
+            foreach (var colname in m.DataMapping.InputColumnsToCopy) {
+                bool found = false;
+                foreach (IDTSInputColumn100 inputcol in ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].InputColumnCollection)
+                {
+                    if (inputcol.Name == colname)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    // This column is not mapped. This will cause an error
+                    bool cancel;
+                    ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, String.Format("However there is no {0} column input attached. Please update the component configuration.", colname), err, null, 0, out cancel);
+                    return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
+                }
+            }
+
             // Everything seems ok.
             return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISVALID;
         }
@@ -280,7 +323,6 @@ namespace com.webkingsoft.JSONSource_Common
                 _outputBuffer = buffers[0];
         }
 
-
         private PipelineBuffer AddOutputRow(PipelineBuffer inputbuffer) {
             // Add A row and pre-fill it
             _outputBuffer.AddRow();
@@ -362,7 +404,7 @@ namespace com.webkingsoft.JSONSource_Common
         {
             foreach (var p in httpParameters) {
                 if (p.IsInputMapped) {
-                    int colIndex = BufferManager.FindColumnByLineageID(_parametersInputLane.Buffer, p.InputColumnLineageId);
+                    int colIndex = BufferManager.FindColumnByLineageID(_parametersInputLane.Buffer, _parametersInputLane.InputColumnCollection[p.InputColumnName].LineageID);
                     p.Value = inputbuffer[colIndex].ToString();
                 }
             }
