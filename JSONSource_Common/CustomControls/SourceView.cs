@@ -166,6 +166,9 @@ namespace com.webkingsoft.JSONSource_Common
         }
 
         public IEnumerable<HTTPParameter> GetHttpParameters() {
+            if (_tmpParams == null) {
+                _tmpParams = new List<HTTPParameter>();
+            }
             return _tmpParams;
         }
 

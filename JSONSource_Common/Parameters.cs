@@ -15,7 +15,7 @@ namespace com.webkingsoft.JSONSource_Common
 {
     public partial class Parameters : Form
     {
-        private List<HTTPParameter> _model;
+        private List<HTTPParameter> _model = new List<HTTPParameter>();
         private Microsoft.SqlServer.Dts.Runtime.Variables _vars;
         private string[] _input_options;
 
