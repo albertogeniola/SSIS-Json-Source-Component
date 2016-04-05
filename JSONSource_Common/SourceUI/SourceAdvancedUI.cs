@@ -7,6 +7,9 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 #if LINQ_SUPPORTED
 using System.Linq;
 #endif
@@ -114,6 +117,13 @@ namespace com.webkingsoft.JSONSource_Common
         private void richTextBox1_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void testButton_Click(object sender, EventArgs e)
+        {
+            SaveModel();
+            var tester = new ComponentTester(_savedModel);
+            tester.ShowDialog();
         }
     }
 }

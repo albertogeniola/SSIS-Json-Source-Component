@@ -107,6 +107,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentConstants.cs" />
+    <Compile Include="ComponentTester.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ComponentTester.designer.cs">
+      <DependentUpon>ComponentTester.cs</DependentUpon>
+    </Compile>
     <Compile Include="CustomControls\AdvancedView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -174,6 +180,12 @@
       <DependentUpon>SourceAdvancedUI.cs</DependentUpon>
     </Compile>
     <Compile Include="TransformationModel.cs" />
+    <Compile Include="UserPrompter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserPrompter.designer.cs">
+      <DependentUpon>UserPrompter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utils.cs" />
     <Compile Include="VariableChooser.cs">
       <SubType>Form</SubType>
@@ -183,6 +195,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ComponentTester.resx">
+      <DependentUpon>ComponentTester.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CustomControls\AdvancedView.resx">
       <DependentUpon>AdvancedView.cs</DependentUpon>
     </EmbeddedResource>
@@ -208,6 +223,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SourceUI\SourceAdvancedUI.resx">
       <DependentUpon>SourceAdvancedUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserPrompter.resx">
+      <DependentUpon>UserPrompter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VariableChooser.resx">
       <DependentUpon>VariableChooser.cs</DependentUpon>

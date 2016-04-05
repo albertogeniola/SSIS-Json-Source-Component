@@ -38,6 +38,7 @@
             this.mainPanel = new System.Windows.Forms.Panel();
             this.menulist = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.testButton = new System.Windows.Forms.Button();
             this.topPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.bottomPanel.SuspendLayout();
@@ -89,6 +90,7 @@
             // 
             // bottomPanel
             // 
+            this.bottomPanel.Controls.Add(this.testButton);
             this.bottomPanel.Controls.Add(this.cancel);
             this.bottomPanel.Controls.Add(this.ok);
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -151,6 +153,16 @@
             this.panel1.Size = new System.Drawing.Size(128, 409);
             this.panel1.TabIndex = 0;
             // 
+            // testButton
+            // 
+            this.testButton.Location = new System.Drawing.Point(134, 3);
+            this.testButton.Name = "testButton";
+            this.testButton.Size = new System.Drawing.Size(75, 36);
+            this.testButton.TabIndex = 11;
+            this.testButton.Text = "Test...";
+            this.testButton.UseVisualStyleBackColor = true;
+            this.testButton.Click += new System.EventHandler(this.testButton_Click);
+            // 
             // SourceAdvancedUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -182,5 +194,6 @@
         private System.Windows.Forms.Panel mainPanel;
         private System.Windows.Forms.ListBox menulist;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button testButton;
     }
 }
