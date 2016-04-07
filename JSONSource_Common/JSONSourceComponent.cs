@@ -225,7 +225,17 @@ namespace com.webkingsoft.JSONSource_Common
         /// </summary>
         public override void PreExecute()
         {
-            MessageBox.Show("Attach debugger now, pid: " + Process.GetCurrentProcess().Id);
+            DataType type;
+            try
+            {
+                Utils.GetVariable(VariableDispenser, "WK_DEBUG", out type);
+                MessageBox.Show("Attach debugger now, pid: " + Process.GetCurrentProcess().Id);
+            }
+            catch (Exception e)
+            {
+                // Do nothing
+            }
+            
             //MessageBox.Show("Attach the debugger now! PID: " + System.Diagnostics.Process.GetCurrentProcess().Id);
             try
             {
