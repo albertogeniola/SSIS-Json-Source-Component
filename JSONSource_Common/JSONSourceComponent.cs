@@ -13,6 +13,7 @@ using System.Text;
 using System.Xml.Serialization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Diagnostics;
 #if LINQ_SUPPORTED
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,9 +22,9 @@ using System.Windows.Forms;
 namespace com.webkingsoft.JSONSource_Common
 {
 #if DTS120
-    [DtsPipelineComponent(DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.0.200.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
+    [DtsPipelineComponent(DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.0000,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
 #elif DTS110
-    [DtsPipelineComponent(DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.0.200.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
+    [DtsPipelineComponent(DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
 #endif
     public class JSONSourceComponent : PipelineComponent
     {
@@ -216,6 +217,7 @@ namespace com.webkingsoft.JSONSource_Common
         private ParallelOptions _opt;
         private IDTSInput100 _parametersInputLane;
         private JSONSourceComponentModel _model;
+        private PipelineBuffer _outputbuffer = null;
 
         /// <summary>
         /// This function is invoked by the environment once, before data processing happens. So it's a great time to configure the basics
@@ -223,7 +225,8 @@ namespace com.webkingsoft.JSONSource_Common
         /// </summary>
         public override void PreExecute()
         {
-            MessageBox.Show("Attach the debugger now! PID: " + System.Diagnostics.Process.GetCurrentProcess().Id);
+            MessageBox.Show("Attach debugger now, pid: " + Process.GetCurrentProcess().Id);
+            //MessageBox.Show("Attach the debugger now! PID: " + System.Diagnostics.Process.GetCurrentProcess().Id);
             try
             {
                 _opt = new ParallelOptions();
@@ -307,7 +310,6 @@ namespace com.webkingsoft.JSONSource_Common
             }
         }
 
-        private PipelineBuffer _outputBuffer;
         /// <summary>
         /// From MS Documentation:
         /// The PrimeOutput method is called when a component has at least one output, attached to a downstream component through an IDTSPath100 object, and the SynchronousInputID property of the output is zero. 
@@ -320,70 +322,91 @@ namespace com.webkingsoft.JSONSource_Common
         public override void PrimeOutput(int outputs, int[] outputIDs, PipelineBuffer[] buffers)
         {
             if (buffers.Length != 0)
-                _outputBuffer = buffers[0];
+                _outputbuffer = buffers[0];
+            else
+                return;
+
+            // This component might be used as Source or as Transformation. Therefore, the data processing might be done by ProcessInput (if input dependent)
+            // or entirely here if no input has been defined.
+            bool cancel = false;
+            if (ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].IsAttached) {
+                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Detected input lane attached, data processing will depend on inputs.", null, 0, ref cancel);
+                return;
+            }
+
+            // In case there is no input, do the hard work here
+            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "No input lane attached, data processing takes place immediately.", null, 0, ref cancel);
+
+            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _model.DataSource.SourceUri.ToString()), null, 0, ref cancel);
+
+            string fname = null;
+            if (_model.DataSource.SourceUri.IsFile)
+                fname = _model.DataSource.SourceUri.LocalPath;
+            else {
+                Utils.DownloadJson(this.VariableDispenser, _model.DataSource.SourceUri, _model.DataSource.WebMethod, null, _model.DataSource.CookieVariable);
+                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
+            }
+
+            // Process data according to IOMappings
+            using (StreamReader sr = new StreamReader(File.Open(fname, FileMode.Open)))
+                ProcessInMemory(sr, _model.DataMapping.RootType, null, _outputbuffer);
+
+            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Json parsed correctly.", null, 0, ref cancel);
+
+            _outputbuffer.SetEndOfRowset();
         }
 
         private PipelineBuffer AddOutputRow(PipelineBuffer inputbuffer) {
             // Add A row and pre-fill it
-            _outputBuffer.AddRow();
+            _outputbuffer.AddRow();
 
-            foreach (var input_output in _inputCopyToOutputMaps)
-            {
-                _outputBuffer[input_output.Value] = inputbuffer[input_output.Key];
-            }
-            return _outputBuffer;
+            if (inputbuffer != null)
+                foreach (var input_output in _inputCopyToOutputMaps)
+                {
+                    _outputbuffer[input_output.Value] = inputbuffer[input_output.Key];
+                }
+
+            return _outputbuffer;
         }
 
         public override void ProcessInput(int inputID, PipelineBuffer inputbuffer)
         {
+            // This method is invoked only when the component has some inputs to process. Otherwise, if no input has been specified, the PrimeOutput will handle all the job.
             bool cancel = false;
             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Processing inputs...", null, 0, ref cancel);
             try
             {
-                // If the HTTPParameters input is attached, execute one request per input. 
-                // Otherwise simply execute one single request.
-                if (_parametersInputLane.IsAttached)
+                bool downloaded = false;
+                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Detected HTTP Params lane attached. Executing in BATCH mode.", null, 0, ref cancel);
+                while (inputbuffer.NextRow())
                 {
-                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Detected HTTP Params lane attached. Executing in BATCH mode.", null, 0, ref cancel);
-                    while (inputbuffer.NextRow())
-                    {
-                        // Perform the request with appropriate inputs as HTTP params...
-                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _model.DataSource.SourceUri.ToString()), null, 0, ref cancel);
-                        
-                        var tmp = _model.DataSource.HttpParameters.ToArray();
-                        fillParams(ref tmp, ref inputbuffer);
-
-                        var fname = Utils.DownloadJson(this.VariableDispenser, _model.DataSource.SourceUri, _model.DataSource.WebMethod, tmp, _model.DataSource.CookieVariable);
-                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
-
-                        // Process data according to IOMappings
-                        using (StreamReader sr = new StreamReader(File.Open(fname, FileMode.Open)))
-                            ProcessInMemory(sr, _model.DataMapping.RootType, inputbuffer);
-
-                        File.Delete(fname);
-
-                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Json parsed correctly.", null, 0, ref cancel);
-                    }
-                }
-                else {
-                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "HTTP Params lane is not attached. Executing in SINGLE mode.", null, 0, ref cancel);
                     // Perform the request with appropriate inputs as HTTP params...
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _model.DataSource.SourceUri.ToString()), null, 0, ref cancel);
+                        
+                    var tmp = _model.DataSource.HttpParameters.ToArray();
+                    fillParams(ref tmp, ref inputbuffer);
 
-                    var fname = Utils.DownloadJson(this.VariableDispenser, _model.DataSource.SourceUri, _model.DataSource.WebMethod, _model.DataSource.HttpParameters, _model.DataSource.CookieVariable);
-                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
+                    string fname = null;
+                    if (_model.DataSource.SourceUri.IsFile)
+                        fname = _model.DataSource.SourceUri.LocalPath;
+                    else {
+                        downloaded = true;
+                        Utils.DownloadJson(this.VariableDispenser, _model.DataSource.SourceUri, _model.DataSource.WebMethod, null, _model.DataSource.CookieVariable);
+                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
+                    }
 
                     // Process data according to IOMappings
                     using (StreamReader sr = new StreamReader(File.Open(fname, FileMode.Open)))
-                        ProcessInMemory(sr, _model.DataMapping.RootType, inputbuffer);
+                        ProcessInMemory(sr, _model.DataMapping.RootType, inputbuffer, _outputbuffer);
 
-                    File.Delete(fname);
+                    if (downloaded)
+                        File.Delete(fname);
 
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Json parsed correctly.", null, 0, ref cancel);
                 }
-
+                
                 if (inputbuffer.EndOfRowset)
-                    _outputBuffer.SetEndOfRowset();
+                    _outputbuffer.SetEndOfRowset();
 
                 ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "All inputs processed.", null, 0, ref cancel);
             }
@@ -413,7 +436,7 @@ namespace com.webkingsoft.JSONSource_Common
         /**
          * Executes the navigation+parsing operation for the given json, putting results into the buffer.
          */
-        private void ProcessInMemory(StreamReader sr, RootType rootType, PipelineBuffer inputbuffer)
+        private void ProcessInMemory(StreamReader sr, RootType rootType, PipelineBuffer inputbuffer, PipelineBuffer outputbuffer)
         {
             using (sr)
             {
