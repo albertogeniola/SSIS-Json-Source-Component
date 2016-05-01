@@ -61,21 +61,16 @@ namespace com.webkingsoft.JSONSource_Common
             var input = _md.InputCollection[0];
             var virtualInputs = _md.InputCollection[0].GetVirtualInput();
             IDTSVirtualInputColumn100 vcol = null;
+
+            // Aggancia tutti i virtual input agli input veri e propri
+            input.InputColumnCollection.RemoveAll();
             foreach (IDTSVirtualInputColumn100 vc in virtualInputs.VirtualInputColumnCollection)
             {
-                if (vcolInputName == vc.Name) {
-                    vcol = vc;
-                    break;
-                }
+                var col = input.InputColumnCollection.New();
+                col.Name = vc.Name;
+                col.LineageID = vc.LineageID;
             }
-            if (vcol == null)
-                // Non ho trovato la colonna!
-                throw new Exception("Metadata are broken: input column "+vcolInputName+" has not been found among the inputs of this component. Please refresh its metadata by editing the component.");
 
-            // Pulisci ogni input già assegnato ed assegna quello scelto
-            input.InputColumnCollection.RemoveAll();
-            var incol = input.InputColumnCollection.New();
-            incol.LineageID = vcol.LineageID;
             /*
             CManagedComponentWrapper destDesignTime = _md.Instantiate();
             // Il metodo seguente effettua il mapping tra una VirtualInputColumn (che di fatto corrisponde all'output del componente in gerarchia) ed una colonna fisica
@@ -86,8 +81,18 @@ namespace com.webkingsoft.JSONSource_Common
 
         private void AddOutputColumns(IEnumerable<IOMapEntry> IoMap)
         {
-            // Tutto andato a buonfine: aggiorna le colonne di output:
             _md.OutputCollection[0].OutputColumnCollection.RemoveAll();
+
+            var input = _md.InputCollection[0];
+
+            // Aggiungi tante colonne di output quante sono le colonne di input
+            foreach (IDTSInputColumn100 i in input.InputColumnCollection) {
+                IDTSOutputColumn100 col = _md.OutputCollection[0].OutputColumnCollection.New();
+                col.Name = i.Name;
+                col.SetDataTypeProperties(i.DataType, i.Length, i.Precision, i.Scale, i.CodePage);
+            }
+
+            // Aggiungi le colonne di output derivanti dall'interpretazione di JSON
             foreach (IOMapEntry e in IoMap)
             {
                 if (e.InputFieldLen < 0)

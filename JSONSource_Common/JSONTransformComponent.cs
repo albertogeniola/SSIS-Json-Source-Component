@@ -256,6 +256,8 @@ namespace com.webkingsoft.JSONSource_Common
         private string _pathToArray = null;
         private ParallelOptions _opt;
         private int _inputColIndex;
+        private int _startOfJsonColIndex;
+        private List<int> _warnNotified = new List<int>();
 
         public override void PreExecute()
         {
@@ -302,14 +304,16 @@ namespace com.webkingsoft.JSONSource_Common
             // Salva una copia locale del percorso cui attingere l'array
             _pathToArray = m.JsonObjectRelativePath;
 
-            // Genera un dizionario ad accesso veloce per il nome della colonna: mappo nome colonna - Indice della colonna nella riga
+            // Genera un dizionario ad accesso veloce per il nome della colonna per i dati json: mappo nome colonna - Indice della colonna nella riga.
+            // Questo dizionario è usato solo per il JSON, mentre per gli input standard non facciamo il lookup, ma usiamo l'indice del buffer.
+            _startOfJsonColIndex = ComponentMetaData.InputCollection[0].InputColumnCollection.Count;
             _outColsMaps = new Dictionary<string, int>();
             foreach (IOMapEntry e in _iomap)
             {
                 bool found = false;
-                foreach (IDTSOutputColumn100 col in base.ComponentMetaData.OutputCollection[0].OutputColumnCollection)
+                for (var i = 0; i<_iomap.Count(); i++) 
                 {
-
+                    var col = ComponentMetaData.OutputCollection[0].OutputColumnCollection[_startOfJsonColIndex + i];
                     if (col.Name == e.OutputColName)
                     {
                         found = true;
@@ -382,7 +386,7 @@ namespace com.webkingsoft.JSONSource_Common
                     //TODO: il buffer di input arriva completo, e non con le sole colonne mappate. 
                     // Process data according to IOMappings
                     //(GetModel().InputColumnName
-                    ProcessInMemory(buffer.GetString(_inputColIndex), _outputBuffer);
+                    ProcessInMemory(buffer.GetString(_inputColIndex), buffer);
                 }
                 catch (Exception e) {
                     bool fireAgain = false;
@@ -401,7 +405,7 @@ namespace com.webkingsoft.JSONSource_Common
         #region //Process Json Elements
         
        
-        private void ProcessInMemory(string jsonData, PipelineBuffer outputBuffer)
+        private void ProcessInMemory(string jsonData, PipelineBuffer inputBuffer)
         {
             
             bool cancel = false;
@@ -425,11 +429,11 @@ namespace com.webkingsoft.JSONSource_Common
                 {
                     if (t.Type == JTokenType.Array)
                     {
-                        count += ProcessArray(t as JArray, outputBuffer);
+                        count += ProcessArray(t as JArray, inputBuffer);
                     }
                     else if (t.Type == JTokenType.Object)
                     {
-                        count += ProcessObject(t as JObject, outputBuffer);
+                        count += ProcessObject(t as JObject, inputBuffer);
                     }
                     else
                     {
@@ -447,16 +451,32 @@ namespace com.webkingsoft.JSONSource_Common
 
         }
 
-        private int ProcessObject(JObject obj, PipelineBuffer outputBuffer)
+        private PipelineBuffer AddOutputRow(PipelineBuffer inputbuffer)
+        {
+            // Add A row and pre-fill it
+            _outputBuffer.AddRow();
+
+            // Copy the inputs into outputs
+            for (var i = 0; i < _startOfJsonColIndex; i++) {
+                _outputBuffer[i] = inputbuffer[i];
+            }
+
+            return _outputBuffer;
+        }
+
+        private int ProcessObject(JObject obj, PipelineBuffer inputbuffer)
         {
             bool cancel = false;
-            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Processing Object...", null, 0, ref cancel);
-            // Each objects corresponds to an output row.
-            outputBuffer.AddRow();
 
-            // For each column requested from metadata, look for data into the object we parsed
-            Parallel.ForEach<IOMapEntry>(_iomap, _opt, delegate(IOMapEntry e)
-            {
+            // Each objects corresponds to an output row.
+            int res = 0;
+
+            var buffer = AddOutputRow(inputbuffer);
+
+            // For each column requested from metadata, look for data into the object we parsed.
+            Parallel.ForEach<IOMapEntry>(_iomap, _opt, delegate (IOMapEntry e) {
+                int colIndex = _outColsMaps[e.OutputColName];
+
                 // If the user wants to get raw json, we should parse nothing: simply return all the json as a string
                 if (e.OutputJsonColumnType == JsonTypes.RawJson)
                 {
@@ -476,53 +496,71 @@ namespace com.webkingsoft.JSONSource_Common
                         val = vals.ElementAt(0).ToString();
                     }
 
-                    int colIndex = _outColsMaps[e.OutputColName];
-                    outputBuffer[colIndex] = val;
+                    buffer[colIndex] = val;
+                    res++;
                 }
                 else
                 {
                     // If it's not a json raw type, parse the value.
                     try
                     {
-                        object val = obj.SelectToken(e.InputFieldPath);
-                        int colIndex = _outColsMaps[e.OutputColName];
-                        outputBuffer[colIndex] = val;
+                        IEnumerable<JToken> tokens = obj.SelectTokens(e.InputFieldPath);
+                        int count = tokens.Count();
+                        if (count == 0)
+                        {
+                            if (!_warnNotified.Contains(colIndex))
+                            {
+                                _warnNotified.Add(colIndex);
+                                ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("No value has been found when parsing jsonpath {0} on column {1}. Is the jsonpath correct?", e.InputFieldPath, e.OutputColName), null, 0);
+                            }
+                        }
+                        else if (count == 1)
+                        {
+                            res++;
+                            buffer[colIndex] = tokens.ElementAt(0);
+                        }
+                        else
+                        {
+                            if (!_warnNotified.Contains(colIndex))
+                            {
+                                _warnNotified.Add(colIndex);
+                                ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("Multiple values have been found when parsing jsonpath {0} on column {1}. This will led to line explosion, so I won't explode this here to save memory. Put a filter in pipeline to explode the lines, if needed.", e.InputFieldPath, e.OutputColName), null, 0);
+                            }
+                            // This case requires explosions. We cannot perform it here, so we output raw json
+                            JArray arr = new JArray();
+                            foreach (var t in tokens)
+                            {
+                                arr.Add(t);
+                            }
+                            buffer[colIndex] = arr.ToString();
+                        }
                     }
                     catch (Newtonsoft.Json.JsonException ex)
                     {
                         bool fireAgain = false;
-                        ComponentMetaData.FireError(ERROR_SELECT_TOKEN, ComponentMetaData.Name, "SelectToken failed. This may be due to an invalid Xpath syntax / member name. However this error still happens if multiple tokens are returned and the value expected is single. Specific error was: " + ex.Message, null, 0, out fireAgain);
+                        ComponentMetaData.FireError(ComponentConstants.ERROR_SELECT_TOKEN, ComponentMetaData.Name, "SelectToken failed. This may be due to an invalid Xpath syntax / member name. However this error still happens if multiple tokens are returned and the value expected is single. Specific error was: " + ex.Message, null, 0, out fireAgain);
                         throw ex;
                     }
                 }
 
             });
-            return 1;
+
+            return res;
         }
 
-        private int ProcessArray(JArray arr, PipelineBuffer buffer)
+        private int ProcessArray(JArray arr, PipelineBuffer inputbuffer)
         {
             bool cancel = false;
             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Processing Array...", null, 0, ref cancel);
             int count = 0;
             foreach (JObject obj in arr)
             {
-                // Each objects corresponds to an output row.
-                buffer.AddRow();
-
-                // For each column requested from metadata, look for data into the object we parsed
-                Parallel.ForEach<IOMapEntry>(_iomap, _opt, delegate(IOMapEntry e)
-                {
-                    object val = obj.SelectToken(e.InputFieldPath);
-                    int colIndex = _outColsMaps[e.OutputColName];
-                    buffer[colIndex] = val;
-                });
-                count++;
+                count += ProcessObject(obj, inputbuffer);
             }
             return count;
         }
-        
-        
+
+
 
         public override IDTSExternalMetadataColumn100 MapInputColumn(int iInputID, int iInputColumnID, int iExternalMetadataColumnID)
         {
