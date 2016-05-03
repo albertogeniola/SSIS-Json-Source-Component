@@ -320,7 +320,8 @@ namespace com.webkingsoft.JSONSource_Common
                         {
                             return;
                         }
-                        else {
+                        else
+                        {
                             // I am going to cheat here. Treat every param like a custom input parameter
                             var item = new HTTPParameter();
                             item.Binding = HTTPParamBinding.CustomValue;
@@ -333,6 +334,10 @@ namespace com.webkingsoft.JSONSource_Common
                             item.Value = prompt.GetValue();
                             parameters.Add(item);
                         }
+                    }
+                    else
+                    {
+                        parameters.Add(param);
                     }
                 }
             }

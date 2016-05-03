@@ -267,7 +267,8 @@ namespace com.webkingsoft.JSONSource_Common
                 }
 
                 // L'ultimo carattere va scartatao
-                queryToAppend.Remove(queryToAppend.Length - 1, 1);
+                if (pars.Count()>0)
+                    queryToAppend.Remove(queryToAppend.Length - 1, 1);
 
 
                 if (b.Query != null && b.Query.Length > 1)
