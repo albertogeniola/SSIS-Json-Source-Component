@@ -211,6 +211,7 @@ namespace com.webkingsoft.JSONSource_Common
         private ParallelOptions _opt;
         private IDTSInput100 _parametersInputLane;
         private JSONSourceComponentModel _model;
+        private Uri _uri;
         private PipelineBuffer _outputbuffer = null;
         private List<int> _warnNotified = new List<int>();
 
@@ -324,6 +325,8 @@ namespace com.webkingsoft.JSONSource_Common
         /// <param name="buffers"></param>
         public override void PrimeOutput(int outputs, int[] outputIDs, PipelineBuffer[] buffers)
         {
+            
+
             if (buffers.Length != 0)
                 _outputbuffer = buffers[0];
             else
@@ -340,13 +343,40 @@ namespace com.webkingsoft.JSONSource_Common
             // In case there is no input, do the hard work here
             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "No input lane attached, data processing takes place immediately.", null, 0, ref cancel);
 
-            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _model.DataSource.SourceUri.ToString()), null, 0, ref cancel);
+            // The uri might be depending on a variable. If that is the case, calculate it here.
+            if (_model.DataSource.FromVariable)
+            {
+                DataType dataType;
+                object variable = Utils.GetVariable(VariableDispenser, _model.DataSource.VariableName, out dataType);
+                if (variable == null)
+                {
+                    bool fireAgain = false;
+                    ComponentMetaData.FireError(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("URI depends on variable {0}. However that variable was not found in this project. ", _model.DataSource.VariableName), null, 0, out fireAgain);
+                    throw new Exception("Invalid Variable name / URI");
+                }
+
+                try
+                {
+                    _uri = new Uri(variable.ToString());
+                }
+                catch (Exception e)
+                {
+                    bool fireAgain = false;
+                    ComponentMetaData.FireError(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("URI depends on variable {0}. The variable content is not a valid URI.", _model.DataSource.VariableName), null, 0, out fireAgain);
+                    throw new Exception("Invalid Variable name / URI");
+                }
+            }
+            else {
+                _uri = _model.DataSource.SourceUri;
+            }
+            
+            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _uri.ToString()), null, 0, ref cancel);
 
             string fname = null;
-            if (_model.DataSource.SourceUri.IsFile)
-                fname = _model.DataSource.SourceUri.LocalPath;
+            if (_uri.IsFile)
+                fname = _uri.LocalPath;
             else {
-                fname = Utils.DownloadJson(this.VariableDispenser, _model.DataSource.SourceUri, _model.DataSource.WebMethod, null, _model.DataSource.CookieVariable);
+                fname = Utils.DownloadJson(this.VariableDispenser, _uri, _model.DataSource.WebMethod, null, _model.DataSource.CookieVariable);
                 ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
             }
 
@@ -384,17 +414,17 @@ namespace com.webkingsoft.JSONSource_Common
                 while (inputbuffer.NextRow())
                 {
                     // Perform the request with appropriate inputs as HTTP params...
-                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _model.DataSource.SourceUri.ToString()), null, 0, ref cancel);
+                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _uri.ToString()), null, 0, ref cancel);
                         
                     var tmp = _model.DataSource.HttpParameters.ToArray();
                     fillParams(ref tmp, ref inputbuffer);
 
                     string fname = null;
-                    if (_model.DataSource.SourceUri.IsFile)
-                        fname = _model.DataSource.SourceUri.LocalPath;
+                    if (_uri.IsFile)
+                        fname = _uri.LocalPath;
                     else {
                         downloaded = true;
-                        fname = Utils.DownloadJson(this.VariableDispenser, _model.DataSource.SourceUri, _model.DataSource.WebMethod, null, _model.DataSource.CookieVariable);
+                        fname = Utils.DownloadJson(this.VariableDispenser, _uri, _model.DataSource.WebMethod, null, _model.DataSource.CookieVariable);
                         ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
                     }
 
