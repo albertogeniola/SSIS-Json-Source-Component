@@ -320,6 +320,7 @@ namespace com.webkingsoft.JSONSource_Common
                         var result = prompt.ShowDialog(this);
                         if (result != DialogResult.OK)
                         {
+                            Dispose();
                             return;
                         }
                         else

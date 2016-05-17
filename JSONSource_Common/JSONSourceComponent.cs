@@ -404,6 +404,7 @@ namespace com.webkingsoft.JSONSource_Common
 
         public override void ProcessInput(int inputID, PipelineBuffer inputbuffer)
         {
+            _uri = _model.DataSource.SourceUri;
             // This method is invoked only when the component has some inputs to process. Otherwise, if no input has been specified, the PrimeOutput will handle all the job.
             bool cancel = false;
             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Processing inputs...", null, 0, ref cancel);
@@ -414,8 +415,6 @@ namespace com.webkingsoft.JSONSource_Common
                 while (inputbuffer.NextRow())
                 {
                     // Perform the request with appropriate inputs as HTTP params...
-                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _uri.ToString()), null, 0, ref cancel);
-                        
                     var tmp = _model.DataSource.HttpParameters.ToArray();
                     fillParams(ref tmp, ref inputbuffer);
 
@@ -424,7 +423,8 @@ namespace com.webkingsoft.JSONSource_Common
                         fname = _uri.LocalPath;
                     else {
                         downloaded = true;
-                        fname = Utils.DownloadJson(this.VariableDispenser, _uri, _model.DataSource.WebMethod, null, _model.DataSource.CookieVariable);
+                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _uri.ToString()), null, 0, ref cancel);
+                        fname = Utils.DownloadJson(this.VariableDispenser, _uri, _model.DataSource.WebMethod, tmp, _model.DataSource.CookieVariable);
                         ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
                     }
 
@@ -617,6 +617,10 @@ namespace com.webkingsoft.JSONSource_Common
             {
                 count+=ProcessObject(obj, inputbuffer);
             }
+
+            // If there is no item in this array, add the NULL inputs.
+            if (count == 0)
+                AddOutputRow(inputbuffer);
             return count;
         }
 
