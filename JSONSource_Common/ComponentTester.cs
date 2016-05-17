@@ -102,6 +102,8 @@ namespace com.webkingsoft.JSONSource_Common
             try
             {
                 #region Navigate to the root and parse items
+                if (_model.DataMapping.JsonRootPath == null)
+                    _model.DataMapping.JsonRootPath = "";
                 IEnumerable<JToken> els = jsonData.SelectTokens(_model.DataMapping.JsonRootPath);
                 // For each root element we got...
                 foreach (JToken t in els)
@@ -181,7 +183,7 @@ namespace com.webkingsoft.JSONSource_Common
                 textBox1.Text = "Error occurred: " + ri.ex.Message;
 
             if (ri.json != null)
-                textBox1.Text += "\nDownloaded: " + ri.json;
+                textBox1.Text += "\r\nDownloaded: " + ri.json;
 
             if (ri.parsedResult != null)
             {
