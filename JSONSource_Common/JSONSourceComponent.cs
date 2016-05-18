@@ -376,7 +376,7 @@ namespace com.webkingsoft.JSONSource_Common
             if (_uri.IsFile)
                 fname = _uri.LocalPath;
             else {
-                fname = Utils.DownloadJson(this.VariableDispenser, _uri, _model.DataSource.WebMethod, null, _model.DataSource.CookieVariable);
+                fname = Utils.DownloadJson(this.VariableDispenser, _uri, _model.DataSource.WebMethod, _model.DataSource.HttpParameters, _model.DataSource.CookieVariable);
                 ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
             }
 
