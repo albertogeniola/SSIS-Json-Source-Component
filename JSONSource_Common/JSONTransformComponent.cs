@@ -20,7 +20,9 @@ using System.Linq;
 
 namespace com.webkingsoft.JSONSource_Common
 {
-#if DTS120
+#if DTS130
+    [DtsPipelineComponent(DisplayName = "JSON Filter", Description = "Parses json data from an input column", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONTransformComponentUI,com.webkingsoft.JSONSource_130,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_130.jsource.ico")]
+#elif DTS110
     [DtsPipelineComponent(DisplayName = "JSON Filter", Description = "Parses json data from an input column", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONTransformComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
 #elif DTS110
     [DtsPipelineComponent(DisplayName = "JSON Filter", Description = "Parses json data from an input column", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONTransformComponentUI,com.webkingsoft.JSONSource_110,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
