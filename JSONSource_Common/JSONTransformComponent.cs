@@ -132,6 +132,7 @@ namespace com.webkingsoft.JSONSource_Common
                 return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
             }
 
+            /*
             foreach (IDTSInputColumn100 input in ComponentMetaData.InputCollection[0].InputColumnCollection) {
                 bool cancel;
                 if (input.DataType != DataType.DT_STR && input.DataType != DataType.DT_WSTR && input.DataType != DataType.DT_TEXT && input.DataType != DataType.DT_NTEXT)
@@ -139,7 +140,7 @@ namespace com.webkingsoft.JSONSource_Common
                     ComponentMetaData.FireError(0, input.IdentificationString, "The column data type of " + input.Name + " is not a textual one, so it is unsupported.","",0,out cancel);
                     return DTSValidationStatus.VS_ISBROKEN;
                 }
-            }
+            }*/
 
             TransformationModel m = null;
             try
@@ -332,7 +333,7 @@ namespace com.webkingsoft.JSONSource_Common
                 }
             }
 
-            _inputColIndex = BufferManager.FindColumnByLineageID(ComponentMetaData.InputCollection[0].Buffer, ComponentMetaData.InputCollection[0].InputColumnCollection[0].LineageID);
+            _inputColIndex = BufferManager.FindColumnByLineageID(ComponentMetaData.InputCollection[0].Buffer, ComponentMetaData.InputCollection[0].InputColumnCollection[GetModel().InputColumnName].LineageID);
 
         }
 
