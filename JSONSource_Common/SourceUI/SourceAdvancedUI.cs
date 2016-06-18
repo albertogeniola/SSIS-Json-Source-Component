@@ -27,8 +27,10 @@ namespace com.webkingsoft.JSONSource_Common
         private AdvancedView _advancedView;
         private JSONSourceComponentModel _savedModel;
         private IDTSVirtualInputColumnCollection100 _inputs;
+        private int _metadataVersion;
+        private int _attributeVersion;
 
-        public SourceAdvancedUI(Variables vars,IServiceProvider sp, IDTSVirtualInputColumnCollection100 virtualInputs)
+        public SourceAdvancedUI(Variables vars,IServiceProvider sp, IDTSVirtualInputColumnCollection100 virtualInputs, int metadataVersion=0, int attributeVersion = 0)
         {
             _vars = vars;
             _sp = sp;
@@ -52,6 +54,12 @@ namespace com.webkingsoft.JSONSource_Common
             _advancedView.Dock = DockStyle.Fill;
             menulist.SelectedIndex = 0;
 
+            
+            _metadataVersion = metadataVersion;
+            _attributeVersion = attributeVersion;
+
+            labelComponentVersion.Text = ""+_attributeVersion;
+            labelMetadataVersion.Text = ""+_metadataVersion;
         }
 
         public void LoadModel(JSONSourceComponentModel m)

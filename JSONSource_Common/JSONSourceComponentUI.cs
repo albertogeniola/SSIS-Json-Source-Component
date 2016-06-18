@@ -6,6 +6,7 @@ using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 using Microsoft.SqlServer.Dts.Design;
 using Microsoft.SqlServer.Dts.Runtime.Design;
 using System.Collections.Generic;
+using Microsoft.SqlServer.Dts.Pipeline;
 
 namespace com.webkingsoft.JSONSource_Common
 {
@@ -43,7 +44,8 @@ namespace com.webkingsoft.JSONSource_Common
         public bool Edit(System.Windows.Forms.IWin32Window parentWindow, Variables vars, Connections cons)
         {
             _virtualInputs = _md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].GetVirtualInput().VirtualInputColumnCollection;
-            SourceAdvancedUI componentEditor = new SourceAdvancedUI(vars,_sp, _virtualInputs);
+            DtsPipelineComponentAttribute componentAttribute = (DtsPipelineComponentAttribute)Attribute.GetCustomAttribute(typeof(JSONSourceComponent), typeof(DtsPipelineComponentAttribute), false);
+            SourceAdvancedUI componentEditor = new SourceAdvancedUI(vars,_sp, _virtualInputs,_md.Version,componentAttribute.CurrentVersion);
             componentEditor.LoadModel(_model);
 
             DialogResult result = componentEditor.ShowDialog(parentWindow);

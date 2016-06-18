@@ -138,6 +138,8 @@
       <DependentUpon>SourceView.cs</DependentUpon>
     </Compile>
     <Compile Include="Enum.cs" />
+    <Compile Include="Exceptions\BrokenModelException.cs" />
+    <Compile Include="Exceptions\ModelNotFoundException.cs" />
     <Compile Include="HTTPParamBinding.cs" />
     <Compile Include="HTTPParameter.cs" />
     <Compile Include="IComponentModel.cs" />
@@ -246,14 +248,12 @@
     <None Include="Resources\folder_explore.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\modelex.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="jsource.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <Content Include="Resources\modelex.png" />
-    <None Include="Resources\Untitled.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\jsource.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

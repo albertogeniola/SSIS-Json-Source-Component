@@ -96,6 +96,8 @@
       <DependentUpon>SourceView.cs</DependentUpon>
     </Compile>
     <Compile Include="Enum.cs" />
+    <Compile Include="Exceptions\BrokenModelException.cs" />
+    <Compile Include="Exceptions\ModelNotFoundException.cs" />
     <Compile Include="HTTPParamBinding.cs" />
     <Compile Include="HTTPParameter.cs" />
     <Compile Include="IOMapEntry.cs" />
@@ -203,16 +205,10 @@
     <None Include="Resources\folder_explore.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\modelex.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="jsource.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\jsource.ico" />
-    <None Include="Resources\jsource.ico.ico" />
-    <Content Include="Resources\modelex.png" />
-    <None Include="Resources\Untitled.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

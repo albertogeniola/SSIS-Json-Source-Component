@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.Dts.Pipeline;
+﻿using com.webkingsoft.JSONSource_Common.Exceptions;
+using Microsoft.SqlServer.Dts.Pipeline;
 using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 using Microsoft.SqlServer.Dts.Runtime.Wrapper;
 using Newtonsoft.Json;
@@ -16,11 +17,11 @@ using System.Windows.Forms;
 namespace com.webkingsoft.JSONSource_Common
 {
 #if DTS130
-    [DtsPipelineComponent(DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_130,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_130.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_130,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_130.jsource.ico")]
 #elif DTS120
-    [DtsPipelineComponent(DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
 #elif DTS110
-    [DtsPipelineComponent(DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
 #endif
     public class JSONSourceComponent : PipelineComponent
     {
@@ -55,6 +56,50 @@ namespace com.webkingsoft.JSONSource_Common
         /// PostExecute()
         /// ReleaseConnections()
         /// Cleanup()
+
+        public override void PerformUpgrade(int pipelineVersion)
+        {
+            DataType type;
+            try
+            {
+                var value = Utils.GetVariable(VariableDispenser, "WK_DEBUG", out type);
+                MessageBox.Show("Attach the debugger now! PID: " + System.Diagnostics.Process.GetCurrentProcess().Id);
+            }
+            catch (Exception e)
+            {
+                // Do nothing
+            }
+
+            ComponentMetaData.CustomPropertyCollection["UserComponentTypeName"].Value = this.GetType().AssemblyQualifiedName;
+
+            // Obtain the current component version from the attribute.
+            DtsPipelineComponentAttribute componentAttribute = (DtsPipelineComponentAttribute)Attribute.GetCustomAttribute(this.GetType(), typeof(DtsPipelineComponentAttribute), false);
+            int binaryVersion = componentAttribute.CurrentVersion;
+            int metaDataVersion = ComponentMetaData.Version;
+
+            
+            // Upgrade the metadata if needed.
+            if (metaDataVersion < binaryVersion)
+            {
+                // Upgrade step by step every version so we are able to align to the latest.
+                if (metaDataVersion == 0) // No verison to 1.1.000.XX
+                {
+                    // From 0 to 1 no change is needed.
+                    metaDataVersion++;
+                }
+
+                // At the end align the versions.
+                ComponentMetaData.Version = metaDataVersion;
+            }
+
+            // Forgot to upgrade the transformation on a server?
+            if (metaDataVersion > binaryVersion)
+            {
+                throw new Exception("Runtime version of the component is out of date."
+                + " Upgrading the installation can possibly solve this issue.");
+            }
+            
+        }
 
         public override void ProvideComponentProperties()
         {
@@ -189,7 +234,7 @@ namespace com.webkingsoft.JSONSource_Common
             if (m == null || m.Value == null)
             {
                 if (fail_if_not_found)
-                    throw new Exception("No model found");
+                    throw new ModelNotFoundException();
 
                 model = new JSONSourceComponentModel();
                 m = ComponentMetaData.CustomPropertyCollection.New();
@@ -198,7 +243,13 @@ namespace com.webkingsoft.JSONSource_Common
                 m.Value = model.ToJsonConfig();
             }
             else {
-                model = JSONSourceComponentModel.LoadFromJson(m.Value);    
+                try
+                {
+                    model = JSONSourceComponentModel.LoadFromJson(m.Value);
+                }
+                catch (Exception e) {
+                    throw new BrokenModelException("Cannot parse the inner model.", e);
+                }
             }
 
             return model;

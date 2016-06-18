@@ -33,12 +33,16 @@
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.bottomPanel = new System.Windows.Forms.Panel();
+            this.testButton = new System.Windows.Forms.Button();
             this.cancel = new System.Windows.Forms.Button();
             this.ok = new System.Windows.Forms.Button();
             this.mainPanel = new System.Windows.Forms.Panel();
             this.menulist = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.testButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.labelComponentVersion = new System.Windows.Forms.Label();
+            this.labelMetadataVersion = new System.Windows.Forms.Label();
             this.topPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.bottomPanel.SuspendLayout();
@@ -90,6 +94,10 @@
             // 
             // bottomPanel
             // 
+            this.bottomPanel.Controls.Add(this.labelMetadataVersion);
+            this.bottomPanel.Controls.Add(this.labelComponentVersion);
+            this.bottomPanel.Controls.Add(this.label2);
+            this.bottomPanel.Controls.Add(this.label1);
             this.bottomPanel.Controls.Add(this.testButton);
             this.bottomPanel.Controls.Add(this.cancel);
             this.bottomPanel.Controls.Add(this.ok);
@@ -98,6 +106,16 @@
             this.bottomPanel.Name = "bottomPanel";
             this.bottomPanel.Size = new System.Drawing.Size(792, 42);
             this.bottomPanel.TabIndex = 1;
+            // 
+            // testButton
+            // 
+            this.testButton.Location = new System.Drawing.Point(197, 3);
+            this.testButton.Name = "testButton";
+            this.testButton.Size = new System.Drawing.Size(75, 36);
+            this.testButton.TabIndex = 11;
+            this.testButton.Text = "Test...";
+            this.testButton.UseVisualStyleBackColor = true;
+            this.testButton.Click += new System.EventHandler(this.testButton_Click);
             // 
             // cancel
             // 
@@ -153,15 +171,41 @@
             this.panel1.Size = new System.Drawing.Size(128, 409);
             this.panel1.TabIndex = 0;
             // 
-            // testButton
+            // label1
             // 
-            this.testButton.Location = new System.Drawing.Point(134, 3);
-            this.testButton.Name = "testButton";
-            this.testButton.Size = new System.Drawing.Size(75, 36);
-            this.testButton.TabIndex = 11;
-            this.testButton.Text = "Test...";
-            this.testButton.UseVisualStyleBackColor = true;
-            this.testButton.Click += new System.EventHandler(this.testButton_Click);
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(4, 3);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(92, 13);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "Metadata version:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(4, 20);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(101, 13);
+            this.label2.TabIndex = 13;
+            this.label2.Text = "Component version:";
+            // 
+            // labelComponentVersion
+            // 
+            this.labelComponentVersion.AutoSize = true;
+            this.labelComponentVersion.Location = new System.Drawing.Point(111, 20);
+            this.labelComponentVersion.Name = "labelComponentVersion";
+            this.labelComponentVersion.Size = new System.Drawing.Size(27, 13);
+            this.labelComponentVersion.TabIndex = 14;
+            this.labelComponentVersion.Text = "N/A";
+            // 
+            // labelMetadataVersion
+            // 
+            this.labelMetadataVersion.AutoSize = true;
+            this.labelMetadataVersion.Location = new System.Drawing.Point(111, 3);
+            this.labelMetadataVersion.Name = "labelMetadataVersion";
+            this.labelMetadataVersion.Size = new System.Drawing.Size(27, 13);
+            this.labelMetadataVersion.TabIndex = 15;
+            this.labelMetadataVersion.Text = "N/A";
             // 
             // SourceAdvancedUI
             // 
@@ -178,6 +222,7 @@
             this.topPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.bottomPanel.ResumeLayout(false);
+            this.bottomPanel.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -195,5 +240,9 @@
         private System.Windows.Forms.ListBox menulist;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button testButton;
+        private System.Windows.Forms.Label labelMetadataVersion;
+        private System.Windows.Forms.Label labelComponentVersion;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
     }
 }
