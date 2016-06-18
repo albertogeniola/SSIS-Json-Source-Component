@@ -101,6 +101,8 @@
     <Compile Include="ComponentTester.designer.cs">
       <DependentUpon>ComponentTester.cs</DependentUpon>
     </Compile>
+    <Compile Include="Exceptions\BrokenModelException.cs" />
+    <Compile Include="Exceptions\ModelNotFoundException.cs" />
     <Compile Include="IComponentModel.cs" />
     <Compile Include="CustomControls\AdvancedView.cs">
       <SubType>UserControl</SubType>
@@ -240,12 +242,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="JSONSource_130.csproj">
-      <Project>{12963DEA-8F7C-4211-B971-4C09F72B7DC5}</Project>
-      <Name>JSONSource_130</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\jsource.ico" />

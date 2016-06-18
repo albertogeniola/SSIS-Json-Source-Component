@@ -17,11 +17,11 @@ using System.Windows.Forms;
 namespace com.webkingsoft.JSONSource_Common
 {
 #if DTS130
-    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_130,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_130.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 0, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_130,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_130.jsource.ico")]
 #elif DTS120
-    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 0, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
 #elif DTS110
-    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 0, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
 #endif
     public class JSONSourceComponent : PipelineComponent
     {
@@ -59,6 +59,9 @@ namespace com.webkingsoft.JSONSource_Common
 
         public override void PerformUpgrade(int pipelineVersion)
         {
+            base.PerformUpgrade(pipelineVersion);
+
+            /*
             DataType type;
             try
             {
@@ -70,7 +73,7 @@ namespace com.webkingsoft.JSONSource_Common
                 // Do nothing
             }
 
-            ComponentMetaData.CustomPropertyCollection["UserComponentTypeName"].Value = this.GetType().AssemblyQualifiedName;
+            //ComponentMetaData.CustomPropertyCollection["UserComponentTypeName"].Value = this.GetType().AssemblyQualifiedName;
 
             // Obtain the current component version from the attribute.
             DtsPipelineComponentAttribute componentAttribute = (DtsPipelineComponentAttribute)Attribute.GetCustomAttribute(this.GetType(), typeof(DtsPipelineComponentAttribute), false);
@@ -85,6 +88,7 @@ namespace com.webkingsoft.JSONSource_Common
                 if (metaDataVersion == 0) // No verison to 1.1.000.XX
                 {
                     // From 0 to 1 no change is needed.
+                    //TODO: implement me when MODEL changes.
                     metaDataVersion++;
                 }
 
@@ -98,7 +102,7 @@ namespace com.webkingsoft.JSONSource_Common
                 throw new Exception("Runtime version of the component is out of date."
                 + " Upgrading the installation can possibly solve this issue.");
             }
-            
+            */
         }
 
         public override void ProvideComponentProperties()
