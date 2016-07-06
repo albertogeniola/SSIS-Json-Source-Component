@@ -335,6 +335,16 @@ namespace com.webkingsoft.JSONSource_Common
 
             _inputColIndex = BufferManager.FindColumnByLineageID(ComponentMetaData.InputCollection[0].Buffer, ComponentMetaData.InputCollection[0].InputColumnCollection[GetModel().InputColumnName].LineageID);
 
+            // Configure json deserializer:
+            // DateParsing is broken in json.net, since it does not take care of timezone.
+            if (!m.ParseDates == null)
+            {
+                JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+                {
+                    DateParseHandling = DateParseHandling.None
+                };
+            }
+
         }
 
         private string DownloadJsonFile(string url, string customLocalTempDir = null)

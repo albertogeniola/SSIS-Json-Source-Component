@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using System.ComponentModel;
 #if LINQ_SUPPORTED
 using System.Linq;
 #endif
@@ -25,6 +26,15 @@ namespace com.webkingsoft.JSONSource_Common
             get {
                 return Microsoft.SqlServer.Dts.Pipeline.ComponentType.Transform;
             }
+        }
+
+        // Handles date parsing
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool ParseDates
+        {
+            get;
+            set;
         }
 
         // Definisce la cartella di appoggio temporanea per la gestione dei file a runtiModele

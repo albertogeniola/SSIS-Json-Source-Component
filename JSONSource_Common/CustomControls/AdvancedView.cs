@@ -34,6 +34,7 @@ namespace com.webkingsoft.JSONSource_Common
             if (advancedSettings.CustomLocalTempDir != null)
             {
                 uiTempDir.Text = advancedSettings.CustomLocalTempDir;
+                cbParseJsonDate.Checked = advancedSettings.ParseDates;
             }
         }
 
@@ -45,7 +46,9 @@ namespace com.webkingsoft.JSONSource_Common
                 result.CustomLocalTempDir = uiTempDir.Text;
             else
                 result.CustomLocalTempDir = null;
-            
+
+            result.ParseDates = cbParseJsonDate.Checked;
+
             return result;
         }
     }

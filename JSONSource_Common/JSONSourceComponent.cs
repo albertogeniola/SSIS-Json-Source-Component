@@ -16,52 +16,52 @@ using System.Windows.Forms;
 
 namespace com.webkingsoft.JSONSource_Common
 {
+
 #if DTS130
-    [DtsPipelineComponent(CurrentVersion = 0, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_130,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_130.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_130,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_130.jsource.ico")]
 #elif DTS120
-    [DtsPipelineComponent(CurrentVersion = 0, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
 #elif DTS110
-    [DtsPipelineComponent(CurrentVersion = 0, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
 #endif
     public class JSONSourceComponent : PipelineComponent
     {
-        // TODO for next version: 
-        // model serialization with custom properties
-        // support one input line for parameters
-        // support output error line
-        // add httpparams support
-        // oauth?
-        // datatype guessing
-        // jsonpath parser-highlighter
-        // Parallel options into gui
-        // Implement runtime debug option
+    // TODO for next version: 
+    // model serialization with custom properties
+    // support one input line for parameters
+    // support output error line
+    // add httpparams support
+    // oauth?
+    // datatype guessing
+    // jsonpath parser-highlighter
+    // Parallel options into gui
+    // Implement runtime debug option
 
-        /// Some implementation notes.
-        /// This component is now a Transformation component, because we want to use Inputs as HTTP parameters. 
-        /// So, the PrimeOutput method won't be called by the envirnment, instead ProcessInput is. Being an async component,
-        /// the ide calls ProcessInputs asynch while data is received via the input stream. So here we basically keep track of inputs
-        /// and process them later in the PrimeOutput method.
-        /// -> inputs are passed to the ProcessInput()
-        /// -> PrimeOutput() is then invoked
+    /// Some implementation notes.
+    /// This component is now a Transformation component, because we want to use Inputs as HTTP parameters. 
+    /// So, the PrimeOutput method won't be called by the envirnment, instead ProcessInput is. Being an async component,
+    /// the ide calls ProcessInputs asynch while data is received via the input stream. So here we basically keep track of inputs
+    /// and process them later in the PrimeOutput method.
+    /// -> inputs are passed to the ProcessInput()
+    /// -> PrimeOutput() is then invoked
 
-        /// Remember the lifecycle!
-        /// AcquireConnections()
-        /// Validate()
-        /// ReleaseConnections()
-        /// PrepareForExecute()
-        /// AcquireConnections()
-        /// PreExecute()
-        /// PrimeOutput()
-        /// ProcessInput()
-        /// PostExecute()
-        /// ReleaseConnections()
-        /// Cleanup()
+    /// Remember the lifecycle!
+    /// AcquireConnections()
+    /// Validate()
+    /// ReleaseConnections()
+    /// PrepareForExecute()
+    /// AcquireConnections()
+    /// PreExecute()
+    /// PrimeOutput()
+    /// ProcessInput()
+    /// PostExecute()
+    /// ReleaseConnections()
+    /// Cleanup()
 
-        public override void PerformUpgrade(int pipelineVersion)
+    public override void PerformUpgrade(int pipelineVersion)
         {
             base.PerformUpgrade(pipelineVersion);
 
-            /*
             DataType type;
             try
             {
@@ -72,9 +72,7 @@ namespace com.webkingsoft.JSONSource_Common
             {
                 // Do nothing
             }
-
-            //ComponentMetaData.CustomPropertyCollection["UserComponentTypeName"].Value = this.GetType().AssemblyQualifiedName;
-
+            
             // Obtain the current component version from the attribute.
             DtsPipelineComponentAttribute componentAttribute = (DtsPipelineComponentAttribute)Attribute.GetCustomAttribute(this.GetType(), typeof(DtsPipelineComponentAttribute), false);
             int binaryVersion = componentAttribute.CurrentVersion;
@@ -87,8 +85,8 @@ namespace com.webkingsoft.JSONSource_Common
                 // Upgrade step by step every version so we are able to align to the latest.
                 if (metaDataVersion == 0) // No verison to 1.1.000.XX
                 {
-                    // From 0 to 1 no change is needed.
-                    //TODO: implement me when MODEL changes.
+                    // From 0 to 1 we added ParseDates value with TRUE as default.
+                    // By design, we don't need to do anything thanks to the default value handling
                     metaDataVersion++;
                 }
 
@@ -102,7 +100,6 @@ namespace com.webkingsoft.JSONSource_Common
                 throw new Exception("Runtime version of the component is out of date."
                 + " Upgrading the installation can possibly solve this issue.");
             }
-            */
         }
 
         public override void ProvideComponentProperties()
@@ -362,7 +359,15 @@ namespace com.webkingsoft.JSONSource_Common
 
                 _model = m;
 
-                
+                // Configure json deserializer:
+                // DateParsing is broken in json.net, since it does not take care of timezone.
+                if (!m.AdvancedSettings.ParseDates)
+                {
+                    JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+                    {
+                        DateParseHandling = DateParseHandling.None
+                    };
+                }
             }
             catch (Exception e) {
                 // TODO!
@@ -382,8 +387,6 @@ namespace com.webkingsoft.JSONSource_Common
         /// <param name="buffers"></param>
         public override void PrimeOutput(int outputs, int[] outputIDs, PipelineBuffer[] buffers)
         {
-            
-
             if (buffers.Length != 0)
                 _outputbuffer = buffers[0];
             else

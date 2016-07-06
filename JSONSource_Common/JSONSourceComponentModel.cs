@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using System.ComponentModel;
 #if LINQ_SUPPORTED
 using System.Linq;
 #endif
@@ -317,6 +318,14 @@ namespace com.webkingsoft.JSONSource_Common
         /// </summary>
         [JsonProperty]
         public string CustomLocalTempDir
+        {
+            get; set;
+        }
+
+        // This property has been added at version 1. So we need to handle the default case.
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool ParseDates
         {
             get; set;
         }

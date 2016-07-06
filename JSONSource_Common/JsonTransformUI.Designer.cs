@@ -46,10 +46,13 @@
             this.OutColName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.OutColumnType = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cbParseJsonDate = new System.Windows.Forms.CheckBox();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.uiIOGrid)).BeginInit();
             this.tabControl1.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // ok
@@ -74,6 +77,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.groupBox1);
             this.tabPage2.Controls.Add(this.label3);
             this.tabPage2.Controls.Add(this.uiTempDir);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
@@ -195,6 +199,26 @@
             this.tabControl1.Size = new System.Drawing.Size(750, 437);
             this.tabControl1.TabIndex = 9;
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.cbParseJsonDate);
+            this.groupBox1.Location = new System.Drawing.Point(9, 54);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(365, 76);
+            this.groupBox1.TabIndex = 12;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Json Parsing";
+            // 
+            // cbParseJsonDate
+            // 
+            this.cbParseJsonDate.Location = new System.Drawing.Point(6, 19);
+            this.cbParseJsonDate.Name = "cbParseJsonDate";
+            this.cbParseJsonDate.Size = new System.Drawing.Size(353, 47);
+            this.cbParseJsonDate.TabIndex = 10;
+            this.cbParseJsonDate.Text = "Parse Json dates: json.net library has some problem with timezone conversion. Che" +
+    "ck this in order to perfom manual dates conversion.";
+            this.cbParseJsonDate.UseVisualStyleBackColor = true;
+            // 
             // JsonTransformUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -213,6 +237,7 @@
             this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.uiIOGrid)).EndInit();
             this.tabControl1.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -236,5 +261,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn OutColName;
         private System.Windows.Forms.DataGridViewComboBoxColumn OutColumnType;
         private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox cbParseJsonDate;
     }
 }

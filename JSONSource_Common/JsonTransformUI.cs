@@ -186,6 +186,8 @@ namespace com.webkingsoft.JSONSource_Common
                 else
                     _model.JsonObjectRelativePath = null;
 
+                _model.ParseDates = cbParseJsonDate.Checked;
+
                 DialogResult = DialogResult.OK;
 
                 Close();
