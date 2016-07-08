@@ -261,6 +261,7 @@ namespace com.webkingsoft.JSONSource_Common
         private int _inputColIndex;
         private int _startOfJsonColIndex;
         private List<int> _warnNotified = new List<int>();
+        private DateParseHandling _dateParsePolicy = DateParseHandling.DateTime;
 
         public override void PreExecute()
         {
@@ -335,16 +336,10 @@ namespace com.webkingsoft.JSONSource_Common
 
             _inputColIndex = BufferManager.FindColumnByLineageID(ComponentMetaData.InputCollection[0].Buffer, ComponentMetaData.InputCollection[0].InputColumnCollection[GetModel().InputColumnName].LineageID);
 
-            // Configure json deserializer:
-            // DateParsing is broken in json.net, since it does not take care of timezone.
-            if (!m.ParseDates == null)
-            {
-                JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-                {
-                    DateParseHandling = DateParseHandling.None
-                };
+            // Check if ww should take care of date parsing
+            if (!m.ParseDates) {
+                _dateParsePolicy = DateParseHandling.None;
             }
-
         }
 
         private string DownloadJsonFile(string url, string customLocalTempDir = null)
@@ -431,29 +426,33 @@ namespace com.webkingsoft.JSONSource_Common
                 if (_pathToArray == null)
                     _pathToArray = "";
                 // Load the JToken and navigate it to the selected root
-                JToken jt = JToken.Parse(jsonData);
-                IEnumerable<JToken> els = jt.SelectTokens(_pathToArray);
-                int rootEls = els.Count();
-                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Array: loaded " + rootEls + " tokens.", null, 0, ref cancel);
-
-                int count = 0;
-                // For each root element we got...
-                foreach (JToken t in els)
+                using (var reader = new JsonTextReader(new StringReader(jsonData)))
                 {
-                    if (t.Type == JTokenType.Array)
+                    reader.DateParseHandling = _dateParsePolicy;
+                    JToken jt = JToken.ReadFrom(reader);
+                    IEnumerable<JToken> els = jt.SelectTokens(_pathToArray);
+                    int rootEls = els.Count();
+                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Array: loaded " + rootEls + " tokens.", null, 0, ref cancel);
+
+                    int count = 0;
+                    // For each root element we got...
+                    foreach (JToken t in els)
                     {
-                        count += ProcessArray(t as JArray, inputBuffer);
+                        if (t.Type == JTokenType.Array)
+                        {
+                            count += ProcessArray(t as JArray, inputBuffer);
+                        }
+                        else if (t.Type == JTokenType.Object)
+                        {
+                            count += ProcessObject(t as JObject, inputBuffer);
+                        }
+                        else
+                        {
+                            throw new Exception("Invalid token returned by RootPath query: " + t.Type.ToString());
+                        }
                     }
-                    else if (t.Type == JTokenType.Object)
-                    {
-                        count += ProcessObject(t as JObject, inputBuffer);
-                    }
-                    else
-                    {
-                        throw new Exception("Invalid token returned by RootPath query: " + t.Type.ToString());
-                    }
+                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Succesfully parsed " + count + " tokens.", null, 0, ref cancel);
                 }
-                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Succesfully parsed " + count + " tokens.", null, 0, ref cancel);
             }
             catch (Exception ex)
             {

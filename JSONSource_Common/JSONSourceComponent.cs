@@ -60,8 +60,6 @@ namespace com.webkingsoft.JSONSource_Common
 
     public override void PerformUpgrade(int pipelineVersion)
         {
-            base.PerformUpgrade(pipelineVersion);
-
             DataType type;
             try
             {
@@ -268,6 +266,7 @@ namespace com.webkingsoft.JSONSource_Common
         private Uri _uri;
         private PipelineBuffer _outputbuffer = null;
         private List<int> _warnNotified = new List<int>();
+        private DateParseHandling _dateParsePolicy = DateParseHandling.DateTime;
 
         /// <summary>
         /// This function is invoked by the environment once, before data processing happens. So it's a great time to configure the basics
@@ -357,17 +356,14 @@ namespace com.webkingsoft.JSONSource_Common
                     _inputCopyToOutputMaps[input_index] = output_index;
                 }
 
-                _model = m;
-
                 // Configure json deserializer:
                 // DateParsing is broken in json.net, since it does not take care of timezone.
                 if (!m.AdvancedSettings.ParseDates)
                 {
-                    JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-                    {
-                        DateParseHandling = DateParseHandling.None
-                    };
+                    _dateParsePolicy = DateParseHandling.None;
                 }
+
+                _model = m;
             }
             catch (Exception e) {
                 // TODO!
@@ -543,13 +539,14 @@ namespace com.webkingsoft.JSONSource_Common
                     // Load the whole json in memory.
                     using (var reader = new JsonTextReader(sr))
                     {
+                        reader.DateParseHandling = _dateParsePolicy;
                         if (rootType == RootType.JsonObject)
                         {
-                            o = JObject.Load(new JsonTextReader(sr));
+                            o = JObject.Load(reader);
                             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Object loaded.", null, 0, ref cancel);
                         }
                         else {
-                            o = JArray.Load(new JsonTextReader(sr));
+                            o = JArray.Load(reader);
                             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Array loaded.", null, 0, ref cancel);
                         }
                     }

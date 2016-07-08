@@ -34,8 +34,9 @@ namespace com.webkingsoft.JSONSource_Common
             if (advancedSettings.CustomLocalTempDir != null)
             {
                 uiTempDir.Text = advancedSettings.CustomLocalTempDir;
-                cbParseJsonDate.Checked = advancedSettings.ParseDates;
             }
+
+            cbParseJsonDate.Checked = advancedSettings.ParseDates;
         }
 
         public JSONAdvancedSettingsModel SaveToModel()
