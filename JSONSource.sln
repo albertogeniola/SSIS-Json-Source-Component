@@ -14,12 +14,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{B19BC1BA-3
 		Installation.md = Installation.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer Script", "Installer Script", "{D219B7F5-C8D8-4F38-9EE4-E0941B2BDF8A}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\Desktop\Setup.iss = ..\..\..\Desktop\Setup.iss
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONSource_130", "JSONSource_Common\JSONSource_130.csproj", "{12963DEA-8F7C-4211-B971-4C09F72B7DC5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Setup", "Setup", "{885CEA31-B685-4915-8AB4-2FD1D474648A}"
+	ProjectSection(SolutionItems) = preProject
+		JSONSource_Common\Setup.iss = JSONSource_Common\Setup.iss
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
