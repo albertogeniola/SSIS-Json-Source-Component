@@ -136,12 +136,13 @@ namespace com.webkingsoft.JSONSource_Common
                 col.Name = e.OutputColName;
 
                 // There might be some possible errors regarding data lenght. We try to correct them here.
-                if (e.OutputColumnType == Microsoft.SqlServer.Dts.Runtime.Wrapper.DataType.DT_WSTR && e.InputFieldLen > 4000)
+                // If length > 4000 and type is string, put NTEXT datatype.
+                if (e.OutputColumnType == Microsoft.SqlServer.Dts.Runtime.Wrapper.DataType.DT_WSTR && (e.InputFieldLen > 4000 || e.InputFieldLen==0))
                 {
                     // FIXME TODO: this must be done directly within the UI
                     // e.OutputColumnType = Microsoft.SqlServer.Dts.Runtime.Wrapper.DataType.DT_NTEXT;
                     _md.FireWarning(0, _md.Name, string.Format("Column {0} is supposed to be longer than 4000 chars, so DT_WSTR is not a suitable column type. Instead, DT_NTEXT has been selected.", e.OutputColName), null, 0);
-                    col.SetDataTypeProperties(Microsoft.SqlServer.Dts.Runtime.Wrapper.DataType.DT_NTEXT, e.InputFieldLen, 0, 0, 0);
+                    col.SetDataTypeProperties(Microsoft.SqlServer.Dts.Runtime.Wrapper.DataType.DT_NTEXT, 0, 0, 0, 0);
                 }
                 else {
                     col.SetDataTypeProperties(e.OutputColumnType, e.InputFieldLen, 0, 0, 0);
