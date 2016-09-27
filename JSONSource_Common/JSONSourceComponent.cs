@@ -599,67 +599,74 @@ namespace com.webkingsoft.JSONSource_Common
             Parallel.ForEach<IOMapEntry>(_iomap, _opt, delegate(IOMapEntry e) {
                 int colIndex = _outColsMaps[e.OutputColName];
 
-                // If the user wants to get raw json, we should parse nothing: simply return all the json as a string
-                if (e.OutputJsonColumnType == JsonTypes.RawJson)
-                {
-                    string val = null;
-                    var vals = obj.SelectTokens(e.InputFieldPath);
-                    if (vals.Count() > 1)
-                    {
-                        JArray arr = new JArray();
-                        foreach (var t in vals)
+                switch (e.OutputJsonColumnType) {
+
+                    // If the user wants to get raw json, we should parse nothing: simply return all the json as a string
+                    case JsonTypes.RawJson:
+                    case JsonTypes.String:
+                        string val = null;
+                        var vals = obj.SelectTokens(e.InputFieldPath);
+                        if (vals.Count() > 1)
                         {
-                            arr.Add(t);
-                        }
-                        val = arr.ToString();
-                    }
-                    else {
-                        val = vals.ElementAt(0).ToString();
-                    }
-                    
-                    buffer[colIndex] = val;
-                    res++;
-                }
-                else {
-                    // If it's not a json raw type, parse the value.
-                    try
-                    {
-                        IEnumerable<JToken> tokens = obj.SelectTokens(e.InputFieldPath);
-                        int count = tokens.Count();
-                        if (count == 0) {
-                            if (!_warnNotified.Contains(colIndex))
-                            {
-                                _warnNotified.Add(colIndex);
-                                ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("No value has been found when parsing jsonpath {0} on column {1}. Is the jsonpath correct?", e.InputFieldPath, e.OutputColName), null, 0);
-                            }
-                        }
-                        else if (count == 1)
-                        {
-                            res++;
-                            buffer[colIndex] = tokens.ElementAt(0); 
-                        }
-                        else {
-                            if (!_warnNotified.Contains(colIndex))
-                            {
-                                _warnNotified.Add(colIndex);
-                                ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("Multiple values have been found when parsing jsonpath {0} on column {1}. This will led to line explosion, so I won't explode this here to save memory. Put a filter in pipeline to explode the lines, if needed.", e.InputFieldPath, e.OutputColName), null, 0);
-                            }
-                            // This case requires explosions. We cannot perform it here, so we output raw json
                             JArray arr = new JArray();
-                            foreach (var t in tokens)
+                            foreach (var t in vals)
                             {
                                 arr.Add(t);
                             }
-                            buffer[colIndex] = arr.ToString();
-                        }                        
-                    }
-                    catch (Newtonsoft.Json.JsonException ex) {
-                        bool fireAgain = false;
-                        ComponentMetaData.FireError(ComponentConstants.ERROR_SELECT_TOKEN, ComponentMetaData.Name, "SelectToken failed. This may be due to an invalid Xpath syntax / member name. However this error still happens if multiple tokens are returned and the value expected is single. Specific error was: " + ex.Message, null, 0, out fireAgain);
-                        throw ex;
-                    }
+                            val = arr.ToString();
+                        }
+                        else
+                        {
+                            val = vals.ElementAt(0).ToString();
+                        }
+
+                        buffer[colIndex] = val;
+                        res++;
+                        break;
+
+                    // In case the desired value is not a string nor raw json, try to get its value
+                    default:
+                        try
+                        {
+                            IEnumerable<JToken> tokens = obj.SelectTokens(e.InputFieldPath);
+                            int count = tokens.Count();
+                            if (count == 0)
+                            {
+                                if (!_warnNotified.Contains(colIndex))
+                                {
+                                    _warnNotified.Add(colIndex);
+                                    ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("No value has been found when parsing jsonpath {0} on column {1}. Is the jsonpath correct?", e.InputFieldPath, e.OutputColName), null, 0);
+                                }
+                            }
+                            else if (count == 1)
+                            {
+                                res++;
+                                buffer[colIndex] = tokens.ElementAt(0);
+                            }
+                            else
+                            {
+                                if (!_warnNotified.Contains(colIndex))
+                                {
+                                    _warnNotified.Add(colIndex);
+                                    ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("Multiple values have been found when parsing jsonpath {0} on column {1}. This will led to line explosion, so I won't explode this here to save memory. Put a filter in pipeline to explode the lines, if needed.", e.InputFieldPath, e.OutputColName), null, 0);
+                                }
+                                // This case requires explosions. We cannot perform it here, so we output raw json
+                                JArray arr = new JArray();
+                                foreach (var t in tokens)
+                                {
+                                    arr.Add(t);
+                                }
+                                buffer[colIndex] = arr.ToString();
+                            }
+                        }
+                        catch (Newtonsoft.Json.JsonException ex)
+                        {
+                            bool fireAgain = false;
+                            ComponentMetaData.FireError(ComponentConstants.ERROR_SELECT_TOKEN, ComponentMetaData.Name, "SelectToken failed. This may be due to an invalid Xpath syntax / member name. However this error still happens if multiple tokens are returned and the value expected is single. Specific error was: " + ex.Message, null, 0, out fireAgain);
+                            throw ex;
+                        }
+                        break;
                 }
-                
             });
 
             return res;
