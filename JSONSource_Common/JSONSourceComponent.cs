@@ -244,7 +244,7 @@ namespace com.webkingsoft.JSONSource_Common
             else {
                 try
                 {
-                    model = JSONSourceComponentModel.LoadFromJson(m.Value);
+                    model = JSONSourceComponentModel.LoadFromJson(m.Value.ToString());
                 }
                 catch (Exception e) {
                     throw new BrokenModelException("Cannot parse the inner model.", e);
