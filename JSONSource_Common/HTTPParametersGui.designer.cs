@@ -1,6 +1,6 @@
 ﻿namespace com.webkingsoft.JSONSource_Common
 {
-    partial class Parameters
+    partial class HTTPParametersGui
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Parameters));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HTTPParametersGui));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.paramName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bindingType = new System.Windows.Forms.DataGridViewComboBoxColumn();
@@ -109,7 +109,7 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // Parameters
+            // HTTPParametersGui
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -118,7 +118,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dataGridView1);
-            this.Name = "Parameters";
+            this.Name = "HTTPParametersGui";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Parameters";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

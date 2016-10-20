@@ -432,7 +432,7 @@ namespace com.webkingsoft.JSONSource_Common
             if (_uri.IsFile)
                 fname = _uri.LocalPath;
             else {
-                fname = Utils.DownloadJson(this.VariableDispenser, _uri, _model.DataSource.WebMethod, _model.DataSource.HttpParameters, _model.DataSource.CookieVariable);
+                fname = Utils.DownloadJson(this.VariableDispenser, _uri, _model.DataSource.WebMethod, _model.DataSource.HttpParameters, _model.DataSource.HttpHeaders, _model.DataSource.CookieVariable);
                 ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
             }
 
@@ -471,8 +471,10 @@ namespace com.webkingsoft.JSONSource_Common
                 while (inputbuffer.NextRow())
                 {
                     // Perform the request with appropriate inputs as HTTP params...
-                    var tmp = _model.DataSource.HttpParameters.ToArray();
-                    fillParams(ref tmp, ref inputbuffer);
+                    var tmp_params = _model.DataSource.HttpParameters.ToArray();
+                    var tmp_headers = _model.DataSource.HttpHeaders.ToArray();
+                    fillParams(ref tmp_params, ref inputbuffer);
+                    fillParams(ref tmp_headers, ref inputbuffer);
 
                     string fname = null;
                     if (_uri.IsFile)
@@ -480,7 +482,7 @@ namespace com.webkingsoft.JSONSource_Common
                     else {
                         downloaded = true;
                         ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _uri.ToString()), null, 0, ref cancel);
-                        fname = Utils.DownloadJson(this.VariableDispenser, _uri, _model.DataSource.WebMethod, tmp, _model.DataSource.CookieVariable);
+                        fname = Utils.DownloadJson(this.VariableDispenser, _uri, _model.DataSource.WebMethod, tmp_params, tmp_headers, _model.DataSource.CookieVariable);
                         ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
                     }
 
@@ -620,7 +622,18 @@ namespace com.webkingsoft.JSONSource_Common
                             val = vals.ElementAt(0).ToString();
                         }
 
-                        buffer[colIndex] = val;
+                        try
+                        {
+                            buffer[colIndex] = val;
+                        }
+                        catch (DoesNotFitBufferException ex)
+                        {
+                            bool fireAgain = false;
+                            ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", e.OutputColName), null, 0, out fireAgain);
+                            throw ex;
+                        }
+
+
                         res++;
                         break;
 
@@ -641,7 +654,16 @@ namespace com.webkingsoft.JSONSource_Common
                             else if (count == 1)
                             {
                                 res++;
-                                buffer[colIndex] = tokens.ElementAt(0);
+                                try
+                                {
+                                    buffer[colIndex] = tokens.ElementAt(0);
+                                }
+                                catch (DoesNotFitBufferException ex)
+                                {
+                                    bool fireAgain = false;
+                                    ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", e.OutputColName), null, 0, out fireAgain);
+                                    throw ex;
+                                }
                             }
                             else
                             {
@@ -656,7 +678,16 @@ namespace com.webkingsoft.JSONSource_Common
                                 {
                                     arr.Add(t);
                                 }
-                                buffer[colIndex] = arr.ToString();
+                                try
+                                {
+                                    buffer[colIndex] = arr.ToString();
+                                }
+                                catch (DoesNotFitBufferException ex)
+                                {
+                                    bool fireAgain = false;
+                                    ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", e.OutputColName), null, 0, out fireAgain);
+                                    throw ex;
+                                }
                             }
                         }
                         catch (Newtonsoft.Json.JsonException ex)

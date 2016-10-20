@@ -46,6 +46,7 @@
             this.browseButton = new System.Windows.Forms.Button();
             this.addButton = new System.Windows.Forms.Button();
             this.uiCustomUrlGroup = new System.Windows.Forms.GroupBox();
+            this.header_button = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.groupBox1.SuspendLayout();
@@ -173,7 +174,7 @@
             this.httpparams.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.httpparams.Location = new System.Drawing.Point(442, 147);
             this.httpparams.Name = "httpparams";
-            this.httpparams.Size = new System.Drawing.Size(152, 117);
+            this.httpparams.Size = new System.Drawing.Size(152, 60);
             this.httpparams.TabIndex = 22;
             this.httpparams.Text = "HTTP Parameters...";
             this.httpparams.UseVisualStyleBackColor = true;
@@ -240,6 +241,7 @@
             // 
             // uiCustomUrlGroup
             // 
+            this.uiCustomUrlGroup.Controls.Add(this.header_button);
             this.uiCustomUrlGroup.Controls.Add(this.richTextBox1);
             this.uiCustomUrlGroup.Controls.Add(this.addButton);
             this.uiCustomUrlGroup.Controls.Add(this.browseButton);
@@ -258,6 +260,17 @@
             this.uiCustomUrlGroup.TabIndex = 15;
             this.uiCustomUrlGroup.TabStop = false;
             this.uiCustomUrlGroup.Text = "Data source configuration";
+            // 
+            // header_button
+            // 
+            this.header_button.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.header_button.Location = new System.Drawing.Point(442, 213);
+            this.header_button.Name = "header_button";
+            this.header_button.Size = new System.Drawing.Size(152, 51);
+            this.header_button.TabIndex = 30;
+            this.header_button.Text = "HTTP Headers...";
+            this.header_button.UseVisualStyleBackColor = true;
+            this.header_button.Click += new System.EventHandler(this.button1_Click);
             // 
             // richTextBox1
             // 
@@ -314,5 +327,6 @@
         private System.Windows.Forms.GroupBox uiCustomUrlGroup;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.Button header_button;
     }
 }

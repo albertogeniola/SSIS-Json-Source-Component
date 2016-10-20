@@ -130,6 +130,6 @@
     <value>True</value>
   </metadata>
   <data name="label1.Text" xml:space="preserve">
-    <value>You can specify one or more HTTP parameter to be passed to the HTTP request. Each parameter is composed by a name and a value, in the form ?name=value&amp;name2=value2... Be aware that parameter names must be unique. Parameter's value can be either custom values or variable values: in case you want to bind a parameter value to a variable, use the appropriate button to create a bound parameter.1</value>
+    <value>You can specify one or more parameters to be passed to the HTTP request. Each parameter is composed by a name and a value. Be aware that parameter names must be unique. Parameter's value can be either custom values or variable values: in case you want to bind a parameter value to a variable, use the appropriate button to create a bound parameter.</value>
   </data>
 </root>

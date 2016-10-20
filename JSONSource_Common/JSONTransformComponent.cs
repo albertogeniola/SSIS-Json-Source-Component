@@ -399,7 +399,7 @@ namespace com.webkingsoft.JSONSource_Common
                 catch (Exception e) {
                     bool fireAgain = false;
                     ComponentMetaData.FireError(RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, "An error has occurred: " + e.Message + ". \n" + e.StackTrace, null, 0, out fireAgain);
-                    return;
+                    throw e;
                 }
             }
 
@@ -470,7 +470,10 @@ namespace com.webkingsoft.JSONSource_Common
 
             // Copy the inputs into outputs
             for (var i = 0; i < _startOfJsonColIndex; i++) {
-                _outputBuffer[i] = inputbuffer[i];
+                if (inputbuffer[i] is BlobColumn)
+                    _outputBuffer.AddBlobData(i,inputbuffer.GetBlobData(i,0,(int)inputbuffer.GetBlobLength(i)));
+                else
+                    _outputBuffer[i] = inputbuffer[i];
             }
 
             return _outputBuffer;
@@ -508,8 +511,17 @@ namespace com.webkingsoft.JSONSource_Common
                         val = vals.ElementAt(0).ToString();
                     }
 
-                    buffer[colIndex] = val;
-                    res++;
+                    try
+                    {
+                        buffer[colIndex] = val;
+                        res++;
+                    }
+                    catch (DoesNotFitBufferException ex)
+                    {
+                        bool fireAgain = false;
+                        ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", e.OutputColName), null, 0, out fireAgain);
+                        throw ex;
+                    }
                 }
                 else
                 {
@@ -528,8 +540,17 @@ namespace com.webkingsoft.JSONSource_Common
                         }
                         else if (count == 1)
                         {
-                            res++;
-                            buffer[colIndex] = tokens.ElementAt(0);
+                            try
+                            {
+                                res++;
+                                buffer[colIndex] = tokens.ElementAt(0);
+                            }
+                            catch (DoesNotFitBufferException ex)
+                            {
+                                bool fireAgain = false;
+                                ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", e.OutputColName), null, 0, out fireAgain);
+                                throw ex;
+                            }
                         }
                         else
                         {
@@ -544,7 +565,17 @@ namespace com.webkingsoft.JSONSource_Common
                             {
                                 arr.Add(t);
                             }
-                            buffer[colIndex] = arr.ToString();
+                            
+                            try
+                            {
+                                buffer[colIndex] = arr.ToString();
+                            }
+                            catch (DoesNotFitBufferException ex)
+                            {
+                                bool fireAgain = false;
+                                ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", e.OutputColName), null, 0, out fireAgain);
+                                throw ex;
+                            }
                         }
                     }
                     catch (Newtonsoft.Json.JsonException ex)

@@ -100,6 +100,16 @@
     <Compile Include="Exceptions\ModelNotFoundException.cs" />
     <Compile Include="HTTPParamBinding.cs" />
     <Compile Include="HTTPParameter.cs" />
+    <Compile Include="HTTPHeadersGui.cs" />
+    <Compile Include="HTTPHeadersGui.designer.cs">
+      <DependentUpon>HTTPHeadersGui.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HTTPParametersGui.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HTTPParametersGui.designer.cs">
+      <DependentUpon>HTTPParametersGui.cs</DependentUpon>
+    </Compile>
     <Compile Include="IOMapEntry.cs" />
     <Compile Include="JSONSourceComponent.cs" />
     <Compile Include="JSONSourceComponentModel.cs" />
@@ -114,12 +124,6 @@
     </Compile>
     <Compile Include="JsonTypes.cs" />
     <Compile Include="ModelNotFoundException.cs" />
-    <Compile Include="Parameters.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Parameters.Designer.cs">
-      <DependentUpon>Parameters.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -169,12 +173,15 @@
     <EmbeddedResource Include="CustomControls\SourceView.resx">
       <DependentUpon>SourceView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="HTTPHeadersGui.resx">
+      <DependentUpon>HTTPHeadersGui.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HTTPParametersGui.resx">
+      <DependentUpon>HTTPParametersGui.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="JsonTransformUI.resx">
       <DependentUpon>JsonTransformUI.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Parameters.resx">
-      <DependentUpon>Parameters.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

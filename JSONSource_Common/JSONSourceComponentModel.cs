@@ -152,7 +152,17 @@ namespace com.webkingsoft.JSONSource_Common
         {
             get;
             set;
-        }   
+        }
+
+        /// <summary>
+        /// Set of HTTP headers to send alongside the request. 
+        /// </summary>
+        [JsonProperty]
+        public IEnumerable<HTTPParameter> HttpHeaders
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// The cookie variable defines the name of the variable where cookies have to be stored.

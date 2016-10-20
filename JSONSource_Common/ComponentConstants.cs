@@ -23,6 +23,7 @@ namespace com.webkingsoft.JSONSource_Common
         public const int ERROR_INPUT_LANE_NOT_FOUND = 17;
 
         public const int ERROR_SELECT_TOKEN = 1001;
+        public const int ERROR_INVALID_BUFFER_SIZE = 1002;
 
         public const int RUNTIME_ERROR_MODEL_INVALID = 100;
 

@@ -18,6 +18,7 @@ namespace com.webkingsoft.JSONSource_Common
 
         Uri uri = null;
         List<HTTPParameter> parameters = new List<HTTPParameter>();
+        List<HTTPParameter> headers = new List<HTTPParameter>();
         string fname = null;
         Dictionary<string, object> copyCols = new Dictionary<string, object>();
 
@@ -56,7 +57,7 @@ namespace com.webkingsoft.JSONSource_Common
                 else if (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
                 {
                     // Need to perform the request
-                    fname = Utils.DownloadJson(null, uri, _model.DataSource.WebMethod, parameters, null);
+                    fname = Utils.DownloadJson(null, uri, _model.DataSource.WebMethod, parameters, headers, null);
                 }
                 #endregion
             }
@@ -341,6 +342,50 @@ namespace com.webkingsoft.JSONSource_Common
                     else
                     {
                         parameters.Add(param);
+                    }
+                }
+            }
+            #endregion
+            #region Prepare the http headers (if needed)
+            // Only needed if the request is going to be directed to a webserver
+            if (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
+            {
+                headers = new List<HTTPParameter>();
+                foreach (var param in _model.DataSource.HttpHeaders)
+                {
+                    if (param.Binding == HTTPParamBinding.Variable || param.Binding == HTTPParamBinding.InputField)
+                    {
+
+                        UserPrompter prompt = null;
+                        if (param.Binding == HTTPParamBinding.Variable)
+                            prompt = new UserPrompter("Variable: " + param.Name);
+                        else
+                            prompt = new UserPrompter("Input column: " + param.InputColumnName);
+
+                        var result = prompt.ShowDialog(this);
+                        if (result != DialogResult.OK)
+                        {
+                            Dispose();
+                            return;
+                        }
+                        else
+                        {
+                            // I am going to cheat here. Treat every param like a custom input parameter
+                            var item = new HTTPParameter();
+                            item.Binding = HTTPParamBinding.CustomValue;
+                            item.Encode = true;
+                            item.InputColumnName = null;
+                            if (param.Binding == HTTPParamBinding.Variable)
+                                item.Name = param.Name;
+                            else
+                                item.Name = param.InputColumnName;
+                            item.Value = prompt.GetValue();
+                            headers.Add(item);
+                        }
+                    }
+                    else
+                    {
+                        headers.Add(param);
                     }
                 }
             }

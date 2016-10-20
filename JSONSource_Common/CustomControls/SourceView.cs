@@ -111,6 +111,7 @@ namespace com.webkingsoft.JSONSource_Common
                 result.WebMethod = "DELETE";
 
             result.HttpParameters = GetHttpParameters();
+            result.HttpHeaders = GetHttpHeaders();
             result.CookieVariable = String.IsNullOrEmpty(cookieVarTb.Text) ? null : cookieVarTb.Text;
 
             return result;
@@ -156,7 +157,7 @@ namespace com.webkingsoft.JSONSource_Common
             }
             
 
-            Parameters p = new Parameters(_vars, inputs);
+            HTTPParametersGui p = new HTTPParametersGui(_vars, inputs);
             p.SetModel(_tmpParams);
             var res = p.ShowDialog();
             if (res == System.Windows.Forms.DialogResult.OK)
@@ -165,11 +166,43 @@ namespace com.webkingsoft.JSONSource_Common
             }
         }
 
+        private IEnumerable<HTTPParameter> _tmpHeaders = null;
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // Collect the variables currently available to the component alongside the input colums available at the moment
+            string[] inputs = null;
+            inputs = new string[_inputs.Count];
+            int count = 0;
+            foreach (IDTSVirtualInputColumn100 vcol in _inputs)
+            {
+                inputs[count] = vcol.Name;
+                count++;
+            }
+
+
+            HTTPParametersGui p = new HTTPParametersGui(_vars, inputs);
+            p.SetModel(_tmpHeaders);
+            var res = p.ShowDialog();
+            if (res == System.Windows.Forms.DialogResult.OK)
+            {
+                _tmpHeaders = p.GetModel();
+            }
+        }
+
         public IEnumerable<HTTPParameter> GetHttpParameters() {
             if (_tmpParams == null) {
                 _tmpParams = new List<HTTPParameter>();
             }
             return _tmpParams;
+        }
+
+        public IEnumerable<HTTPParameter> GetHttpHeaders()
+        {
+            if (_tmpHeaders == null)
+            {
+                _tmpHeaders = new List<HTTPParameter>();
+            }
+            return _tmpHeaders;
         }
 
         private void addButton_Click(object sender, EventArgs e)

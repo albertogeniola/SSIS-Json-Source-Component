@@ -13,13 +13,13 @@ using System.Linq;
 
 namespace com.webkingsoft.JSONSource_Common
 {
-    public partial class Parameters : Form
+    public partial class HTTPParametersGui : Form
     {
         private List<HTTPParameter> _model = new List<HTTPParameter>();
         private Microsoft.SqlServer.Dts.Runtime.Variables _vars;
         private string[] _input_options;
 
-        public Parameters(Microsoft.SqlServer.Dts.Runtime.Variables vars, string[] inputHttpCols = null)
+        public HTTPParametersGui(Microsoft.SqlServer.Dts.Runtime.Variables vars, string[] inputHttpCols = null)
         {
             _vars = vars;
             InitializeComponent();
