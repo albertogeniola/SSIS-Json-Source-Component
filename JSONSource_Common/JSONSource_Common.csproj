@@ -100,10 +100,6 @@
     <Compile Include="Exceptions\ModelNotFoundException.cs" />
     <Compile Include="HTTPParamBinding.cs" />
     <Compile Include="HTTPParameter.cs" />
-    <Compile Include="HTTPHeadersGui.cs" />
-    <Compile Include="HTTPHeadersGui.designer.cs">
-      <DependentUpon>HTTPHeadersGui.cs</DependentUpon>
-    </Compile>
     <Compile Include="HTTPParametersGui.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -172,9 +168,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CustomControls\SourceView.resx">
       <DependentUpon>SourceView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HTTPHeadersGui.resx">
-      <DependentUpon>HTTPHeadersGui.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HTTPParametersGui.resx">
       <DependentUpon>HTTPParametersGui.cs</DependentUpon>

@@ -29,6 +29,7 @@ namespace com.webkingsoft.JSONSource_Common
             _inputs = inputs;
 
             _tmpParams = new List<HTTPParameter>();
+            _tmpHeaders = new List<HTTPParameter>();
             InitializeComponent();
         }
         
@@ -220,6 +221,7 @@ namespace com.webkingsoft.JSONSource_Common
         {
             // Keep all the http parameters locally, we will need them in order to provide the custom HTTP parameter dialog
             _tmpParams = m.HttpParameters;
+            _tmpHeaders = m.HttpHeaders;
 
             // Fill in the rest of the view using model data
             variableR.Checked = m.FromVariable; // TODO: Make sure this puts the edit text as readonly

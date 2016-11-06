@@ -175,7 +175,7 @@ namespace com.webkingsoft.JSONSource_Common
             dataGridView1.Rows[r].Cells[0].Value = null;
             dataGridView1.Rows[r].Cells[1].Value = Enum.GetName(typeof(HTTPParamBinding),HTTPParamBinding.CustomValue);
             dataGridView1.Rows[r].Cells[2].Value = null;
-            dataGridView1.Rows[r].Cells[3].Value = true;
+            dataGridView1.Rows[r].Cells[3].Value = false;
             dataGridView1.CurrentCell = dataGridView1.Rows[r].Cells[0];
             dataGridView1.BeginEdit(true);
         }

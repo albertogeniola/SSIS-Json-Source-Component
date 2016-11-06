@@ -251,6 +251,10 @@ namespace com.webkingsoft.JSONSource_Common
                 }
             }
 
+            // TODO: parametrize this
+            _opt = new ParallelOptions();
+            _opt.MaxDegreeOfParallelism = 4;
+
             return model;
         }
 
@@ -260,13 +264,13 @@ namespace com.webkingsoft.JSONSource_Common
         private IOMapEntry[] _iomap;
         private Dictionary<string, int> _outColsMaps;
         private Dictionary<int, int> _inputCopyToOutputMaps;
-        private ParallelOptions _opt;
         private IDTSInput100 _parametersInputLane;
         private JSONSourceComponentModel _model;
         private Uri _uri;
         private PipelineBuffer _outputbuffer = null;
         private List<int> _warnNotified = new List<int>();
         private DateParseHandling _dateParsePolicy = DateParseHandling.DateTime;
+        private ParallelOptions _opt;
 
         /// <summary>
         /// This function is invoked by the environment once, before data processing happens. So it's a great time to configure the basics
@@ -287,9 +291,6 @@ namespace com.webkingsoft.JSONSource_Common
             
             try
             {
-                _opt = new ParallelOptions();
-                _opt.MaxDegreeOfParallelism = 4;
-
                 bool cancel = false;
 
                 // Load the model and fail if no model is found
@@ -588,117 +589,200 @@ namespace com.webkingsoft.JSONSource_Common
 
         }
 
+        // This is a possible alternative to current implementation. Maybe in future we will swap to something similar. 
+        // It makes use of recursion for automaticaly exploding nested javascript. However this introduces some "complexity" that standard
+        // user does not necessarily understand. Thus, for the moment, we swap back to classic implementation.
+        /*
+        private int ProcessObject(JObject obj, PipelineBuffer inputbuffer) {
+            object[] prev_values = new object[_iomap.Length];
+            int start_index = 0;
+
+            return ProcessColumns(obj, inputbuffer, prev_values, start_index);
+        }
+
+        private int ProcessColumns(JObject obj, PipelineBuffer inputbuffer, object[] prev_values, int start_index) {
+
+            // Base case: we reached the end of recursion (leafs).
+            if (start_index == (_iomap.Length))
+            {
+                // Add the output row
+                var buff = AddOutputRow(inputbuffer);
+
+                // Copy the temporary buffer into the actual row
+                for(int i=0;i<prev_values.Length;i++) {
+                    try
+                    {
+                        buff[i] = prev_values[i];
+                    }
+                    catch (DoesNotFitBufferException ex)
+                    {
+                        IOMapEntry col_e = _iomap.ElementAt(i);
+                        bool fireAgain = false;
+                        ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", col_e.OutputColName), null, 0, out fireAgain);
+                        throw ex;
+                    }
+                }
+
+                return 1;
+            }
+
+            // Otherwise we still have some columns to parse
+            IOMapEntry e = _iomap.ElementAt(start_index);
+
+            // Quickly retrieve the coulmn index of the mapped output to this column entry
+            int colIndex = _outColsMaps[e.OutputColName];
+            
+            // Navigate to the wanted value
+            var tokens = obj.SelectTokens(e.InputFieldPath, false);
+            int count = tokens.Count();
+
+            // In case no result is obtained, fill the current temp buffer with a null and invoke simple recursion
+            if (count == 0)
+            {
+                // We obtained no result. This may be an error of the developer, so it is a good idea to fire a warning.
+                // For now, we do not crash. In future we might implement row redirection to error output. Just provide NULL value.
+                if (!_warnNotified.Contains(colIndex))
+                {
+                    _warnNotified.Add(colIndex);
+                    ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("No value has been found when parsing jsonpath {0} on column {1}. Is the jsonpath correct?", e.InputFieldPath, e.OutputColName), null, 0);
+                }
+                
+                // Fill the null value and invoke simple recursion
+                prev_values[start_index] = null;
+                return ProcessColumns(obj, inputbuffer, prev_values, start_index + 1);
+            }
+            else if (count == 1)
+            {
+                // If we only have one value retrieve it directly and invoke simple recursion
+                try
+                {
+                    // Fill the value and invoke simple recursion
+                    prev_values[start_index] = tokens.ElementAt(0); ;
+                    return ProcessColumns(obj, inputbuffer, prev_values, start_index + 1);
+
+                }
+                catch (DoesNotFitBufferException ex)
+                {
+                    bool fireAgain = false;
+                    ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", e.OutputColName), null, 0, out fireAgain);
+                    throw ex;
+                }
+            }
+            else
+            {
+                // This case requires explosions. Invoke recursion for each value.
+                int res = 0;
+                foreach (JToken t in tokens)
+                {
+                    prev_values[start_index] = t;
+                    res += ProcessColumns(obj, inputbuffer, prev_values, start_index + 1);
+                }
+
+                return res;
+            }
+
+            // We should never hit this place
+            throw new ApplicationException("This is a design error. Contact the developer.");
+
+        }*/
+
+        
         private int ProcessObject(JObject obj, PipelineBuffer inputbuffer)
         {
-            bool cancel=false;
-
-            // Each objects corresponds to an output row.
             int res = 0;
 
+            // Each successful parsed object will produce a new output line, so we allocate now a buffer
+            // that we will fill during parsing. We also pass the input buffer, because some columns have to be
+            // prefilled with inputs (copied values)
             var buffer = AddOutputRow(inputbuffer);
-
-            // For each column requested from metadata, look for data into the object we parsed.
-            Parallel.ForEach<IOMapEntry>(_iomap, _opt, delegate(IOMapEntry e) {
+            
+            // Now execute object parsing. We parse each column separately, according to the mappings
+            // expressed by the user. We also take advantage of parallelism.
+            Parallel.ForEach(_iomap, _opt, (IOMapEntry e) =>
+            {
+                // Quickly retrieve the coulmn index of the mapped output to this column entry
                 int colIndex = _outColsMaps[e.OutputColName];
 
-                switch (e.OutputJsonColumnType) {
+                // Prefill the outputvalue as NULL. In case we find nothing, we will produce a NULL element, instead of an empty string
+                object val = null;
 
-                    // If the user wants to get raw json, we should parse nothing: simply return all the json as a string
+                // The following API call may produce multiple outputs. If that is the case, we manually build a json array and serialize that one into a string.
+                var tokens = obj.SelectTokens(e.InputFieldPath, false);
+                int count = tokens.Count();
+                if (count == 0)
+                {
+                    // We obtained no result. This may be an error of the developer, so it is a good idea to fire a warning.
+                    // For now, we do not crash. In future we might implement row redirection to error output. Just provide NULL value.
+                    if (!_warnNotified.Contains(colIndex))
+                    {
+                        _warnNotified.Add(colIndex);
+                        ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("No value has been found when parsing jsonpath {0} on column {1}. Is the jsonpath correct?", e.InputFieldPath, e.OutputColName), null, 0);
+                    }
+                    val = null;
+                }
+                else if (count == 1)
+                {
+                    // If we only have one value retrieve it directly.
+                    try
+                    {
+                        val = tokens.ElementAt(0);
+                    }
+                    catch (DoesNotFitBufferException ex)
+                    {
+                        bool fireAgain = false;
+                        ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", e.OutputColName), null, 0, out fireAgain);
+                        throw ex;
+                    }
+                }
+                else
+                {
+                    if (!_warnNotified.Contains(colIndex))
+                    {
+                        _warnNotified.Add(colIndex);
+                        ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("Multiple values have been found when parsing jsonpath {0} on column {1}. This will led to line explosion, so I won't explode this here to save memory. Put a filter in pipeline to explode the lines, if needed.", e.InputFieldPath, e.OutputColName), null, 0);
+                    }
+
+                    // This case requires explosions. We cannot perform it here, so we output raw json.
+                    JArray arr = new JArray();
+                    foreach(var t in tokens)
+                    {
+                        arr.Add(t);
+                    }
+                    val = arr;
+                }
+                
+                // Now we might act differently in accordance to the type of parsing requested by the user.
+                // In practice we handle two cases: output as RAW/Strings or Strong-Typed outputs. In the first case,
+                // we simply transform every output into a string. In the latter, we try to parse the value, such as
+                // numbers, booleans and dates.
+                switch (e.OutputJsonColumnType)
+                {
+                    // First case: map the inputs to a simple string.
                     case JsonTypes.RawJson:
                     case JsonTypes.String:
-                        string val = null;
-                        var vals = obj.SelectTokens(e.InputFieldPath);
-                        if (vals.Count() > 1)
-                        {
-                            JArray arr = new JArray();
-                            foreach (var t in vals)
-                            {
-                                arr.Add(t);
-                            }
-                            val = arr.ToString();
-                        }
-                        else
-                        {
-                            val = vals.ElementAt(0).ToString();
-                        }
-
-                        try
-                        {
-                            buffer[colIndex] = val;
-                        }
-                        catch (DoesNotFitBufferException ex)
-                        {
-                            bool fireAgain = false;
-                            ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", e.OutputColName), null, 0, out fireAgain);
-                            throw ex;
-                        }
-
-
-                        res++;
+                        // If the output has to be a string, just convert what we have so far into a string. Do not take care of explosion nor parsing.
+                        if (val != null)
+                            val = val.ToString();
                         break;
-
-                    // In case the desired value is not a string nor raw json, try to get its value
                     default:
-                        try
-                        {
-                            IEnumerable<JToken> tokens = obj.SelectTokens(e.InputFieldPath);
-                            int count = tokens.Count();
-                            if (count == 0)
-                            {
-                                if (!_warnNotified.Contains(colIndex))
-                                {
-                                    _warnNotified.Add(colIndex);
-                                    ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("No value has been found when parsing jsonpath {0} on column {1}. Is the jsonpath correct?", e.InputFieldPath, e.OutputColName), null, 0);
-                                }
-                            }
-                            else if (count == 1)
-                            {
-                                res++;
-                                try
-                                {
-                                    buffer[colIndex] = tokens.ElementAt(0);
-                                }
-                                catch (DoesNotFitBufferException ex)
-                                {
-                                    bool fireAgain = false;
-                                    ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", e.OutputColName), null, 0, out fireAgain);
-                                    throw ex;
-                                }
-                            }
-                            else
-                            {
-                                if (!_warnNotified.Contains(colIndex))
-                                {
-                                    _warnNotified.Add(colIndex);
-                                    ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("Multiple values have been found when parsing jsonpath {0} on column {1}. This will led to line explosion, so I won't explode this here to save memory. Put a filter in pipeline to explode the lines, if needed.", e.InputFieldPath, e.OutputColName), null, 0);
-                                }
-                                // This case requires explosions. We cannot perform it here, so we output raw json
-                                JArray arr = new JArray();
-                                foreach (var t in tokens)
-                                {
-                                    arr.Add(t);
-                                }
-                                try
-                                {
-                                    buffer[colIndex] = arr.ToString();
-                                }
-                                catch (DoesNotFitBufferException ex)
-                                {
-                                    bool fireAgain = false;
-                                    ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", e.OutputColName), null, 0, out fireAgain);
-                                    throw ex;
-                                }
-                            }
-                        }
-                        catch (Newtonsoft.Json.JsonException ex)
-                        {
-                            bool fireAgain = false;
-                            ComponentMetaData.FireError(ComponentConstants.ERROR_SELECT_TOKEN, ComponentMetaData.Name, "SelectToken failed. This may be due to an invalid Xpath syntax / member name. However this error still happens if multiple tokens are returned and the value expected is single. Specific error was: " + ex.Message, null, 0, out fireAgain);
-                            throw ex;
-                        }
+                        // In all other cases, we might need data-parsing. Fortunately this is handled automaticaly by the assignment operation. So we do nothing in here.
                         break;
                 }
+
+                // Now assign to the column index the value we previously extracted.
+                try
+                {
+                    buffer[colIndex] = val;
+                }
+                catch (DoesNotFitBufferException ex)
+                {
+                    bool fireAgain = false;
+                    ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", e.OutputColName), null, 0, out fireAgain);
+                    throw ex;
+                }
             });
+
+            res++;
 
             return res;
         }
