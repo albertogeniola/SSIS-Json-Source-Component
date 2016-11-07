@@ -17,9 +17,12 @@ using System.Linq;
 
 namespace com.webkingsoft.JSONSource_Common
 {
-    
     public partial class SourceAdvancedUI : Form
     {
+        public static readonly string DONATE_URL = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6HPAB89UYSZF2";
+        public static readonly string SUPPORT_URL = "https://jsonsource.codeplex.com/";
+        public static readonly string LI_PROFILE = "https://www.linkedin.com/in/albertogeniola";
+
         private SourceView _sourceView;
         private Variables _vars;
         private IServiceProvider _sp;
@@ -132,6 +135,31 @@ namespace com.webkingsoft.JSONSource_Common
             SaveModel();
             var tester = new ComponentTester(_savedModel);
             tester.ShowDialog();
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(DONATE_URL);
+        }
+
+        private void help_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(SUPPORT_URL);
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(DONATE_URL);
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(LI_PROFILE);
+        }
+
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(LI_PROFILE);
         }
     }
 }

@@ -251,6 +251,15 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\jsource.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\question-mark-icon-2996.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pitcher-150069_960_720.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\images.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
