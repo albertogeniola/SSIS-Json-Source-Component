@@ -696,10 +696,8 @@ namespace com.webkingsoft.JSONSource_Common
             // prefilled with inputs (copied values)
             var buffer = AddOutputRow(inputbuffer);
             
-            // Now execute object parsing. We parse each column separately, according to the mappings
-            // expressed by the user. We also take advantage of parallelism.
-            Parallel.ForEach(_iomap, _opt, (IOMapEntry e) =>
-            {
+            for(int i=0;i<_iomap.Count();i++) {
+                IOMapEntry e = _iomap.ElementAt(i);
                 // Quickly retrieve the coulmn index of the mapped output to this column entry
                 int colIndex = _outColsMaps[e.OutputColName];
 
@@ -780,7 +778,7 @@ namespace com.webkingsoft.JSONSource_Common
                     ComponentMetaData.FireError(ComponentConstants.ERROR_INVALID_BUFFER_SIZE, ComponentMetaData.Name, String.Format("Maximum size of column {0} is smaller than provided data. Please increase buffer size.", e.OutputColName), null, 0, out fireAgain);
                     throw ex;
                 }
-            });
+            };
 
             res++;
 

@@ -13,6 +13,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using System.Threading.Tasks;
+using System.Threading;
 #if LINQ_SUPPORTED
 using System.Linq;
 #endif
@@ -254,14 +255,15 @@ namespace com.webkingsoft.JSONSource_Common
 
         // Le seguenti variabili contengono gli oggetti da usare a runtime, instanziati dal metodo seguente,
         // invocato appena prima di processare l'input.
-        private IOMapEntry[] _iomap;
-        private Dictionary<string, int> _outColsMaps;
-        private string _pathToArray = null;
-        private ParallelOptions _opt;
-        private int _inputColIndex;
-        private int _startOfJsonColIndex;
-        private List<int> _warnNotified = new List<int>();
-        private DateParseHandling _dateParsePolicy = DateParseHandling.DateTime;
+        IOMapEntry[] _iomap;
+        Dictionary<string, int> _outColsMaps;
+        string _pathToArray = null;
+        ParallelOptions _opt;
+        int _inputColIndex;
+        int _startOfJsonColIndex;
+        List<int> _warnNotified = new List<int>();
+        DateParseHandling _dateParsePolicy = DateParseHandling.DateTime;
+        PipelineBuffer _outputBuffer = null;
 
         public override void PreExecute()
         {
@@ -341,7 +343,7 @@ namespace com.webkingsoft.JSONSource_Common
                 _dateParsePolicy = DateParseHandling.None;
             }
         }
-
+        /*
         private string DownloadJsonFile(string url, string customLocalTempDir = null)
         {
             string localTmp = null;
@@ -376,44 +378,62 @@ namespace com.webkingsoft.JSONSource_Common
 
             }
         }
+        */
 
-        private PipelineBuffer _outputBuffer;
+        /// <summary>
+        /// This method is only called once for Asynchronous transformations. It is never called in case of SYNCH transformation. In our case,
+        /// we implement an ASYNC transf, so we expect this method to be called. We will use it for storing references to the output buffer.
+        /// </summary>
+        /// <param name="outputs"></param>
+        /// <param name="outputIDs"></param>
+        /// <param name="buffers"></param>
         public override void PrimeOutput(int outputs, int[] outputIDs, PipelineBuffer[] buffers)
         {
-            if (buffers.Length != 0)
-                _outputBuffer = buffers[0];
+            /*
+            for (int output = 0; output < outputs; output++)
+            {
+                if (outputIDs[output] == ComponentMetaData.OutputCollection[0].ID)
+                {
+                    _outputBuffer = buffers[output];
+                }
+            }*/
+            _outputBuffer = buffers[0];
         }
+
         public override void ProcessInput(int inputID, PipelineBuffer buffer)
         {
+            
             bool cancel = false;
             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "PROCESS INPUT CALLED", null, 0, ref cancel);
 
-            while (buffer.NextRow()) {
+            while (buffer.NextRow())
+            {
                 try
                 {
-                    //TODO: il buffer di input arriva completo, e non con le sole colonne mappate. 
                     // Process data according to IOMappings
-                    //(GetModel().InputColumnName
-                    ProcessInMemory(buffer.GetString(_inputColIndex), buffer);
+                    ProcessInMemory(buffer.GetString(_inputColIndex), ref buffer);
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
                     bool fireAgain = false;
                     ComponentMetaData.FireError(RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, "An error has occurred: " + e.Message + ". \n" + e.StackTrace, null, 0, out fireAgain);
                     throw e;
                 }
+                
             }
 
-            //IDTSInput100 input = ComponentMetaData.InputCollection.GetObjectByID(inputID);
-            //buffer.AddRow();
-            if (buffer.EndOfRowset)
-                _outputBuffer.SetEndOfRowset();
             
+            if (buffer.EndOfRowset)
+            {
+                _outputBuffer.SetEndOfRowset();
+            }
+
         }
 
         #region //Process Json Elements
-        
-       
-        private void ProcessInMemory(string jsonData, PipelineBuffer inputBuffer)
+
+
+        private void ProcessInMemory(string jsonData, ref PipelineBuffer inputBuffer)
         {
             
             bool cancel = false;
@@ -440,11 +460,11 @@ namespace com.webkingsoft.JSONSource_Common
                     {
                         if (t.Type == JTokenType.Array)
                         {
-                            count += ProcessArray(t as JArray, inputBuffer);
+                            count += ProcessArray(t as JArray, ref inputBuffer);
                         }
                         else if (t.Type == JTokenType.Object)
                         {
-                            count += ProcessObject(t as JObject, inputBuffer);
+                            count += ProcessObject(t as JObject, ref inputBuffer);
                         }
                         else
                         {
@@ -459,34 +479,46 @@ namespace com.webkingsoft.JSONSource_Common
                 ComponentMetaData.FireError(RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, ex.Message + ex.StackTrace + ex.InnerException, null, 0, out cancel);
                 throw new Exception("Error occurred: " + ex.Message + ex.StackTrace + ex.InnerException);
             }
-            
-
         }
 
-        private PipelineBuffer AddOutputRow(PipelineBuffer inputbuffer)
+        private void AddOutputRow(ref PipelineBuffer inputbuffer)
         {
-            // Add A row and pre-fill it
-            _outputBuffer.AddRow();
+            // For some RESON I STILL DO NOT UNDERSTAND, THIS METHOD FALLS in a sort of race condition.
+            // The following is the worst workaroud ever, but needed ito quickly address the problem.
+            while (true)
+            {
+                try
+                {
+                    _outputBuffer.AddRow();
+                    break;
+                }
+                catch (Exception e)
+                {
+                    ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, "Outputrow was not ready. ", null, 0);
+                    throw e;
+                }
+            }
 
             // Copy the inputs into outputs
-            for (var i = 0; i < _startOfJsonColIndex; i++) {
+            for (var i = 0; i < _startOfJsonColIndex; i++)
+            {
                 if (inputbuffer[i] is BlobColumn)
-                    _outputBuffer.AddBlobData(i,inputbuffer.GetBlobData(i,0,(int)inputbuffer.GetBlobLength(i)));
+                    _outputBuffer.AddBlobData(i, inputbuffer.GetBlobData(i, 0, (int)inputbuffer.GetBlobLength(i)));
                 else
                     _outputBuffer[i] = inputbuffer[i];
             }
-
-            return _outputBuffer;
+            
         }
 
-        private int ProcessObject(JObject obj, PipelineBuffer inputbuffer)
+        
+        private int ProcessObject(JObject obj, ref PipelineBuffer inputbuffer)
         {
             bool cancel = false;
 
             // Each objects corresponds to an output row.
             int res = 0;
 
-            var buffer = AddOutputRow(inputbuffer);
+            AddOutputRow(ref inputbuffer);
 
             // For each column requested from metadata, look for data into the object we parsed.
             Parallel.ForEach<IOMapEntry>(_iomap, _opt, delegate (IOMapEntry e) {
@@ -497,7 +529,13 @@ namespace com.webkingsoft.JSONSource_Common
                 {
                     string val = null;
                     var vals = obj.SelectTokens(e.InputFieldPath);
-                    if (vals.Count() > 1)
+                    if (vals.Count() == 0) {
+                        val = null;
+                    }else if (vals.Count() == 1)
+                    {
+                        val = vals.ElementAt(0).ToString();
+                    }
+                    else
                     {
                         JArray arr = new JArray();
                         foreach (var t in vals)
@@ -506,14 +544,10 @@ namespace com.webkingsoft.JSONSource_Common
                         }
                         val = arr.ToString();
                     }
-                    else
-                    {
-                        val = vals.ElementAt(0).ToString();
-                    }
 
                     try
                     {
-                        buffer[colIndex] = val;
+                        _outputBuffer[colIndex] = val;
                         res++;
                     }
                     catch (DoesNotFitBufferException ex)
@@ -543,7 +577,7 @@ namespace com.webkingsoft.JSONSource_Common
                             try
                             {
                                 res++;
-                                buffer[colIndex] = tokens.ElementAt(0);
+                                _outputBuffer[colIndex] = tokens.ElementAt(0);
                             }
                             catch (DoesNotFitBufferException ex)
                             {
@@ -568,7 +602,7 @@ namespace com.webkingsoft.JSONSource_Common
                             
                             try
                             {
-                                buffer[colIndex] = arr.ToString();
+                                _outputBuffer[colIndex] = arr.ToString();
                             }
                             catch (DoesNotFitBufferException ex)
                             {
@@ -591,14 +625,14 @@ namespace com.webkingsoft.JSONSource_Common
             return res;
         }
 
-        private int ProcessArray(JArray arr, PipelineBuffer inputbuffer)
+        private int ProcessArray(JArray arr, ref PipelineBuffer inputbuffer)
         {
             bool cancel = false;
             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Processing Array...", null, 0, ref cancel);
             int count = 0;
             foreach (JObject obj in arr)
             {
-                count += ProcessObject(obj, inputbuffer);
+                count += ProcessObject(obj, ref inputbuffer);
             }
             return count;
         }

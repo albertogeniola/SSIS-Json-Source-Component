@@ -160,6 +160,7 @@
             // 
             // label3
             // 
+            this.label3.Cursor = System.Windows.Forms.Cursors.Hand;
             this.label3.Font = new System.Drawing.Font("Segoe Print", 10F);
             this.label3.Location = new System.Drawing.Point(297, 9);
             this.label3.Name = "label3";
@@ -170,6 +171,7 @@
             // 
             // pictureBox2
             // 
+            this.pictureBox2.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
             this.pictureBox2.InitialImage = null;
             this.pictureBox2.Location = new System.Drawing.Point(262, 5);
