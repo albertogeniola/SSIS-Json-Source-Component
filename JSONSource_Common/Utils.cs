@@ -286,9 +286,13 @@ namespace com.webkingsoft.JSONSource_Common
                 // Discard last character
                 if (queryToAppend.Length>0)
                     queryToAppend.Remove(queryToAppend.Length - 1, 1);
-                
-                if (b.Query != null && b.Query.Length > 1)
-                    b.Query = b.Query.Substring(1) + "&" + queryToAppend.ToString();
+
+                // Handle the case in which query params are mixed: some typed directly into the box and others given by the ad-hoc GUI.
+                if (b.Query != null && b.Query.Length > 1) {
+                    b.Query = b.Query.Substring(1);
+                    if (!String.IsNullOrEmpty(queryToAppend.ToString()))
+                        b.Query += "&" + queryToAppend.ToString();
+                }
                 else
                     b.Query = queryToAppend.ToString();
 
