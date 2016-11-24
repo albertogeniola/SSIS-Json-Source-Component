@@ -264,5 +264,22 @@ namespace com.webkingsoft.JSONSource_Common
         {
             MessageBox.Show(e.Exception.Message);
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            //dataGridView1.EndEdit()
+            foreach (DataGridViewRow r in dataGridView1.SelectedRows) {
+                dataGridView1.Rows.Remove(r);
+            }
+            /*
+            int r = dataGridView1.Rows.Add();
+            dataGridView1.Rows[r].Cells[0].Value = null;
+            dataGridView1.Rows[r].Cells[1].Value = Enum.GetName(typeof(HTTPParamBinding), HTTPParamBinding.CustomValue);
+            dataGridView1.Rows[r].Cells[2].Value = null;
+            dataGridView1.Rows[r].Cells[3].Value = false;
+            dataGridView1.CurrentCell = dataGridView1.Rows[r].Cells[0];
+            dataGridView1.BeginEdit(true);
+            */
+        }
     }
 }
