@@ -233,6 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="JSONSource.snk" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

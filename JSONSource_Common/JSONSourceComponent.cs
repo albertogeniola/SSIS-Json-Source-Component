@@ -27,11 +27,11 @@ namespace com.webkingsoft.JSONSource_Common
     /// ProcessInput() is called (multiple times). 
     /// </summary>
 #if DTS130
-    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_130,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_130.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 2, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_130,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_130.jsource.ico")]
 #elif DTS120
-    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 2, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
 #elif DTS110
-    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 2, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
 #endif
     public class JSONSourceComponent : PipelineComponent
     {
@@ -85,7 +85,6 @@ namespace com.webkingsoft.JSONSource_Common
             int binaryVersion = componentAttribute.CurrentVersion;
             int metaDataVersion = ComponentMetaData.Version;
 
-            
             // Upgrade the metadata if needed.
             if (metaDataVersion < binaryVersion)
             {
@@ -94,6 +93,47 @@ namespace com.webkingsoft.JSONSource_Common
                 {
                     // From 0 to 1 we added ParseDates value with TRUE as default.
                     // By design, we don't need to do anything thanks to the default value handling
+                    metaDataVersion++;
+                }
+
+                if (metaDataVersion == 1) {
+                    // In this version we changed some properties. So we need to align to the new ones.
+                    var m = ComponentMetaData.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL].ToString();
+                    dynamic previous = JsonConvert.DeserializeObject(m);
+
+                    JSONSourceComponentModel current = new JSONSourceComponentModel();
+
+                    // We updated the portion of the model regarding the data source. 
+                    // Let's handle it first: we introduced UriBindingType and UriBindingValue instead of SourceUri and FromVariable.
+                    JSONDataSourceModel sourceModel = new JSONDataSourceModel();
+
+                    // We added the URIBinding type parameter. This is based on the previous combination of FromVariable.
+                    if (previous.DataSource.FromVariable)
+                    {
+                        sourceModel.UriBindingType = ParamBinding.Variable;
+                        sourceModel.UriBindingValue = previous.DataSource.VariableName;
+                    }
+                    else {
+                        sourceModel.UriBindingType = ParamBinding.CustomValue;
+                        sourceModel.UriBindingValue = previous.DataSource.SourceUri.ToString();
+                    }
+
+                    // The rest just remains the same
+                    sourceModel.CookieVariable = previous.DataSource.CookieVariable;
+                    sourceModel.HttpHeaders = previous.DataSource.HttpHeaders;
+                    sourceModel.HttpParameters = previous.DataSource.HttpParameters;
+                    sourceModel.WebMethod = previous.DataSource.WebMethod;
+
+                    // Save the modified portion of the model
+                    current.DataSource = sourceModel;
+                    // Now just copy the other two sub-models
+                    current.DataMapping = previous.DataMapping;
+                    current.AdvancedSettings = previous.AdvancedSettings;
+
+                    // Now just overwrite the saved model
+                    ComponentMetaData.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL].Value = current.ToJsonConfig();
+
+                    // Bump up!
                     metaDataVersion++;
                 }
 
