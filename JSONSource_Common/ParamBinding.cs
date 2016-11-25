@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace com.webkingsoft.JSONSource_Common
 {
-    public enum HTTPParamBinding
+    public enum ParamBinding
     {
         Variable,
         CustomValue,

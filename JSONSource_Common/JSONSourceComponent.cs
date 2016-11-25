@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 #if LINQ_SUPPORTED
 using System.Threading.Tasks;
@@ -16,7 +17,15 @@ using System.Windows.Forms;
 
 namespace com.webkingsoft.JSONSource_Common
 {
-
+    /// <summary>
+    /// The JSON Source component has two major goals: retrieve JSON data and parse it. Data can be retriven by reading a file (which can also reside on the network),
+    /// or can be downloaded via a web-service.
+    /// This component can operate in two ways: SOURCE or TRANSFORMATION. The component is in source mode when no input is attached, thus data collection does not depend
+    /// on any input. In this case, the runtime environment will only call PrimeOutput once and no call is performed against ProcessInput.
+    /// If at least one input is specified, the component works in TRANSFORMATION mode. This means that, for each incoming row on the input, a request will be performed. Tehrefore,
+    /// request parameters can depend on inputs. In this case, PrimeOutput() is still called once, but the component won't do anaything over there. The real work happens when
+    /// ProcessInput() is called (multiple times). 
+    /// </summary>
 #if DTS130
     [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_130,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_130.jsource.ico")]
 #elif DTS120
@@ -26,39 +35,39 @@ namespace com.webkingsoft.JSONSource_Common
 #endif
     public class JSONSourceComponent : PipelineComponent
     {
-    // TODO for next version: 
-    // model serialization with custom properties
-    // support one input line for parameters
-    // support output error line
-    // add httpparams support
-    // oauth?
-    // datatype guessing
-    // jsonpath parser-highlighter
-    // Parallel options into gui
-    // Implement runtime debug option
+        /// Remember the lifecycle!
+        /// AcquireConnections()
+        /// Validate()
+        /// ReleaseConnections()
+        /// PrepareForExecute()
+        /// AcquireConnections()
+        /// PreExecute()
+        /// PrimeOutput()
+        /// ProcessInput()
+        /// PostExecute()
+        /// ReleaseConnections()
+        /// Cleanup()
 
-    /// Some implementation notes.
-    /// This component is now a Transformation component, because we want to use Inputs as HTTP parameters. 
-    /// So, the PrimeOutput method won't be called by the envirnment, instead ProcessInput is. Being an async component,
-    /// the ide calls ProcessInputs asynch while data is received via the input stream. So here we basically keep track of inputs
-    /// and process them later in the PrimeOutput method.
-    /// -> inputs are passed to the ProcessInput()
-    /// -> PrimeOutput() is then invoked
+        // Constant data: the following variables are prefilled during PreExecuted and will never change for the entire execution.
+        private string _httpMethod;
+        private RootType _dataRootType;
+        private string _dataRootPath;
+        private IEnumerable<HTTPParameter> _unboundHttpHeaders;
+        private IEnumerable<HTTPParameter> _unboundHttpParams;
+        private string _cookieVarname;
+        private ParamBinding _uriBindingType;
+        private string _uriBindingValue;
+        private PipelineBuffer _outputbuffer = null;
+        private IDTSInput100 _parametersInputLane;
+        private Dictionary<int, int> _inputCopyToOutputMaps;
+        private IOMapEntry[] _iomap;
+        private Dictionary<string, int> _outColsMaps;
+        private DateParseHandling _dateParsePolicy = DateParseHandling.DateTime;
+        private ParallelOptions _opt;
+        private OperationMode _mode;
+        private List<int> _warnNotified = new List<int>();
 
-    /// Remember the lifecycle!
-    /// AcquireConnections()
-    /// Validate()
-    /// ReleaseConnections()
-    /// PrepareForExecute()
-    /// AcquireConnections()
-    /// PreExecute()
-    /// PrimeOutput()
-    /// ProcessInput()
-    /// PostExecute()
-    /// ReleaseConnections()
-    /// Cleanup()
-
-    public override void PerformUpgrade(int pipelineVersion)
+        public override void PerformUpgrade(int pipelineVersion)
         {
             DataType type;
             try
@@ -177,11 +186,11 @@ namespace com.webkingsoft.JSONSource_Common
             // HTTP Params
             // CopyColumns
             foreach (var param in m.DataSource.HttpParameters) {
-                if (param.IsInputMapped)
+                if (param.Binding==ParamBinding.InputField)
                 {
                     bool found = false;
                     foreach (IDTSInputColumn100 inputcol in ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].InputColumnCollection) {
-                        if (inputcol.Name == param.InputColumnName) {
+                        if (inputcol.Name == param.BindingValue) {
                             found = true;
                             break;
                         }
@@ -189,7 +198,7 @@ namespace com.webkingsoft.JSONSource_Common
                     if (!found) {
                         bool cancel;
                         // This column is not mapped. This will cause an error
-                        ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, String.Format("HTTP parameter {0} requires input column {1} to be defined/connected. However there is no {1} column input attached.",param.Name,param.InputColumnName), err, null, 0, out cancel);
+                        ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, String.Format("HTTP parameter {0} requires input column {1} to be defined/connected. However there is no {1} column input attached.",param.Name,param.BindingValue), err, null, 0, out cancel);
                         return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
                     }
                 }
@@ -257,26 +266,157 @@ namespace com.webkingsoft.JSONSource_Common
 
             return model;
         }
-
-        // The following variables are used as temporary storage when the validation has been finished and
-        // the data process is happening at runtime. Their goal is to provide a fast way to lookup important
-        // data while processing data.
-        private IOMapEntry[] _iomap;
-        private Dictionary<string, int> _outColsMaps;
-        private Dictionary<int, int> _inputCopyToOutputMaps;
-        private IDTSInput100 _parametersInputLane;
-        private JSONSourceComponentModel _model;
-        private Uri _uri;
-        private PipelineBuffer _outputbuffer = null;
-        private List<int> _warnNotified = new List<int>();
-        private DateParseHandling _dateParsePolicy = DateParseHandling.DateTime;
-        private ParallelOptions _opt;
-
+        
         /// <summary>
         /// This function is invoked by the environment once, before data processing happens. So it's a great time to configure the basics
-        /// before starting to process data. Basically, we'll fill up the fast-lookup variables defined above.
+        /// before starting to process data. In here, we retrieve all the data that is not supposed to change later on.
         /// </summary>
         public override void PreExecute()
+        {
+            AttachDebugger();
+
+            // Load the model and fail if no model is found
+            JSONSourceComponentModel model = GetModel(true);
+
+            // Save the input column index, used to parse parameters for web-requests
+            _parametersInputLane = ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
+
+            // Now perform the IO mapping for fast lookup during JSON Reading
+            // Dictionary<name_of_column, index_of_column_in_pipeline_row>
+            _iomap = model.DataMapping.IoMap.ToArray<IOMapEntry>();
+            _outColsMaps = new Dictionary<string, int>();
+            foreach (IOMapEntry e in _iomap)
+            {
+                bool found = false;
+                foreach (IDTSOutputColumn100 col in base.ComponentMetaData.OutputCollection[0].OutputColumnCollection)
+                {
+                    if (col.Name == e.OutputColName)
+                    {
+                        found = true;
+                        int colIndex = BufferManager.FindColumnByLineageID(ComponentMetaData.OutputCollection[0].Buffer, col.LineageID);
+                        _outColsMaps.Add(e.OutputColName, colIndex);
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    // Inconsistency. Throw an error
+                    throw new Exception(string.Format("The component is unable to locate the column named {0} inside the component metadata. Please review the component.", e.OutputColName));
+                }
+            }
+
+            _inputCopyToOutputMaps = new Dictionary<int, int>();
+            // Fill the fast dictionary for Input to output cols
+            foreach (var inputColName in model.DataMapping.InputColumnsToCopy)
+            {
+
+                // Retrieve the index of the input column and use it as key for the fast dict. Note that for our implementation, input column names matech output column names
+                // Input column index <-> OutputColumnIndex
+                int input_index = BufferManager.FindColumnByLineageID(ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].Buffer, ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].InputColumnCollection[inputColName].LineageID);
+                int output_index = BufferManager.FindColumnByLineageID(ComponentMetaData.OutputCollection[0].Buffer, ComponentMetaData.OutputCollection[0].OutputColumnCollection[inputColName].LineageID);
+                // Map the input index to the output index
+                _inputCopyToOutputMaps[input_index] = output_index;
+            }
+
+            // Configure json deserializer:
+            // DateParsing is broken in json.net, since it does not take care of timezone.
+            if (!model.AdvancedSettings.ParseDates)
+            {
+                _dateParsePolicy = DateParseHandling.None;
+            }
+
+            _httpMethod = model.DataSource.WebMethod;
+
+            _uriBindingType = model.DataSource.UriBindingType;
+            _uriBindingValue= model.DataSource.UriBindingValue;
+
+            _dataRootType = model.DataMapping.RootType;
+
+            _dataRootPath = model.DataMapping.JsonRootPath;
+
+            _unboundHttpHeaders = model.DataSource.HttpHeaders;
+            _unboundHttpParams = model.DataSource.HttpParameters;
+
+            _cookieVarname = model.DataSource.CookieVariable;
+            // Configure the operation mode. If there is at least one input, we consider ourself in TRANSFORM. If no input is attached, we are in SOURCE.
+            _mode = ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].IsAttached ? OperationMode.TRANSFORM : OperationMode.SOURCE;
+        }
+
+        private Uri ResolveUri(ParamBinding bindingType, string value, PipelineBuffer inputBuffer =null) {
+            // If the uri depends on a variable, get it now.
+            Uri uri = null;
+            switch (bindingType)
+            {
+                case ParamBinding.Variable:
+                    DataType type;
+                    object varval = Utils.GetVariable(this.VariableDispenser, value, out type);
+                    var uristr = varval.ToString();
+                    uri = new Uri(uristr);
+                    break;
+                case ParamBinding.CustomValue:
+                    uri = new Uri(value);
+                    break;
+
+                case ParamBinding.InputField:
+                    if (inputBuffer == null)
+                        throw new ApplicationException("Bind data was called with a null inputbuffer. Contact the developer.");
+                    int colIndex = BufferManager.FindColumnByLineageID(_parametersInputLane.Buffer, _parametersInputLane.InputColumnCollection[value].LineageID);
+                    uri = new Uri(inputBuffer[colIndex].ToString());
+                    break;
+                default:
+                    throw new ApplicationException("Invalid model. Unsupported parambinding value.");
+            }
+            // Validation alredy happended. We just double check for some more runtime elements, such as variables mapped values or file presence/existance.
+            if (uri.IsFile)
+            {
+                if (!File.Exists(uri.LocalPath))
+                    throw new Exception(String.Format("File {0} does not exist.", uri.LocalPath));
+            }
+
+            return uri;
+        }
+
+        private Dictionary<string,string> ResolveParametersBinding(IEnumerable<HTTPParameter> parameters, PipelineBuffer inputBuffer=null)
+        {
+            Dictionary<string, string> res = new Dictionary<string, string>();
+            foreach (var p in parameters)
+            {
+                string val = null;
+                switch (p.Binding) {
+                    case ParamBinding.CustomValue:
+                        val = p.BindingValue;
+                        break;
+                    case ParamBinding.InputField:
+                        if (inputBuffer == null) {
+                            throw new ApplicationException("BindParams was invoked with null inputbuffer and one column mapped to input. This is a logic error. Please contact the developer.");
+                        }
+
+                        int colIndex = BufferManager.FindColumnByLineageID(_parametersInputLane.Buffer, _parametersInputLane.InputColumnCollection[p.BindingValue].LineageID);
+                        val = inputBuffer[colIndex].ToString();
+                        break;
+                    case ParamBinding.Variable:
+                        DataType type;
+                        object varval = Utils.GetVariable(this.VariableDispenser, p.BindingValue, out type);
+                        val = varval.ToString();
+                        break;
+                    default:
+                        throw new ApplicationException("Unexpected binding value for this column.");
+                }
+
+                if (p.Encode)
+                    val = Uri.EscapeUriString(val);
+
+                res[p.Name] = val;
+            }
+
+            return res;
+        }
+        
+        /// <summary>
+        /// This function is used to attach a debugger. Just declare a boolean WK_DEBUG variable with TRUE value and invoke this function
+        /// where you'd like to break.
+        /// </summary>
+        private void AttachDebugger()
         {
             DataType type;
             try
@@ -287,89 +427,6 @@ namespace com.webkingsoft.JSONSource_Common
             catch (Exception e)
             {
                 // Do nothing
-            }
-            
-            try
-            {
-                bool cancel = false;
-
-                // Load the model and fail if no model is found
-                JSONSourceComponentModel m = GetModel(true);
-
-                // If the uri depends on a variable, get it now.
-                Uri uri = null;
-                if (m.DataSource.FromVariable)
-                {
-                    object varval = Utils.GetVariable(this.VariableDispenser, m.DataSource.VariableName, out type);
-                    var uristr = varval.ToString();
-
-                    // Parse the uri
-                    uri = new Uri(uristr);
-                }
-                else {
-                    uri = m.DataSource.SourceUri;
-                }
-
-                // Validation alredy happended. We just double check for some more runtime elements, such as variables mapped values or file presence/existance.
-                if (uri.IsFile)
-                {
-                    if (!File.Exists(uri.LocalPath))
-                        throw new Exception(String.Format("File {0} does not exist.", uri.LocalPath));
-                    
-                }
-
-                // Save the input column index, used to parse parameters for web-requests
-                _parametersInputLane = ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
-
-                // Now perform the IO mapping for fast lookup during JSON Reading
-                // Dictionary<name_of_column, index_of_column_in_pipeline_row>
-                _iomap = m.DataMapping.IoMap.ToArray<IOMapEntry>();                
-                _outColsMaps = new Dictionary<string, int>();
-                foreach (IOMapEntry e in _iomap)
-                {
-                    bool found = false;
-                    foreach (IDTSOutputColumn100 col in base.ComponentMetaData.OutputCollection[0].OutputColumnCollection)
-                    {
-                        if (col.Name == e.OutputColName)
-                        {
-                            found = true;
-                            int colIndex = BufferManager.FindColumnByLineageID(ComponentMetaData.OutputCollection[0].Buffer, col.LineageID);
-                            _outColsMaps.Add(e.OutputColName, colIndex);
-                            break;
-                        }
-                    }
-                    if (!found)
-                    {
-                        // Inconsistency. Throw an error
-                        throw new Exception(string.Format("The component is unable to locate the column named {0} inside the component metadata. Please review the component.", e.OutputColName));
-                    }
-                }
-
-                _inputCopyToOutputMaps = new Dictionary<int, int>();
-                // Fill the fast dictionary for Input to output cols
-                foreach (var inputColName in m.DataMapping.InputColumnsToCopy) {
-                    
-                    // Retrieve the index of the input column and use it as key for the fast dict. Note that for our implementation, input column names matech output column names
-                    // Input column index <-> OutputColumnIndex
-                    int input_index = BufferManager.FindColumnByLineageID(ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].Buffer, ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].InputColumnCollection[inputColName].LineageID);
-                    int output_index = BufferManager.FindColumnByLineageID(ComponentMetaData.OutputCollection[0].Buffer, ComponentMetaData.OutputCollection[0].OutputColumnCollection[inputColName].LineageID);
-                    // Map the input index to the output index
-                    _inputCopyToOutputMaps[input_index] = output_index;
-                }
-
-                // Configure json deserializer:
-                // DateParsing is broken in json.net, since it does not take care of timezone.
-                if (!m.AdvancedSettings.ParseDates)
-                {
-                    _dateParsePolicy = DateParseHandling.None;
-                }
-
-                _model = m;
-            }
-            catch (Exception e) {
-                // TODO!
-                bool cancel;
-                ComponentMetaData.FireError(ComponentConstants.RUNTIME_ERROR_MODEL_INVALID, ComponentMetaData.Name, e.Message, null, 0, out cancel);
             }
         }
 
@@ -384,66 +441,96 @@ namespace com.webkingsoft.JSONSource_Common
         /// <param name="buffers"></param>
         public override void PrimeOutput(int outputs, int[] outputIDs, PipelineBuffer[] buffers)
         {
+            // In case of SOURCE mode, we need to handle all the work here. Otherwise, in TRANSFORMATION mode, we just have to save a pointer
+            // to the outputbuffer and do the work in ProcessInput.
+            
+            // Store a pointer to the output buffers we obtain here.
             if (buffers.Length != 0)
                 _outputbuffer = buffers[0];
             else
                 return;
 
-            // This component might be used as Source or as Transformation. Therefore, the data processing might be done by ProcessInput (if input dependent)
-            // or entirely here if no input has been defined.
-            bool cancel = false;
-            if (ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].IsAttached) {
-                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Detected input lane attached, data processing will depend on inputs.", null, 0, ref cancel);
-                return;
-            }
-
-            // In case there is no input, do the hard work here
-            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "No input lane attached, data processing takes place immediately.", null, 0, ref cancel);
-
-            // The uri might be depending on a variable. If that is the case, calculate it here.
-            if (_model.DataSource.FromVariable)
+            if (_mode == OperationMode.SOURCE)
             {
-                DataType dataType;
-                object variable = Utils.GetVariable(VariableDispenser, _model.DataSource.VariableName, out dataType);
-                if (variable == null)
-                {
-                    bool fireAgain = false;
-                    ComponentMetaData.FireError(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("URI depends on variable {0}. However that variable was not found in this project. ", _model.DataSource.VariableName), null, 0, out fireAgain);
-                    throw new Exception("Invalid Variable name / URI");
-                }
+                Uri uri = ResolveUri(_uriBindingType, _uriBindingValue);
 
-                try
-                {
-                    _uri = new Uri(variable.ToString());
-                }
-                catch (Exception e)
-                {
-                    bool fireAgain = false;
-                    ComponentMetaData.FireError(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("URI depends on variable {0}. The variable content is not a valid URI.", _model.DataSource.VariableName), null, 0, out fireAgain);
-                    throw new Exception("Invalid Variable name / URI");
-                }
-            }
-            else {
-                _uri = _model.DataSource.SourceUri;
-            }
-            
-            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _uri.ToString()), null, 0, ref cancel);
+                bool cancel = false;
 
-            string fname = null;
-            if (_uri.IsFile)
-                fname = _uri.LocalPath;
-            else {
-                fname = Utils.DownloadJson(this.VariableDispenser, _uri, _model.DataSource.WebMethod, _model.DataSource.HttpParameters, _model.DataSource.HttpHeaders, _model.DataSource.CookieVariable);
+                // So we are clear to proceed with the HTTP request.
+                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Component is running in SOURCE MODE.", null, 0, ref cancel);
+
+                bool downloaded;
+                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", uri.ToString()), null, 0, ref cancel);
+                string fname = GetFileFromUri(uri,null,null,out downloaded);
+
                 ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
+
+                // Process data according to IOMappings
+                using (StreamReader sr = new StreamReader(File.Open(fname, FileMode.Open)))
+                    ProcessInMemory(sr, _dataRootType, null, _outputbuffer);
+
+                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Json parsed correctly.", null, 0, ref cancel);
+
+                _outputbuffer.SetEndOfRowset();
+
+                // TODO: UI option to prevent removal of downloaded data?
+                if (downloaded)
+                {
+                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Removing downloaded json file {0}.",fname), null, 0, ref cancel);
+                    File.Delete(fname);
+                }
+
             }
+            else {
+                bool cancel = false;
+                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Component is running in TRANSFORMATION MODE.", null, 0, ref cancel);
+            }
+        }
 
-            // Process data according to IOMappings
-            using (StreamReader sr = new StreamReader(File.Open(fname, FileMode.Open)))
-                ProcessInMemory(sr, _model.DataMapping.RootType, null, _outputbuffer);
+        /// <summary>
+        /// This function takes care of retrieving the file data to be parsed. It alo handles retries.
+        /// </summary>
+        /// <param name="downloaded">True if the file was downloaded, false otherwise.</param>
+        /// <returns>The path of the file to parse</returns>
+        private string GetFileFromUri(Uri uri, Dictionary<string,string> parameters, Dictionary<string,string> headers, out bool downloaded)
+        {
+            // TODO: retry attempts.
+            if (uri.IsFile)
+            {
+                downloaded = false;
+                return uri.LocalPath;
+            }
+            else
+            {
+                CookieContainer cookies = new CookieContainer();
+                downloaded = true;
+                if (!String.IsNullOrEmpty(_cookieVarname))
+                {
+                    DataType type;
+                    cookies = Utils.GetVariable(VariableDispenser, _cookieVarname, out type) as CookieContainer;
+                }
 
-            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Json parsed correctly.", null, 0, ref cancel);
+                var res = Utils.DownloadJson(this.VariableDispenser, uri, _httpMethod, parameters, headers, cookies);
+                
+                // If the cookie container parameter was not null, assign the container to the variable
+                if (!String.IsNullOrEmpty(_cookieVarname))
+                {
+                    IDTSVariables100 vars = null;
+                    try
+                    {
+                        VariableDispenser.LockOneForWrite(_cookieVarname, ref vars);
+                        vars[_cookieVarname].Value = cookies;
+                    }
+                    finally
+                    {
+                        if (vars != null)
+                            vars.Unlock();
+                    }
 
-            _outputbuffer.SetEndOfRowset();
+                }
+
+                return res;
+            }
         }
 
         private PipelineBuffer AddOutputRow(PipelineBuffer inputbuffer) {
@@ -461,35 +548,32 @@ namespace com.webkingsoft.JSONSource_Common
 
         public override void ProcessInput(int inputID, PipelineBuffer inputbuffer)
         {
-            _uri = _model.DataSource.SourceUri;
+            // This method is invoked only when we are in TRANSFORMATION MODE, i.e. we have input-dependant parameters to handle. 
+            // Thus, in here we need to BIND parameters to respective inputs, perform the HTTP request and parse data.
+            // Note: since we only support one input lane, we assume inputID/inputbuffers are always referring to that input lane.
+            
             // This method is invoked only when the component has some inputs to process. Otherwise, if no input has been specified, the PrimeOutput will handle all the job.
             bool cancel = false;
             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Processing inputs...", null, 0, ref cancel);
             try
             {
-                bool downloaded = false;
-                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Detected HTTP Params lane attached. Executing in BATCH mode.", null, 0, ref cancel);
+                bool downloaded;
+                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Detected input lane attached. Executing in BATCH mode.", null, 0, ref cancel);
                 while (inputbuffer.NextRow())
                 {
+                    // For every input row, bind the parameters
+                    Uri uri = ResolveUri(_uriBindingType, _uriBindingValue, inputbuffer);
+
                     // Perform the request with appropriate inputs as HTTP params...
-                    var tmp_params = _model.DataSource.HttpParameters.ToArray();
-                    var tmp_headers = _model.DataSource.HttpHeaders.ToArray();
-                    fillParams(ref tmp_params, ref inputbuffer);
-                    fillParams(ref tmp_headers, ref inputbuffer);
+                    var headers = ResolveParametersBinding(_unboundHttpHeaders);
+                    var parameters = ResolveParametersBinding(_unboundHttpParams);
 
-                    string fname = null;
-                    if (_uri.IsFile)
-                        fname = _uri.LocalPath;
-                    else {
-                        downloaded = true;
-                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", _uri.ToString()), null, 0, ref cancel);
-                        fname = Utils.DownloadJson(this.VariableDispenser, _uri, _model.DataSource.WebMethod, tmp_params, tmp_headers, _model.DataSource.CookieVariable);
-                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
-                    }
-
+                    // TODO FireInfo so that we log each request...
+                    string fname = GetFileFromUri(uri, parameters, headers, out downloaded);
+                    
                     // Process data according to IOMappings
                     using (StreamReader sr = new StreamReader(File.Open(fname, FileMode.Open)))
-                        ProcessInMemory(sr, _model.DataMapping.RootType, inputbuffer, _outputbuffer);
+                        ProcessInMemory(sr, _dataRootType, inputbuffer, _outputbuffer);
 
                     if (downloaded)
                         File.Delete(fname);
@@ -507,21 +591,6 @@ namespace com.webkingsoft.JSONSource_Common
                 bool fireAgain = false;
                 ComponentMetaData.FireError(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, "An error has occurred: " + e.Message + ". \n" + e.StackTrace, null, 0, out fireAgain);
                 return;
-            }
-        }
-
-        /// <summary>
-        /// Given a list of parameters and the input buffer, lookup for input bind paramenters and retrieve their value from the input buffer.
-        /// </summary>
-        /// <param name="httpParameters"></param>
-        /// <param name="buffer"></param>
-        private void fillParams(ref HTTPParameter[] httpParameters, ref PipelineBuffer inputbuffer)
-        {
-            foreach (var p in httpParameters) {
-                if (p.IsInputMapped) {
-                    int colIndex = BufferManager.FindColumnByLineageID(_parametersInputLane.Buffer, _parametersInputLane.InputColumnCollection[p.InputColumnName].LineageID);
-                    p.Value = inputbuffer[colIndex].ToString();
-                }
             }
         }
 
@@ -555,11 +624,11 @@ namespace com.webkingsoft.JSONSource_Common
                     }
 
                     // Get all the tokens returned by the XPath string specified
-                    if (_model.DataMapping.JsonRootPath == null)
-                        _model.DataMapping.JsonRootPath = "";
+                    if (_dataRootPath == null)
+                        _dataRootPath = "";
 
                     // Navigate to the relative Root.
-                    IEnumerable<JToken> els =  o.SelectTokens(_model.DataMapping.JsonRootPath);
+                    IEnumerable<JToken> els =  o.SelectTokens(_dataRootPath);
                     int rootEls = els.Count();
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Array: loaded " + rootEls + " tokens.", null, 0, ref cancel);
 
@@ -832,5 +901,10 @@ namespace com.webkingsoft.JSONSource_Common
         }
 
     }
-    
+
+    enum OperationMode {
+        TRANSFORM,
+        SOURCE
+    }
+
 }

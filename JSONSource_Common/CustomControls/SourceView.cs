@@ -56,6 +56,9 @@ namespace com.webkingsoft.JSONSource_Common
 
         private void direct_variable_check_change(object sender, EventArgs e)
         {
+            inputLaneCb.Enabled = inputLaneR.Checked;
+            inputLaneCb.Visible = inputLaneR.Checked;
+
             addButton.Visible = variableR.Checked;
             addButton.Enabled = variableR.Checked;
             uiWebURL.ReadOnly = variableR.Checked;
@@ -94,13 +97,22 @@ namespace com.webkingsoft.JSONSource_Common
 
             if (variableR.Checked)
             {
-                result.FromVariable = true;
-                result.VariableName = uiWebURL.Text;
+                result.UriBindingType = ParamBinding.Variable;
+                result.UriBindingValue = uiWebURL.Text;
             }
-            else {
-                result.FromVariable = false;
-                result.SourceUri = new Uri(uiWebURL.Text);
+            else if (directInputR.Checked)
+            {
+                result.UriBindingType = ParamBinding.CustomValue;
+                result.UriBindingValue = uiWebURL.Text;
             }
+            else if (inputLaneR.Checked)
+            {
+                result.UriBindingType = ParamBinding.InputField;
+                result.UriBindingValue = inputLaneCb.SelectedText;
+            }
+            else
+                throw new ApplicationException("Invalid Input model specified. Please contact the developer.");
+
             
             if (getRadio.Checked)
                 result.WebMethod = "GET";
@@ -224,17 +236,12 @@ namespace com.webkingsoft.JSONSource_Common
             _tmpHeaders = m.HttpHeaders;
 
             // Fill in the rest of the view using model data
-            variableR.Checked = m.FromVariable; // TODO: Make sure this puts the edit text as readonly
-            if (m.FromVariable)
-            {
-                uiWebURL.Text = m.VariableName;
-            }
-            else {
-                if (m.SourceUri != null)
-                    uiWebURL.Text = m.SourceUri.ToString();
-                else
-                    uiWebURL.Text = "";
-            }
+            inputLaneR.Checked = m.UriBindingType == ParamBinding.CustomValue;
+            variableR.Checked = m.UriBindingType == ParamBinding.Variable;
+            inputLaneR.Checked = m.UriBindingType == ParamBinding.InputField;
+
+            uiWebURL.Text = m.UriBindingValue.ToString();
+
             switch (m.WebMethod) {
                 case "GET":
                     getRadio.Checked = true;

@@ -23,7 +23,7 @@ namespace com.webkingsoft.JSONSource_Common
         {
             _vars = vars;
             InitializeComponent();
-            bindingType.DataSource = Enum.GetNames(typeof(HTTPParamBinding));
+            bindingType.DataSource = Enum.GetNames(typeof(ParamBinding));
             dataGridView1.CellBeginEdit += dataGridView1_CellBeginEdit;
             dataGridView1.CellValueChanged += dataGridView1_CellValueChanged;
             dataGridView1.RowValidating += dataGridView1_RowValidating;
@@ -63,15 +63,15 @@ namespace com.webkingsoft.JSONSource_Common
             }
 
             // 2. Tipo di binding
-            HTTPParamBinding bin;
-            if (!Enum.TryParse<HTTPParamBinding>(binding.Value.ToString(), out bin)) {
+            ParamBinding bin;
+            if (!Enum.TryParse<ParamBinding>(binding.Value.ToString(), out bin)) {
                 d.Rows[e.RowIndex].Cells[1].ErrorText = "Invalid binding option specified.";
                 e.Cancel = true;
                 return;
             }
 
             // 3. Valore: se è di tipo bound, controlla che la variabile specificata esista. Se no, accetta tutto. Per noi un parametro HTTP può anche essere nullo.
-            if (bin == HTTPParamBinding.Variable)
+            if (bin == ParamBinding.Variable)
             {
                 string var = value.Value.ToString().Trim();
                 bool valid = false;
@@ -90,7 +90,7 @@ namespace com.webkingsoft.JSONSource_Common
                     return;
                 }
             }
-            else if (bin == HTTPParamBinding.InputField) {
+            else if (bin == ParamBinding.InputField) {
                 if (value.Value == null)
                 {
                     d.Rows[e.RowIndex].Cells[2].ErrorText = "Invalid input choosen";
@@ -114,15 +114,15 @@ namespace com.webkingsoft.JSONSource_Common
             // If binding type is either variable or custom, just leave it as textbox, otherwise keep it as combobox
             if (e.ColumnIndex == 1) {
                 DataGridView d = (DataGridView)sender;
-                HTTPParamBinding b = (HTTPParamBinding)Enum.Parse(typeof(HTTPParamBinding), d.Rows[e.RowIndex].Cells[1].Value.ToString());
+                ParamBinding b = (ParamBinding)Enum.Parse(typeof(ParamBinding), d.Rows[e.RowIndex].Cells[1].Value.ToString());
 
-                if (b == HTTPParamBinding.Variable || b == HTTPParamBinding.CustomValue)
+                if (b == ParamBinding.Variable || b == ParamBinding.CustomValue)
                 {
                     d.Rows[e.RowIndex].Cells[2].Value = null;
                     d.Rows[e.RowIndex].Cells[2] = new DataGridViewTextBoxCell();
 
-                } else if (b == HTTPParamBinding.InputField) {
-                    d.Rows[e.RowIndex].Cells[2].ValueType = typeof(HTTPParamBinding);
+                } else if (b == ParamBinding.InputField) {
+                    d.Rows[e.RowIndex].Cells[2].ValueType = typeof(ParamBinding);
                     var cbox = new DataGridViewComboBoxCell();
                     cbox.DataSource = _input_options;
                     d.Rows[e.RowIndex].Cells[2] = cbox;
@@ -139,9 +139,9 @@ namespace com.webkingsoft.JSONSource_Common
             DataGridView d = (DataGridView)sender;
             // Se si sta per modificare il valore del parametro...
             if (e.ColumnIndex == 2) {
-                HTTPParamBinding b = (HTTPParamBinding)Enum.Parse(typeof(HTTPParamBinding), d.Rows[e.RowIndex].Cells[1].Value.ToString());
+                ParamBinding b = (ParamBinding)Enum.Parse(typeof(ParamBinding), d.Rows[e.RowIndex].Cells[1].Value.ToString());
                 // Se la riga corrente si riferisce ad un parametro variable-bound, fai in modo che si apra il popup della scelta delle variabili.
-                if (b == HTTPParamBinding.Variable)
+                if (b == ParamBinding.Variable)
                 {
                     // Mostra il dialog di scelta delle variabili
                     VariableChooser vc = new VariableChooser(_vars);
@@ -154,7 +154,7 @@ namespace com.webkingsoft.JSONSource_Common
                         //d.EndEdit();
                     }
                 }
-                else if (b == HTTPParamBinding.InputField) {
+                else if (b == ParamBinding.InputField) {
                     if (_input_options == null || _input_options.Length < 1)
                     {
                         MessageBox.Show("There is no input attached to this lane. First attach an input, then you'll be able to select a vale from this box.");
@@ -173,7 +173,7 @@ namespace com.webkingsoft.JSONSource_Common
         {
             int r = dataGridView1.Rows.Add();
             dataGridView1.Rows[r].Cells[0].Value = null;
-            dataGridView1.Rows[r].Cells[1].Value = Enum.GetName(typeof(HTTPParamBinding),HTTPParamBinding.CustomValue);
+            dataGridView1.Rows[r].Cells[1].Value = Enum.GetName(typeof(ParamBinding),ParamBinding.CustomValue);
             dataGridView1.Rows[r].Cells[2].Value = null;
             dataGridView1.Rows[r].Cells[3].Value = false;
             dataGridView1.CurrentCell = dataGridView1.Rows[r].Cells[0];
@@ -188,15 +188,13 @@ namespace com.webkingsoft.JSONSource_Common
             foreach (DataGridViewRow row in dataGridView1.Rows) {
                 HTTPParameter p = new HTTPParameter();
                 p.Name = row.Cells[0].Value.ToString().Trim();
-                p.Binding = (HTTPParamBinding) Enum.Parse(typeof(HTTPParamBinding), row.Cells[1].Value.ToString().Trim());
+                p.Binding = (ParamBinding) Enum.Parse(typeof(ParamBinding), row.Cells[1].Value.ToString().Trim());
 
-                if (p.Binding == HTTPParamBinding.InputField) {
-                    p.Value = null;
-                    p.InputColumnName = (string)row.Cells[2].Value;
+                if (p.Binding == ParamBinding.InputField) {
+                    p.BindingValue = (string)row.Cells[2].Value;
                 } else
                 {
-                    p.InputColumnName = null;
-                    p.Value = row.Cells[2].Value.ToString().Trim();
+                    p.BindingValue= row.Cells[2].Value.ToString().Trim();
                 }
                 
                 p.Encode = (bool)row.Cells[3].Value;
@@ -211,7 +209,7 @@ namespace com.webkingsoft.JSONSource_Common
             dataGridView1.Rows.Clear();
             if (pars!=null)
                 foreach (HTTPParameter p in pars) {
-                    if (p.Binding == HTTPParamBinding.InputField)
+                    if (p.Binding == ParamBinding.InputField)
                     {
                         string bind = null;
                         // Check if the input column is available
@@ -219,8 +217,8 @@ namespace com.webkingsoft.JSONSource_Common
                             // Column might have been deleted
                             bind = null;
                         else {
-                            if (_input_options.Contains(p.InputColumnName))
-                                bind = p.InputColumnName;
+                            if (_input_options.Contains(p.BindingValue))
+                                bind = p.BindingValue;
                         }
 
                         if (bind == null)
@@ -235,7 +233,7 @@ namespace com.webkingsoft.JSONSource_Common
                         dataGridView1.Rows[index].Cells[2] = cbox;
 
                         dataGridView1.Rows[index].Cells[0].Value = p.Name;
-                        dataGridView1.Rows[index].Cells[1].Value = Enum.GetName(typeof(HTTPParamBinding), p.Binding);
+                        dataGridView1.Rows[index].Cells[1].Value = Enum.GetName(typeof(ParamBinding), p.Binding);
                         if (bind != null)
                             dataGridView1.Rows[index].Cells[2].Value = bind;
                         else
@@ -244,7 +242,7 @@ namespace com.webkingsoft.JSONSource_Common
                         dataGridView1.Rows[index].Cells[3].Value = p.Encode;
                     }
                     else {
-                        dataGridView1.Rows.Add(new object[] { p.Name, Enum.GetName(typeof(HTTPParamBinding), p.Binding), p.Value, p.Encode });
+                        dataGridView1.Rows.Add(new object[] { p.Name, Enum.GetName(typeof(ParamBinding), p.Binding), p.BindingValue, p.Encode });
                     }
                     _model.Add(p);
                 }

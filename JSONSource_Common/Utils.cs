@@ -33,13 +33,11 @@ namespace com.webkingsoft.JSONSource_Common
             }
         }
 
-        private static string DownloadJsonFile(Uri url, string method, IEnumerable<KeyValuePair<string, string>> encodedpars, Dictionary<string, string> headers, ref CookieContainer cookiecontainer, string customLocalTempDir)
+        private static string DownloadJsonFile(Uri url, string method, Dictionary<string, string> encodedpars, Dictionary<string, string> headers, ref CookieContainer cookiecontainer, string customLocalTempDir)
         {
             string localTmp = null;
             string filePath = null;
-
-
-
+            
             if (url == null || string.IsNullOrEmpty(url.AbsolutePath))
                 throw new ArgumentException("Url parameter was null or empty.");
             if (method == null)
@@ -232,16 +230,10 @@ namespace com.webkingsoft.JSONSource_Common
             return res;
         }*/
 
-        public static string DownloadJson(IDTSVariableDispenser100 vd, Uri url, string method, IEnumerable<HTTPParameter> parameters, IEnumerable<HTTPParameter> headers, string cookievar, string customLocalTempDir = null)
+        public static string DownloadJson(IDTSVariableDispenser100 vd, Uri url, string method, Dictionary<string, string> parameters, Dictionary<string, string> headers, CookieContainer cookies, string customLocalTempDir = null)
         {
-            // Recupera la variabie di cookiecontainer, se specificata
-            if (String.IsNullOrEmpty(method))
-                throw new ArgumentException("Invalid method specified.");
-
             method = method.ToUpper();
             UriBuilder b = new UriBuilder(url);
-
-            List<KeyValuePair<string,string>> postParams = new List<KeyValuePair<string,string>>();
 
             // Build the Request URL. 
             // GET and DELETE require parameters to be encoded directly into the URL.
@@ -250,35 +242,11 @@ namespace com.webkingsoft.JSONSource_Common
                 StringBuilder queryToAppend = new StringBuilder();
                 foreach (var param in parameters) {
                     // Name
-                    if (param.Encode)
-                        queryToAppend.Append(Uri.EscapeUriString(param.Name));
-                    else
-                        queryToAppend.Append(param.Name);
+                    queryToAppend.Append(param.Key);
                     // =
                     queryToAppend.Append("=");
-                    
                     // Value
-                    string val = null;
-                    if (param.Binding == HTTPParamBinding.CustomValue)
-                        val = param.Value;
-                    else if (param.Binding == HTTPParamBinding.Variable)
-                    {
-                        DataType type;
-                        val = GetVariable(vd, param.Value, out type).ToString();
-                    }
-                    else if (param.Binding == HTTPParamBinding.InputField)
-                    {
-                        val = param.Value;
-                    }
-                    else {
-                        throw new Exception("Unespected binding type");
-                    }
-
-                    if (param.Encode)
-                        val = Uri.EscapeUriString(val);
-
-                    queryToAppend.Append(val);
-
+                    queryToAppend.Append(param.Value);
                     // Next
                     queryToAppend.Append("&");
                 }
@@ -296,95 +264,15 @@ namespace com.webkingsoft.JSONSource_Common
                 else
                     b.Query = queryToAppend.ToString();
 
-            }
-
-            // POST and PUT require different handling. Data should be parametrized into the body
-            else if (parameters != null) {
-                // Costruisci la lista key-value
-                foreach (var param in parameters) {
-                    // Name
-                    string key = null;
-                    string value = null;
-
-                    if (param.Encode)
-                        key = Uri.EscapeUriString(param.Name);
-                    else
-                        key = param.Name;
-                    
-                    // Value
-                    if (param.Binding == HTTPParamBinding.CustomValue)
-                        value = param.Value;
-                    else if (param.Binding == HTTPParamBinding.Variable)
-                    {
-                        DataType type;
-                        value = GetVariable(vd, param.Value, out type).ToString();
-                    }
-
-                    if (param.Encode)
-                        value = Uri.EscapeUriString(value);
-                    KeyValuePair<string,string> pair = new KeyValuePair<string,string>(key,value);
-                    postParams.Add(pair);
-                }
-            }
-
-            Dictionary<string, string> http_hreaders = null;
-            // Headers handling
-            if (headers != null)
-            {
-                http_hreaders = new Dictionary<string, string>();
-                foreach (var header in headers)
-                {
-                    // Value
-                    string val = null;
-                    if (header.Binding == HTTPParamBinding.CustomValue)
-                        val = header.Value;
-                    else if (header.Binding == HTTPParamBinding.Variable)
-                    {
-                        DataType type;
-                        val = GetVariable(vd, header.Value, out type).ToString();
-                    }
-                    else if (header.Binding == HTTPParamBinding.InputField)
-                    {
-                        val = header.Value;
-                    }
-                    else
-                    {
-                        throw new Exception("Unespected binding type");
-                    }
-
-                    if (header.Encode)
-                        val = Uri.EscapeUriString(val);
-
-                    http_hreaders.Add(header.Name, val);
-                }
-            }
-
+            }          
+            
+            
             CookieContainer cc = null;
-            if (!String.IsNullOrEmpty(cookievar)) { 
-                DataType type;
-                cc = GetVariable(vd, cookievar, out type) as CookieContainer;
-            }
             if (cc == null)
                 cc = new CookieContainer();
 
-            string res = DownloadJsonFile(b.Uri, method, postParams, http_hreaders, ref cc, customLocalTempDir);
-
-            // If the cookie container parameter was not null, assign the container to the variable
-            if (!String.IsNullOrEmpty(cookievar))
-            {
-                IDTSVariables100 vars = null;
-                try
-                {
-                    vd.LockOneForWrite(cookievar, ref vars);
-                    vars[cookievar].Value = cc;
-                }
-                finally {
-                    if (vars != null)
-                        vars.Unlock();
-                }
-                
-            }
-
+            string res = DownloadJsonFile(b.Uri, method, parameters, headers, ref cc, customLocalTempDir);
+            
             return res;
             
         }

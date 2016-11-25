@@ -100,12 +100,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentConstants.cs" />
-    <Compile Include="ComponentTester.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ComponentTester.designer.cs">
-      <DependentUpon>ComponentTester.cs</DependentUpon>
-    </Compile>
     <Compile Include="Exceptions\BrokenModelException.cs" />
     <Compile Include="Exceptions\ModelNotFoundException.cs" />
     <Compile Include="HTTPParametersGui.cs">
@@ -140,7 +134,7 @@
       <DependentUpon>SourceView.cs</DependentUpon>
     </Compile>
     <Compile Include="Enum.cs" />
-    <Compile Include="HTTPParamBinding.cs" />
+    <Compile Include="ParamBinding.cs" />
     <Compile Include="HTTPParameter.cs" />
     <Compile Include="IOMapEntry.cs" />
     <Compile Include="JSONSourceComponent.cs" />
@@ -190,9 +184,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ComponentTester.resx">
-      <DependentUpon>ComponentTester.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="CustomControls\AdvancedView.resx">
       <DependentUpon>AdvancedView.cs</DependentUpon>
     </EmbeddedResource>

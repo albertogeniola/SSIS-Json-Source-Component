@@ -75,35 +75,32 @@ namespace com.webkingsoft.JSONSource_Common
             warn = "";
 
             // If the component relies on a variable value, make sure it exists
-            if (FromVariable) {
-                if (string.IsNullOrEmpty(VariableName))
-                {
-                    err = "Variable " + VariableName + " isn't valid.";
-                    return false;
-                }
-
-                // Note that we can't validate here the variable contents and we can't even check if the variable exists. 
-                // This checks are done at runtime, before parsing the data. Just fire a warning.
-                warn += "You've specified variable source. No validation check is performed by the designer. This value will be validated at runtime, so make sure it is consistent.\n";
-
-                // TODO: add run-time validation for this case.        
-            }
-            // If the URI has been hard-coded, we may perform additional checks.
-            else {
-                if (SourceUri == null)
-                {
-                    err = "URI is invalid";
-                    return false;
-                }
-
-                // If the source URI is a fileUri, make sure it exists.
-                if (SourceUri.IsFile) {
-                    if (!File.Exists(SourceUri.LocalPath)) {
-                        err = "Variable " + VariableName + " isn't valid.";
+            switch (UriBindingType) {
+                case ParamBinding.Variable:
+                    if (string.IsNullOrEmpty(UriBindingValue))
+                    {
+                        err = "Variable " + UriBindingValue + " isn't valid.";
                         return false;
                     }
-                }
-            }
+
+                    // Note that we can't validate here the variable contents and we can't even check if the variable exists. 
+                    // This checks are done at runtime, before parsing the data. Just fire a warning.
+                    warn += "You've specified variable source. No validation check is performed by the designer. This value will be validated at runtime, so make sure it is consistent.\n";
+
+                    // TODO: add run-time validation for this case.        
+                    break;
+
+                case ParamBinding.CustomValue:
+                    if (UriBindingValue == null)
+                    {
+                        err = "URI is invalid";
+                        return false;
+                    }
+                    break;
+                default:
+                    err = "Parameter binding for URI is invalid/unsupported.";
+                    return false;
+            }    
             return true;
         }
 
@@ -119,28 +116,22 @@ namespace com.webkingsoft.JSONSource_Common
         }
 
         /// <summary>
-        /// Represents the data source URI. Can either be HTTP or FILE.
+        /// Represents the binding value that is resolved at runtime according to the BindingType
         /// </summary>
         [JsonProperty]
-        public Uri SourceUri
+        public string UriBindingValue
         {
             get; set;
         }
 
         /// <summary>
-        /// This flag indicates if the URI should be collected looking into a variable name or via hardcoded URI
+        /// Represents how do we retrieve the SourceUri value.
         /// </summary>
         [JsonProperty]
-        public bool FromVariable {
-            get; set;
-        }
-
-        /// <summary>
-        /// Represents the name of the variable containing the URI where to get fata from.
-        /// </summary>
-        [JsonProperty]
-        public string VariableName {
-            get; set;
+        public ParamBinding UriBindingType
+        {
+            get;
+            set;
         }
 
         #region Web settings

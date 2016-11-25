@@ -42,16 +42,19 @@
             this.httpparams = new System.Windows.Forms.Button();
             this.variableR = new System.Windows.Forms.RadioButton();
             this.directInputR = new System.Windows.Forms.RadioButton();
-            this.label1 = new System.Windows.Forms.Label();
             this.browseButton = new System.Windows.Forms.Button();
             this.addButton = new System.Windows.Forms.Button();
             this.uiCustomUrlGroup = new System.Windows.Forms.GroupBox();
             this.header_button = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.inputLaneR = new System.Windows.Forms.RadioButton();
+            this.inputLaneCb = new System.Windows.Forms.ComboBox();
+            this.urlInputModeGb = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.cookieGroup.SuspendLayout();
             this.uiCustomUrlGroup.SuspendLayout();
+            this.urlInputModeGb.SuspendLayout();
             this.SuspendLayout();
             // 
             // uiWebURL
@@ -184,11 +187,11 @@
             // 
             this.variableR.AutoSize = true;
             this.variableR.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.variableR.Location = new System.Drawing.Point(105, 124);
+            this.variableR.Location = new System.Drawing.Point(207, 15);
             this.variableR.Name = "variableR";
-            this.variableR.Size = new System.Drawing.Size(63, 17);
+            this.variableR.Size = new System.Drawing.Size(90, 17);
             this.variableR.TabIndex = 24;
-            this.variableR.Text = "Variable";
+            this.variableR.Text = "From variable";
             this.variableR.UseVisualStyleBackColor = true;
             this.variableR.CheckedChanged += new System.EventHandler(this.direct_variable_check_change);
             // 
@@ -197,24 +200,15 @@
             this.directInputR.AutoSize = true;
             this.directInputR.Checked = true;
             this.directInputR.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.directInputR.Location = new System.Drawing.Point(19, 124);
+            this.directInputR.Location = new System.Drawing.Point(6, 15);
             this.directInputR.Name = "directInputR";
-            this.directInputR.Size = new System.Drawing.Size(82, 17);
+            this.directInputR.Size = new System.Drawing.Size(90, 17);
             this.directInputR.TabIndex = 25;
             this.directInputR.TabStop = true;
-            this.directInputR.Text = "Direct Input";
+            this.directInputR.Tag = "";
+            this.directInputR.Text = "Custom Value";
             this.directInputR.UseVisualStyleBackColor = true;
             this.directInputR.CheckedChanged += new System.EventHandler(this.direct_variable_check_change);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(16, 108);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 13);
-            this.label1.TabIndex = 26;
-            this.label1.Text = "Mode:";
             // 
             // browseButton
             // 
@@ -241,13 +235,12 @@
             // 
             // uiCustomUrlGroup
             // 
+            this.uiCustomUrlGroup.Controls.Add(this.urlInputModeGb);
+            this.uiCustomUrlGroup.Controls.Add(this.inputLaneCb);
             this.uiCustomUrlGroup.Controls.Add(this.header_button);
             this.uiCustomUrlGroup.Controls.Add(this.richTextBox1);
             this.uiCustomUrlGroup.Controls.Add(this.addButton);
             this.uiCustomUrlGroup.Controls.Add(this.browseButton);
-            this.uiCustomUrlGroup.Controls.Add(this.label1);
-            this.uiCustomUrlGroup.Controls.Add(this.directInputR);
-            this.uiCustomUrlGroup.Controls.Add(this.variableR);
             this.uiCustomUrlGroup.Controls.Add(this.httpparams);
             this.uiCustomUrlGroup.Controls.Add(this.cookieGroup);
             this.uiCustomUrlGroup.Controls.Add(this.groupBox1);
@@ -289,6 +282,39 @@
             this.openFileDialog1.Filter = "JSON File|*.json|Txt files|*.txt|All files|*.*";
             this.openFileDialog1.ShowReadOnly = true;
             // 
+            // inputLaneR
+            // 
+            this.inputLaneR.AutoSize = true;
+            this.inputLaneR.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inputLaneR.Location = new System.Drawing.Point(102, 15);
+            this.inputLaneR.Name = "inputLaneR";
+            this.inputLaneR.Size = new System.Drawing.Size(99, 17);
+            this.inputLaneR.TabIndex = 31;
+            this.inputLaneR.Text = "From input lane";
+            this.inputLaneR.UseVisualStyleBackColor = true;
+            // 
+            // inputLaneCb
+            // 
+            this.inputLaneCb.Enabled = false;
+            this.inputLaneCb.FormattingEnabled = true;
+            this.inputLaneCb.Location = new System.Drawing.Point(19, 147);
+            this.inputLaneCb.Name = "inputLaneCb";
+            this.inputLaneCb.Size = new System.Drawing.Size(417, 21);
+            this.inputLaneCb.TabIndex = 32;
+            this.inputLaneCb.Visible = false;
+            // 
+            // urlInputModeGb
+            // 
+            this.urlInputModeGb.Controls.Add(this.directInputR);
+            this.urlInputModeGb.Controls.Add(this.inputLaneR);
+            this.urlInputModeGb.Controls.Add(this.variableR);
+            this.urlInputModeGb.Location = new System.Drawing.Point(19, 103);
+            this.urlInputModeGb.Name = "urlInputModeGb";
+            this.urlInputModeGb.Size = new System.Drawing.Size(417, 38);
+            this.urlInputModeGb.TabIndex = 33;
+            this.urlInputModeGb.TabStop = false;
+            this.urlInputModeGb.Text = "URL Input:";
+            // 
             // SourceView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -302,6 +328,8 @@
             this.cookieGroup.PerformLayout();
             this.uiCustomUrlGroup.ResumeLayout(false);
             this.uiCustomUrlGroup.PerformLayout();
+            this.urlInputModeGb.ResumeLayout(false);
+            this.urlInputModeGb.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -321,12 +349,14 @@
         private System.Windows.Forms.Button httpparams;
         private System.Windows.Forms.RadioButton variableR;
         private System.Windows.Forms.RadioButton directInputR;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button browseButton;
         private System.Windows.Forms.Button addButton;
         private System.Windows.Forms.GroupBox uiCustomUrlGroup;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button header_button;
+        private System.Windows.Forms.RadioButton inputLaneR;
+        private System.Windows.Forms.ComboBox inputLaneCb;
+        private System.Windows.Forms.GroupBox urlInputModeGb;
     }
 }

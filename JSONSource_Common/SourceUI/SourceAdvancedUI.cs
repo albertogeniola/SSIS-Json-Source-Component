@@ -132,9 +132,10 @@ namespace com.webkingsoft.JSONSource_Common
 
         private void testButton_Click(object sender, EventArgs e)
         {
-            SaveModel();
-            var tester = new ComponentTester(_savedModel);
-            tester.ShowDialog();
+            MessageBox.Show("Sorry, this functionality is still under development!");
+            //SaveModel();
+            //var tester = new ComponentTester(_savedModel);
+            //tester.ShowDialog();
         }
 
         private void label3_Click(object sender, EventArgs e)

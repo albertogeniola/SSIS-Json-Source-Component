@@ -15,22 +15,13 @@ namespace com.webkingsoft.JSONSource_Common
             set;
         }
 
-        public bool IsInputMapped {
-            get { return Binding == HTTPParamBinding.InputField; }
-        }
-
-        public string InputColumnName {
-            get;
-            set;
-        }
-
-        public string Value
+        public string BindingValue
         {
             get;
             set;
         }
 
-        public HTTPParamBinding Binding
+        public ParamBinding Binding
         {
             get;
             set;

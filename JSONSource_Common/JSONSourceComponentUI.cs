@@ -61,8 +61,8 @@ namespace com.webkingsoft.JSONSource_Common
                     inputColumnsToAdd.Add(incol);
                 }
                 foreach (var p in _model.DataSource.HttpParameters) {
-                    if (p.IsInputMapped) {
-                        inputColumnsToAdd.Add(p.InputColumnName);
+                    if (p.Binding == ParamBinding.InputField) {
+                        inputColumnsToAdd.Add(p.BindingValue);
                     }
                 }
 
