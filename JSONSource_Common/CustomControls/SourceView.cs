@@ -31,6 +31,9 @@ namespace com.webkingsoft.JSONSource_Common
             _tmpParams = new List<HTTPParameter>();
             _tmpHeaders = new List<HTTPParameter>();
             InitializeComponent();
+
+            foreach (IDTSVirtualInputColumn100 i in inputs)
+                inputLaneCb.Items.Add(i.Name);
         }
         
         public string GetHTTPMethod() {
@@ -58,6 +61,7 @@ namespace com.webkingsoft.JSONSource_Common
         {
             inputLaneCb.Enabled = inputLaneR.Checked;
             inputLaneCb.Visible = inputLaneR.Checked;
+            uiWebURL.Visible = variableR.Checked || directInputR.Checked;
 
             addButton.Visible = variableR.Checked;
             addButton.Enabled = variableR.Checked;
@@ -236,9 +240,11 @@ namespace com.webkingsoft.JSONSource_Common
             _tmpHeaders = m.HttpHeaders;
 
             // Fill in the rest of the view using model data
-            inputLaneR.Checked = m.UriBindingType == ParamBinding.CustomValue;
+            directInputR.Checked = m.UriBindingType == ParamBinding.CustomValue;
             variableR.Checked = m.UriBindingType == ParamBinding.Variable;
             inputLaneR.Checked = m.UriBindingType == ParamBinding.InputField;
+            
+            inputLaneCb.SelectedText = m.UriBindingValue;
 
             uiWebURL.Text = m.UriBindingValue.ToString();
 

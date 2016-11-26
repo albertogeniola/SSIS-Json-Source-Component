@@ -69,6 +69,8 @@ namespace com.webkingsoft.JSONSource_Common
 
         public override void PerformUpgrade(int pipelineVersion)
         {
+            AttachDebugger();
+
             DataType type;
             try
             {
@@ -98,7 +100,7 @@ namespace com.webkingsoft.JSONSource_Common
 
                 if (metaDataVersion == 1) {
                     // In this version we changed some properties. So we need to align to the new ones.
-                    var m = ComponentMetaData.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL].ToString();
+                    var m = ComponentMetaData.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL].Value.ToString();
                     dynamic previous = JsonConvert.DeserializeObject(m);
 
                     JSONSourceComponentModel current = new JSONSourceComponentModel();
@@ -108,27 +110,42 @@ namespace com.webkingsoft.JSONSource_Common
                     JSONDataSourceModel sourceModel = new JSONDataSourceModel();
 
                     // We added the URIBinding type parameter. This is based on the previous combination of FromVariable.
-                    if (previous.DataSource.FromVariable)
+                    if ((bool)previous.DataSource.FromVariable)
                     {
                         sourceModel.UriBindingType = ParamBinding.Variable;
-                        sourceModel.UriBindingValue = previous.DataSource.VariableName;
+                        sourceModel.UriBindingValue = (string)previous.DataSource.VariableName;
                     }
                     else {
                         sourceModel.UriBindingType = ParamBinding.CustomValue;
-                        sourceModel.UriBindingValue = previous.DataSource.SourceUri.ToString();
+                        sourceModel.UriBindingValue = (string)previous.DataSource.SourceUri.ToString();
                     }
 
                     // The rest just remains the same
-                    sourceModel.CookieVariable = previous.DataSource.CookieVariable;
-                    sourceModel.HttpHeaders = previous.DataSource.HttpHeaders;
-                    sourceModel.HttpParameters = previous.DataSource.HttpParameters;
-                    sourceModel.WebMethod = previous.DataSource.WebMethod;
+                    sourceModel.CookieVariable = (string)previous.DataSource.CookieVariable;
+                    List<HTTPParameter> headers = new List<HTTPParameter>();
+
+                    if (previous.DataSource.HttpHeaders!= null)
+                        foreach (var param in previous.DataSource.HttpHeaders)
+                        {
+                            headers.Add((HTTPParameter)param);
+                        }
+                    sourceModel.HttpHeaders = headers;
+
+                    List<HTTPParameter> parameters = new List<HTTPParameter>();
+                    if (previous.DataSource.HttpParameters != null)
+                        foreach (var param in previous.DataSource.HttpParameters)
+                        {
+                            parameters.Add((HTTPParameter)param);
+                        }
+                    sourceModel.HttpParameters = parameters;
+
+                    sourceModel.WebMethod = (string)previous.DataSource.WebMethod;
 
                     // Save the modified portion of the model
                     current.DataSource = sourceModel;
                     // Now just copy the other two sub-models
-                    current.DataMapping = previous.DataMapping;
-                    current.AdvancedSettings = previous.AdvancedSettings;
+                    current.DataMapping = JSONDataMappingModel.LoadFromJson(previous.DataMapping.ToString());
+                    current.AdvancedSettings = JSONAdvancedSettingsModel.LoadFromJson(previous.AdvancedSettings.ToString());
 
                     // Now just overwrite the saved model
                     ComponentMetaData.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL].Value = current.ToJsonConfig();

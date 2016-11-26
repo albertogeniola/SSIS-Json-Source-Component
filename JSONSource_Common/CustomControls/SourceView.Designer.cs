@@ -45,12 +45,12 @@
             this.browseButton = new System.Windows.Forms.Button();
             this.addButton = new System.Windows.Forms.Button();
             this.uiCustomUrlGroup = new System.Windows.Forms.GroupBox();
+            this.urlInputModeGb = new System.Windows.Forms.GroupBox();
+            this.inputLaneR = new System.Windows.Forms.RadioButton();
+            this.inputLaneCb = new System.Windows.Forms.ComboBox();
             this.header_button = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.inputLaneR = new System.Windows.Forms.RadioButton();
-            this.inputLaneCb = new System.Windows.Forms.ComboBox();
-            this.urlInputModeGb = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.cookieGroup.SuspendLayout();
             this.uiCustomUrlGroup.SuspendLayout();
@@ -254,6 +254,40 @@
             this.uiCustomUrlGroup.TabStop = false;
             this.uiCustomUrlGroup.Text = "Data source configuration";
             // 
+            // urlInputModeGb
+            // 
+            this.urlInputModeGb.Controls.Add(this.directInputR);
+            this.urlInputModeGb.Controls.Add(this.inputLaneR);
+            this.urlInputModeGb.Controls.Add(this.variableR);
+            this.urlInputModeGb.Location = new System.Drawing.Point(19, 103);
+            this.urlInputModeGb.Name = "urlInputModeGb";
+            this.urlInputModeGb.Size = new System.Drawing.Size(417, 38);
+            this.urlInputModeGb.TabIndex = 33;
+            this.urlInputModeGb.TabStop = false;
+            this.urlInputModeGb.Text = "URL Input:";
+            // 
+            // inputLaneR
+            // 
+            this.inputLaneR.AutoSize = true;
+            this.inputLaneR.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inputLaneR.Location = new System.Drawing.Point(102, 15);
+            this.inputLaneR.Name = "inputLaneR";
+            this.inputLaneR.Size = new System.Drawing.Size(99, 17);
+            this.inputLaneR.TabIndex = 31;
+            this.inputLaneR.Text = "From input lane";
+            this.inputLaneR.UseVisualStyleBackColor = true;
+            this.inputLaneR.CheckedChanged += new System.EventHandler(this.direct_variable_check_change);
+            // 
+            // inputLaneCb
+            // 
+            this.inputLaneCb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.inputLaneCb.Enabled = false;
+            this.inputLaneCb.Location = new System.Drawing.Point(19, 147);
+            this.inputLaneCb.Name = "inputLaneCb";
+            this.inputLaneCb.Size = new System.Drawing.Size(417, 21);
+            this.inputLaneCb.TabIndex = 32;
+            this.inputLaneCb.Visible = false;
+            // 
             // header_button
             // 
             this.header_button.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -281,39 +315,6 @@
             this.openFileDialog1.FileName = "openFileDialog1";
             this.openFileDialog1.Filter = "JSON File|*.json|Txt files|*.txt|All files|*.*";
             this.openFileDialog1.ShowReadOnly = true;
-            // 
-            // inputLaneR
-            // 
-            this.inputLaneR.AutoSize = true;
-            this.inputLaneR.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.inputLaneR.Location = new System.Drawing.Point(102, 15);
-            this.inputLaneR.Name = "inputLaneR";
-            this.inputLaneR.Size = new System.Drawing.Size(99, 17);
-            this.inputLaneR.TabIndex = 31;
-            this.inputLaneR.Text = "From input lane";
-            this.inputLaneR.UseVisualStyleBackColor = true;
-            // 
-            // inputLaneCb
-            // 
-            this.inputLaneCb.Enabled = false;
-            this.inputLaneCb.FormattingEnabled = true;
-            this.inputLaneCb.Location = new System.Drawing.Point(19, 147);
-            this.inputLaneCb.Name = "inputLaneCb";
-            this.inputLaneCb.Size = new System.Drawing.Size(417, 21);
-            this.inputLaneCb.TabIndex = 32;
-            this.inputLaneCb.Visible = false;
-            // 
-            // urlInputModeGb
-            // 
-            this.urlInputModeGb.Controls.Add(this.directInputR);
-            this.urlInputModeGb.Controls.Add(this.inputLaneR);
-            this.urlInputModeGb.Controls.Add(this.variableR);
-            this.urlInputModeGb.Location = new System.Drawing.Point(19, 103);
-            this.urlInputModeGb.Name = "urlInputModeGb";
-            this.urlInputModeGb.Size = new System.Drawing.Size(417, 38);
-            this.urlInputModeGb.TabIndex = 33;
-            this.urlInputModeGb.TabStop = false;
-            this.urlInputModeGb.Text = "URL Input:";
             // 
             // SourceView
             // 
