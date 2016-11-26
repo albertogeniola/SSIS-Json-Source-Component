@@ -112,7 +112,7 @@ namespace com.webkingsoft.JSONSource_Common
             else if (inputLaneR.Checked)
             {
                 result.UriBindingType = ParamBinding.InputField;
-                result.UriBindingValue = inputLaneCb.SelectedText;
+                result.UriBindingValue = inputLaneCb.SelectedItem.ToString();
             }
             else
                 throw new ApplicationException("Invalid Input model specified. Please contact the developer.");
@@ -244,7 +244,7 @@ namespace com.webkingsoft.JSONSource_Common
             variableR.Checked = m.UriBindingType == ParamBinding.Variable;
             inputLaneR.Checked = m.UriBindingType == ParamBinding.InputField;
             
-            inputLaneCb.SelectedText = m.UriBindingValue;
+            inputLaneCb.SelectedItem = m.UriBindingValue;
 
             uiWebURL.Text = m.UriBindingValue.ToString();
 

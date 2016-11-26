@@ -97,6 +97,9 @@ namespace com.webkingsoft.JSONSource_Common
                         return false;
                     }
                     break;
+                case ParamBinding.InputField:
+                    // Cannot verify it here, so just skip it.
+                    break;
                 default:
                     err = "Parameter binding for URI is invalid/unsupported.";
                     return false;

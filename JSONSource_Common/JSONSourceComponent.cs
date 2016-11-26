@@ -417,7 +417,8 @@ namespace com.webkingsoft.JSONSource_Common
                 case ParamBinding.InputField:
                     if (inputBuffer == null)
                         throw new ApplicationException("Bind data was called with a null inputbuffer. Contact the developer.");
-                    int colIndex = BufferManager.FindColumnByLineageID(_parametersInputLane.Buffer, _parametersInputLane.InputColumnCollection[value].LineageID);
+                    int colIndex = BufferManager.FindColumnByLineageID(_parametersInputLane.Buffer, _parametersInputLane.GetVirtualInput().VirtualInputColumnCollection[value].LineageID);
+                    //int colIndex = BufferManager.FindColumnByLineageID(_parametersInputLane.Buffer, _parametersInputLane.InputColumnCollection[value].LineageID);
                     uri = new Uri(inputBuffer[colIndex].ToString());
                     break;
                 default:
@@ -448,7 +449,8 @@ namespace com.webkingsoft.JSONSource_Common
                             throw new ApplicationException("BindParams was invoked with null inputbuffer and one column mapped to input. This is a logic error. Please contact the developer.");
                         }
 
-                        int colIndex = BufferManager.FindColumnByLineageID(_parametersInputLane.Buffer, _parametersInputLane.InputColumnCollection[p.BindingValue].LineageID);
+                        int colIndex = BufferManager.FindColumnByLineageID(_parametersInputLane.Buffer, _parametersInputLane.GetVirtualInput().VirtualInputColumnCollection[p.BindingValue].LineageID);
+                        //int colIndex = BufferManager.FindColumnByLineageID(_parametersInputLane.Buffer, _parametersInputLane.InputColumnCollection[].LineageID);
                         val = inputBuffer[colIndex].ToString();
                         break;
                     case ParamBinding.Variable:
