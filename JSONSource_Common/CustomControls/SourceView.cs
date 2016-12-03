@@ -34,6 +34,10 @@ namespace com.webkingsoft.JSONSource_Common
 
             foreach (IDTSVirtualInputColumn100 i in inputs)
                 inputLaneCb.Items.Add(i.Name);
+
+            // Preselect the item with index = 0
+            if (_inputs.Count>0)
+                inputLaneCb.SelectedIndex = 0;
         }
         
         public string GetHTTPMethod() {
@@ -243,7 +247,9 @@ namespace com.webkingsoft.JSONSource_Common
             directInputR.Checked = m.UriBindingType == ParamBinding.CustomValue;
             variableR.Checked = m.UriBindingType == ParamBinding.Variable;
             inputLaneR.Checked = m.UriBindingType == ParamBinding.InputField;
-            
+
+            inputLaneR.Enabled = _inputs.Count > 0;
+
             inputLaneCb.SelectedItem = m.UriBindingValue;
 
             uiWebURL.Text = m.UriBindingValue.ToString();

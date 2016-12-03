@@ -27,11 +27,11 @@ namespace com.webkingsoft.JSONSource_Common
     /// ProcessInput() is called (multiple times). 
     /// </summary>
 #if DTS130
-    [DtsPipelineComponent(CurrentVersion = 2, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_130,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_130.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 3, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_130,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_130.jsource.ico")]
 #elif DTS120
-    [DtsPipelineComponent(CurrentVersion = 2, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 3, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_120.jsource.ico")]
 #elif DTS110
-    [DtsPipelineComponent(CurrentVersion = 2, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
+    [DtsPipelineComponent(CurrentVersion = 3, DisplayName = "JSON Source Component", Description = "Downloads and parses a JSON file from the web.", ComponentType = ComponentType.Transform, UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.1.000.0,Culture=neutral", IconResource = "com.webkingsoft.JSONSource_110.jsource.ico")]
 #endif
     public class JSONSourceComponent : PipelineComponent
     {
@@ -95,7 +95,6 @@ namespace com.webkingsoft.JSONSource_Common
                 {
                     // From 0 to 1 we added ParseDates value with TRUE as default.
                     // By design, we don't need to do anything thanks to the default value handling
-                    metaDataVersion++;
                 }
 
                 if (metaDataVersion == 1) {
@@ -155,13 +154,33 @@ namespace com.webkingsoft.JSONSource_Common
 
                     // Now just overwrite the saved model
                     ComponentMetaData.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL].Value = current.ToJsonConfig();
+                    
+                }
 
-                    // Bump up!
-                    metaDataVersion++;
+                if (metaDataVersion == 2)
+                {
+                    // We added support for Error Outputs
+                    var e = ComponentMetaData.OutputCollection.GetEnumerator();
+                    bool found = false;
+                    while (e.MoveNext()) {
+                        if ((e.Current as IDTSOutput100).Name == ComponentConstants.NAME_OUTPUT_ERROR_LANE) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        // Add it.
+                        var i = ComponentMetaData.OutputCollection.New();
+                        i.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE;
+                        i.IsErrorOut = true;
+                        i.SynchronousInputID = 0;
+                    }
+
                 }
 
                 // At the end align the versions.
-                ComponentMetaData.Version = metaDataVersion;
+                ComponentMetaData.Version = binaryVersion;
             }
 
             // Forgot to upgrade the transformation on a server?

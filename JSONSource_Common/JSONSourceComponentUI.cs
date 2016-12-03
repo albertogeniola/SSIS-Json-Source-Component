@@ -72,6 +72,9 @@ namespace com.webkingsoft.JSONSource_Common
                 // About the output, add an output for each IOMap entry (json derived) and for each CopyColumn. HttpParameters are not added as output if not explicitly said so.
                 AddOutputColumns(_model.DataMapping.IoMap, _model.DataMapping.InputColumnsToCopy);
 
+                // Add Error columns
+                AddErrorColumns();
+
                 // Serialize the configuration.
                 // TODO: use a standard way to do that
                 _md.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL].Value = componentEditor.SavedModel.ToJsonConfig();
