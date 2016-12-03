@@ -52,7 +52,23 @@ namespace com.webkingsoft.JSONSource_Common
             }
 
             // Load the HTTP error policy
-            //TODO: load this
+            httpErrorHandlingGv.Rows.Clear();
+            foreach (var r in advancedSettings.HttpErrorPolicy) {
+                int index = httpErrorHandlingGv.Rows.Add();
+                httpErrorHandlingGv[0, index].Value = ""+r.Key;
+                httpErrorHandlingGv[0, index].Tag = r.Key;
+
+                httpErrorHandlingGv[1, index].Value = ""+r.Value.ErroHandlingMode;
+                httpErrorHandlingGv[1, index].Tag = r.Value.ErroHandlingMode;
+
+                httpErrorHandlingGv[2, index].Value = ""+r.Value.RetryAttempts;
+                httpErrorHandlingGv[2, index].Tag = r.Value.RetryAttempts;
+
+                httpErrorHandlingGv[3, index].Value = ""+ r.Value.SleepTimeInSeconds;
+                httpErrorHandlingGv[3, index].Tag = r.Value.SleepTimeInSeconds;
+            }
+
+            // TODO: fixme. When loading the control, if ErrorPolicy is not retry, we should lock the waittime and retry attempts.
 
             if (advancedSettings.CustomLocalTempDir != null)
             {
@@ -109,21 +125,30 @@ namespace com.webkingsoft.JSONSource_Common
                 cm.EndCurrentEdit();
             }
 
-            // But first check if there is any error. Just rely on the Grid Interal checks.
+            // Save the handling policy regarding HTTP errors
+            Dictionary<int, ErrorHandlingPolicy> http_err_policy = new Dictionary<int, ErrorHandlingPolicy>();
             foreach (DataGridViewRow r in httpErrorHandlingGv.Rows)
             {
+                if (r.IsNewRow)
+                {
+                    continue;
+                }
+
                 if (r.ErrorText != "")
                 {
-                    if (r.IsNewRow)
-                    {
-                        continue;
-                    }
-
                     throw new ApplicationException(String.Format("Invalid HTTP error policy specified in the table. Please check row {0}", (r.Index + 1)));
+                }
+                else {
+                    ErrorHandlingPolicy p = new ErrorHandlingPolicy();
+                    p.ErroHandlingMode = (ErrorHandlingPolicy.ErrorHandling)r.Cells[1].Tag;
+                    p.RetryAttempts = (int)r.Cells[2].Tag;
+                    p.SleepTimeInSeconds = (int)r.Cells[3].Tag;
+
+                    http_err_policy.Add((int)r.Cells[0].Tag, p);
                 }
             }
 
-            //TODO: save this
+            result.HttpErrorPolicy = http_err_policy;
 
             if (!string.IsNullOrEmpty(uiTempDir.Text))
                 result.CustomLocalTempDir = uiTempDir.Text;
@@ -185,7 +210,6 @@ namespace com.webkingsoft.JSONSource_Common
                     break;
                 case 1:
                     // Handling policy
-                    // TODO: 
                     break;
 
                 case 2:
@@ -254,14 +278,14 @@ namespace com.webkingsoft.JSONSource_Common
 
             // If we got here, everything is ok, so clear the error.
             row.ErrorText = "";
-
         }
 
         private void httpErrorHandlingGv_CellValidated(object sender, DataGridViewCellEventArgs e)
         {
             // If the Error Handling value is retry, enable other two cells (wait time and retry attempts)
             // Otherwise disable them
-            if (e.ColumnIndex == 1) {
+            if (e.ColumnIndex == 1)
+            {
                 var val = (sender as DataGridView).Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
 
                 if (val != null)
@@ -283,7 +307,8 @@ namespace com.webkingsoft.JSONSource_Common
                         (sender as DataGridView).Rows[e.RowIndex].Cells[3].Style.BackColor = Color.LightGray;
                     }
 
-                    if ((sender as DataGridView).Rows[e.RowIndex].Cells[2].Value==null || (sender as DataGridView).Rows[e.RowIndex].Cells[2].Value=="") {
+                    if ((sender as DataGridView).Rows[e.RowIndex].Cells[2].Value == null || (sender as DataGridView).Rows[e.RowIndex].Cells[2].Value == "")
+                    {
                         (sender as DataGridView).Rows[e.RowIndex].Cells[2].Value = "1";
                     }
 
@@ -293,6 +318,25 @@ namespace com.webkingsoft.JSONSource_Common
                     }
                 }
             }
+        }
+
+        private void httpErrorHandlingGv_RowValidated(object sender, DataGridViewCellEventArgs e)
+        {
+            // Save parsed values into TAG handles
+            DataGridViewRow r = httpErrorHandlingGv.Rows[e.RowIndex];
+
+            if (r.IsNewRow || r.ErrorText != "")
+                return;
+
+            int code = int.Parse(r.Cells[0].Value.ToString());
+            ErrorHandlingPolicy.ErrorHandling policy = (ErrorHandlingPolicy.ErrorHandling)Enum.Parse(typeof(ErrorHandlingPolicy.ErrorHandling),r.Cells[1].Value.ToString());
+            int retry = int.Parse(r.Cells[2].Value.ToString());
+            int waittime = int.Parse(r.Cells[3].Value.ToString());
+
+            r.Cells[0].Tag = code;
+            r.Cells[1].Tag = policy;
+            r.Cells[2].Tag = retry;
+            r.Cells[3].Tag = waittime;
         }
     }
 }

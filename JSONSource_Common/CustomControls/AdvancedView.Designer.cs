@@ -236,6 +236,7 @@
             this.httpErrorHandlingGv.TabIndex = 0;
             this.httpErrorHandlingGv.CellValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.httpErrorHandlingGv_CellValidated);
             this.httpErrorHandlingGv.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.cell_validation);
+            this.httpErrorHandlingGv.RowValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.httpErrorHandlingGv_RowValidated);
             this.httpErrorHandlingGv.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.httpErrorHandlingGv_RowValidating);
             // 
             // status_code
