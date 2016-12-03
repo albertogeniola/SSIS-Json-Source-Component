@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentConstants.cs" />
+    <Compile Include="ErrorHandlingPolicy.cs" />
     <Compile Include="Exceptions\BrokenModelException.cs" />
     <Compile Include="Exceptions\ModelNotFoundException.cs" />
     <Compile Include="IComponentModel.cs" />

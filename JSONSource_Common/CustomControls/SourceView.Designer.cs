@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SourceView));
             this.uiWebURL = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -51,10 +52,12 @@
             this.header_button = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.groupBox1.SuspendLayout();
             this.cookieGroup.SuspendLayout();
             this.uiCustomUrlGroup.SuspendLayout();
             this.urlInputModeGb.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.SuspendLayout();
             // 
             // uiWebURL
@@ -65,6 +68,7 @@
             this.uiWebURL.Name = "uiWebURL";
             this.uiWebURL.Size = new System.Drawing.Size(417, 78);
             this.uiWebURL.TabIndex = 1;
+            this.uiWebURL.Validating += new System.ComponentModel.CancelEventHandler(this.uiWebURL_Validating);
             // 
             // groupBox1
             // 
@@ -316,6 +320,10 @@
             this.openFileDialog1.Filter = "JSON File|*.json|Txt files|*.txt|All files|*.*";
             this.openFileDialog1.ShowReadOnly = true;
             // 
+            // errorProvider1
+            // 
+            this.errorProvider1.ContainerControl = this;
+            // 
             // SourceView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -331,6 +339,7 @@
             this.uiCustomUrlGroup.PerformLayout();
             this.urlInputModeGb.ResumeLayout(false);
             this.urlInputModeGb.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -359,5 +368,6 @@
         private System.Windows.Forms.RadioButton inputLaneR;
         private System.Windows.Forms.ComboBox inputLaneCb;
         private System.Windows.Forms.GroupBox urlInputModeGb;
+        private System.Windows.Forms.ErrorProvider errorProvider1;
     }
 }

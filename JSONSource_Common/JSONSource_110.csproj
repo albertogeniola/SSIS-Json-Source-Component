@@ -138,6 +138,7 @@
       <DependentUpon>SourceView.cs</DependentUpon>
     </Compile>
     <Compile Include="Enum.cs" />
+    <Compile Include="ErrorHandlingPolicy.cs" />
     <Compile Include="Exceptions\BrokenModelException.cs" />
     <Compile Include="Exceptions\ModelNotFoundException.cs" />
     <Compile Include="HTTPParameter.cs" />

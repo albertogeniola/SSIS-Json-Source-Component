@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentConstants.cs" />
+    <Compile Include="ErrorHandlingPolicy.cs" />
     <Compile Include="Exceptions\BrokenModelException.cs" />
     <Compile Include="Exceptions\ModelNotFoundException.cs" />
     <Compile Include="HTTPParametersGui.cs">
@@ -250,6 +251,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\images.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="JSONSource_110.csproj">
+      <Project>{E670B60F-1392-4620-B629-CDAF7267E9B1}</Project>
+      <Name>JSONSource_110</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

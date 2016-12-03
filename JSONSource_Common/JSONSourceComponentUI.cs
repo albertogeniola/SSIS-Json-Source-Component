@@ -7,6 +7,7 @@ using Microsoft.SqlServer.Dts.Design;
 using Microsoft.SqlServer.Dts.Runtime.Design;
 using System.Collections.Generic;
 using Microsoft.SqlServer.Dts.Pipeline;
+using Microsoft.SqlServer.Dts.Runtime.Wrapper;
 
 namespace com.webkingsoft.JSONSource_Common
 {
@@ -97,6 +98,33 @@ namespace com.webkingsoft.JSONSource_Common
                 var incol = input.InputColumnCollection.New();
                 incol.LineageID = _virtualInputs[colname].LineageID;
             }
+        }
+
+        private void AddErrorColumns() {
+            // Reconfigure outputs: 
+            _md.OutputCollection[ComponentConstants.NAME_OUTPUT_ERROR_LANE].Name = "Error";
+            _md.OutputCollection[ComponentConstants.NAME_OUTPUT_ERROR_LANE].OutputColumnCollection.RemoveAll();
+
+            // Error output columns will contain some generic information about the errors that occurred during the execution, plus any input/request/filepath associated to that source
+            // -> ERROR_TYPE: can be "application", "parsing", "http", "generic"
+            // -> ERROR_DETAILS: contain some details regarding the error
+            // -> HTTP Query
+            // -> HTTP Code: used only if the error regards HTTP
+            // -> HTTP Response
+            IDTSOutputColumn100 err_type = _md.OutputCollection[ComponentConstants.NAME_OUTPUT_ERROR_LANE].OutputColumnCollection.New();
+            err_type.SetDataTypeProperties(DataType.DT_WSTR, 50, 0, 0, 0);
+            err_type.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE_ERROR_TYPE;
+
+            IDTSOutputColumn100 err_details = _md.OutputCollection[ComponentConstants.NAME_OUTPUT_ERROR_LANE].OutputColumnCollection.New();
+            err_details.SetDataTypeProperties(DataType.DT_WSTR, 50, 0, 0, 0);
+            err_details.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE_ERROR_DETAILS;
+
+            IDTSOutputColumn100 err_http_code= _md.OutputCollection[ComponentConstants.NAME_OUTPUT_ERROR_LANE].OutputColumnCollection.New();
+            err_http_code.SetDataTypeProperties(DataType.DT_UI2, 50, 0, 0, 0);
+            err_http_code.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE_ERROR_HTTP_CODE;
+
+            // Now copy-paste all original columns, so we can basically "redirect" them on error.
+            //TODO
         }
 
         private void AddOutputColumns(IEnumerable<IOMapEntry> IoMap, IEnumerable<string> copyColNames)

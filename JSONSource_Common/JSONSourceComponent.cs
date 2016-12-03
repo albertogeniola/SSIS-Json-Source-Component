@@ -105,8 +105,8 @@ namespace com.webkingsoft.JSONSource_Common
 
                     JSONSourceComponentModel current = new JSONSourceComponentModel();
 
-                    // We updated the portion of the model regarding the data source. 
-                    // Let's handle it first: we introduced UriBindingType and UriBindingValue instead of SourceUri and FromVariable.
+                    // We updated the portion of the model regarding the data source and added some advanced features. 
+                    // Let's handle data-source first: we introduced UriBindingType and UriBindingValue instead of SourceUri and FromVariable.
                     JSONDataSourceModel sourceModel = new JSONDataSourceModel();
 
                     // We added the URIBinding type parameter. This is based on the previous combination of FromVariable.
@@ -143,9 +143,15 @@ namespace com.webkingsoft.JSONSource_Common
 
                     // Save the modified portion of the model
                     current.DataSource = sourceModel;
-                    // Now just copy the other two sub-models
-                    current.DataMapping = JSONDataMappingModel.LoadFromJson(previous.DataMapping.ToString());
+
+                    // Let's Handle upgrade the Advanced feature part of the model
                     current.AdvancedSettings = JSONAdvancedSettingsModel.LoadFromJson(previous.AdvancedSettings.ToString());
+                    current.AdvancedSettings.NetworkErrorPolicy = ComponentConstants.NewDefaultNetworkHandlingPolicy();
+                    current.AdvancedSettings.HttpErrorPolicy = ComponentConstants.NewDefaultHttpHandlingPolicy();
+
+                    // Now just copy remaining sub-model
+                    current.DataMapping = JSONDataMappingModel.LoadFromJson(previous.DataMapping.ToString());
+                    
 
                     // Now just overwrite the saved model
                     ComponentMetaData.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL].Value = current.ToJsonConfig();
@@ -180,6 +186,13 @@ namespace com.webkingsoft.JSONSource_Common
             var params_lane = ComponentMetaData.InputCollection.New();
             params_lane.Name = ComponentConstants.NAME_INPUT_LANE_PARAMS;
 
+            // Prepare error output column
+            IDTSOutput100 errorOutput = ComponentMetaData.OutputCollection.New();
+            errorOutput.IsErrorOut = true;
+            errorOutput.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE;
+            // The error lane is also asynchronous.
+            errorOutput.SynchronousInputID = 0;
+
             // TODO: initialize here custom properties for the model. It would be clearer and follows the MS Specs.
         }
 
@@ -199,9 +212,9 @@ namespace com.webkingsoft.JSONSource_Common
                 ComponentMetaData.FireError(ComponentConstants.ERROR_NO_INPUT_SUPPORTED, ComponentMetaData.Name, "This component only supports one input lane, for parameters.", null, 0, out fireAgain);
                 return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
             }
-            if (ComponentMetaData.OutputCollection.Count != 1)
+            if (ComponentMetaData.OutputCollection.Count != 2)
             {
-                ComponentMetaData.FireError(ComponentConstants.ERROR_SINGLE_OUTPUT_SUPPORTED, ComponentMetaData.Name, "This component only supports a single output lane.", null, 0, out fireAgain);
+                ComponentMetaData.FireError(ComponentConstants.ERROR_SINGLE_OUTPUT_SUPPORTED, ComponentMetaData.Name, "This component only supports two output lanes: one for data and another for errors.", null, 0, out fireAgain);
                 return Microsoft.SqlServer.Dts.Pipeline.Wrapper.DTSValidationStatus.VS_ISBROKEN;
             }
 

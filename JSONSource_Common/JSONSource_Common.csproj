@@ -65,12 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentConstants.cs" />
-    <Compile Include="ComponentTester.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ComponentTester.Designer.cs">
-      <DependentUpon>ComponentTester.cs</DependentUpon>
-    </Compile>
     <Compile Include="CustomControls\AdvancedView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -154,9 +148,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ComponentTester.resx">
-      <DependentUpon>ComponentTester.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="CustomControls\AdvancedView.resx">
       <DependentUpon>AdvancedView.cs</DependentUpon>
     </EmbeddedResource>

@@ -272,5 +272,20 @@ namespace com.webkingsoft.JSONSource_Common
                 cookieVarTb.Text = m.CookieVariable;
 
         }
+
+        private void uiWebURL_Validating(object sender, CancelEventArgs e)
+        {
+            if (directInputR.Checked) {
+                // Parse the url
+                try
+                {
+                    Uri u = new Uri(uiWebURL.Text);
+                    errorProvider1.SetError(uiWebURL, "");
+                }
+                catch (UriFormatException ex) {
+                    errorProvider1.SetError(uiWebURL, "Provided URI is not valid. It should match the form http://xxx.domain.yy");
+                }
+            }
+        }
     }
 }

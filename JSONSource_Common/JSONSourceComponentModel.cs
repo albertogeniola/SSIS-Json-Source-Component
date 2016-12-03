@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using System.ComponentModel;
+using com.webkingsoft.JSONSource_Common;
 #if LINQ_SUPPORTED
 using System.Linq;
 #endif
@@ -62,6 +63,13 @@ namespace com.webkingsoft.JSONSource_Common
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     public class JSONDataSourceModel:IComponentModel {
+
+        public JSONDataSourceModel() {
+            // The constructor will populate the properties with some safe default.
+            UriBindingType = ParamBinding.CustomValue;
+            UriBindingValue = "";
+            WebMethod = "GET";
+        }
 
         /// <summary>
         /// Validates the DataSource configuraiton.
@@ -317,6 +325,16 @@ namespace com.webkingsoft.JSONSource_Common
     [JsonObject(MemberSerialization.OptIn)]
     public class JSONAdvancedSettingsModel: IComponentModel
     {
+        public JSONAdvancedSettingsModel() {
+            CustomLocalTempDir = null;
+            ParseDates = false;
+            NetworkErrorPolicy = new ErrorHandlingPolicy();
+            NetworkErrorPolicy.ErroHandlingMode = ErrorHandlingPolicy.ErrorHandling.STOP_IMMEDIATELY;
+            NetworkErrorPolicy.RetryAttempts = 0;
+            NetworkErrorPolicy.SleepTimeInSeconds = 0;
+            HttpErrorPolicy = new Dictionary<int, ErrorHandlingPolicy>();
+        }
+
         /// <summary>
         /// Represents the temporary directory where to download the JSONFile from the internet, whenever is needed.
         /// </summary>
@@ -330,6 +348,26 @@ namespace com.webkingsoft.JSONSource_Common
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool ParseDates
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Describes how the component should handle errors regarding network exceptions
+        /// This property has been added at version 2.
+        /// </summary>
+        [JsonProperty]
+        public ErrorHandlingPolicy NetworkErrorPolicy
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Describes how the component should handle errors regarding http exceptions
+        /// This property has been added at version 2.
+        /// </summary>
+        [JsonProperty]
+        public Dictionary<int, ErrorHandlingPolicy > HttpErrorPolicy
         {
             get; set;
         }
@@ -359,6 +397,49 @@ namespace com.webkingsoft.JSONSource_Common
                     warn += "The path to " + CustomLocalTempDir + " doesn't exists on this FS. If you're going to deploy the package on another server, make sure the path is correct and the service has write permission on it.\n";
                 }
             }
+
+            // Check if Network error handling policies are ok.
+            if (NetworkErrorPolicy.ErroHandlingMode == ErrorHandlingPolicy.ErrorHandling.RETRY || NetworkErrorPolicy.ErroHandlingMode == ErrorHandlingPolicy.ErrorHandling.SKIP) {
+                if (NetworkErrorPolicy.RetryAttempts < 0) {
+                    err += "Invalid value for Retry Attempts.";
+                    return false;
+                }
+
+                if (NetworkErrorPolicy.SleepTimeInSeconds < 0)
+                {
+                    err += "Invalid value for Sleep Time.";
+                    return false;
+                }
+            }
+
+            // Check http error handling policies
+            foreach (var i in HttpErrorPolicy) {
+                int code = i.Key;
+
+                if (code < 100 || code > 509) {
+                    err += "Invalid status code " + code;
+                    return false;
+                }
+
+                if (i.Value.ErroHandlingMode == ErrorHandlingPolicy.ErrorHandling.RETRY || i.Value.ErroHandlingMode == ErrorHandlingPolicy.ErrorHandling.SKIP)
+                {
+                    if (i.Value.RetryAttempts < 0)
+                    {
+                        err += "Invalid value for Retry Attempts for code "+code;
+                        return false;
+                    }
+
+                    if (i.Value.SleepTimeInSeconds < 0)
+                    {
+                        err += "Invalid value for Sleep Time for code "+ code;
+                        return false;
+                    }
+                }
+            }
+
+            // Check the HTTP error handling:
+            //TODO
+            
 
             return true;
         }

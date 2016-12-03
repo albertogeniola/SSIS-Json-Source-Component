@@ -33,5 +33,47 @@ namespace com.webkingsoft.JSONSource_Common
 
 
         public const string NAME_INPUT_LANE_PARAMS = "Http Parameters Lane";
+
+        // Error output constants
+        public const string NAME_OUTPUT_ERROR_LANE = "Errors";
+        public const string NAME_OUTPUT_ERROR_LANE_ERROR_TYPE = "Error Type";
+        public const string NAME_OUTPUT_ERROR_LANE_ERROR_DETAILS = "Error Details";
+        public const string NAME_OUTPUT_ERROR_LANE_ERROR_HTTP_CODE = "HttpCode";
+
+
+        public static ErrorHandlingPolicy NewDefaultNetworkHandlingPolicy() {
+            ErrorHandlingPolicy res = new ErrorHandlingPolicy();
+            res.ErroHandlingMode = ErrorHandlingPolicy.ErrorHandling.STOP_IMMEDIATELY;
+            res.RetryAttempts = 0;
+            res.SleepTimeInSeconds = 0;
+
+            return res;
+        }
+
+        /// <summary>
+        /// This method returns a dictionary of ErrorHandling policies associated to some well-known http status codes.
+        /// Bu default we will simply stop on errors 4xx and 5xx
+        /// </summary>
+        /// <returns></returns>
+        public static Dictionary<int, ErrorHandlingPolicy> NewDefaultHttpHandlingPolicy()
+        {
+            Dictionary<int, ErrorHandlingPolicy> res = new Dictionary<int, ErrorHandlingPolicy>();
+
+            // HTTP 400:
+            ErrorHandlingPolicy p400 = new ErrorHandlingPolicy();
+            p400.ErroHandlingMode = ErrorHandlingPolicy.ErrorHandling.STOP_IMMEDIATELY;
+            p400.RetryAttempts = 0;
+            p400.SleepTimeInSeconds = 0;
+            res.Add(400, p400);
+
+            // HTTP 500:
+            ErrorHandlingPolicy p500 = new ErrorHandlingPolicy();
+            p500.ErroHandlingMode = ErrorHandlingPolicy.ErrorHandling.STOP_IMMEDIATELY;
+            p500.RetryAttempts = 0;
+            p500.SleepTimeInSeconds = 0;
+            res.Add(500, p500);
+
+            return res;
+        }
     }
 }
