@@ -98,7 +98,9 @@
   <ItemGroup>
     <Compile Include="ComponentConstants.cs" />
     <Compile Include="ErrorHandlingPolicy.cs" />
+    <Compile Include="Exceptions\BadHttpCodeException.cs" />
     <Compile Include="Exceptions\BrokenModelException.cs" />
+    <Compile Include="Exceptions\DataCollectionException.cs" />
     <Compile Include="Exceptions\ModelNotFoundException.cs" />
     <Compile Include="IComponentModel.cs" />
     <Compile Include="CustomControls\AdvancedView.cs">

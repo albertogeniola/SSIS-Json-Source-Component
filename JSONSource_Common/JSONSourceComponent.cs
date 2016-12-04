@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 #if LINQ_SUPPORTED
 using System.Threading.Tasks;
@@ -58,6 +59,7 @@ namespace com.webkingsoft.JSONSource_Common
         private ParamBinding _uriBindingType;
         private string _uriBindingValue;
         private PipelineBuffer _outputbuffer = null;
+        private PipelineBuffer _errorbuffer = null;
         private IDTSInput100 _parametersInputLane;
         private Dictionary<int, int> _inputCopyToOutputMaps;
         private IOMapEntry[] _iomap;
@@ -66,6 +68,8 @@ namespace com.webkingsoft.JSONSource_Common
         private ParallelOptions _opt;
         private OperationMode _mode;
         private List<int> _warnNotified = new List<int>();
+        private ErrorHandlingPolicy _networkErrorHandling = null;
+        private Dictionary<int,ErrorHandlingPolicy> _httpErrorPolicies = null;
 
         public override void PerformUpgrade(int pipelineVersion)
         {
@@ -174,7 +178,24 @@ namespace com.webkingsoft.JSONSource_Common
                         var i = ComponentMetaData.OutputCollection.New();
                         i.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE;
                         i.IsErrorOut = true;
-                        i.SynchronousInputID = 0;
+                        
+                        // Error output columns will contain some generic information about the errors that occurred during the execution, plus any input/request/filepath associated to that source
+                        // -> ERROR_TYPE: can be "application", "parsing", "http", "generic"
+                        // -> ERROR_DETAILS: contain some details regarding the error
+                        // -> HTTP Code: used only if the error regards HTTP
+                        
+                        IDTSOutputColumn100 err_type = i.OutputColumnCollection.New();
+                        err_type.SetDataTypeProperties(DataType.DT_WSTR, 50, 0, 0, 0);
+                        err_type.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE_ERROR_TYPE;
+
+                        IDTSOutputColumn100 err_details = i.OutputColumnCollection.New();
+                        err_details.SetDataTypeProperties(DataType.DT_WSTR, 4000, 0, 0, 0);
+                        err_details.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE_ERROR_DETAILS;
+
+                        IDTSOutputColumn100 err_http_code = i.OutputColumnCollection.New();
+                        err_http_code.SetDataTypeProperties(DataType.DT_UI4, 0, 0, 0, 0);
+                        err_http_code.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE_ERROR_HTTP_CODE;
+
                     }
 
                 }
@@ -211,6 +232,18 @@ namespace com.webkingsoft.JSONSource_Common
             errorOutput.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE;
             // The error lane is also asynchronous.
             errorOutput.SynchronousInputID = 0;
+
+            IDTSOutputColumn100 err_type = errorOutput.OutputColumnCollection.New();
+            err_type.SetDataTypeProperties(DataType.DT_WSTR, 50, 0, 0, 0);
+            err_type.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE_ERROR_TYPE;
+
+            IDTSOutputColumn100 err_details = errorOutput.OutputColumnCollection.New();
+            err_details.SetDataTypeProperties(DataType.DT_WSTR, 4000, 0, 0, 0);
+            err_details.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE_ERROR_DETAILS;
+
+            IDTSOutputColumn100 err_http_code = errorOutput.OutputColumnCollection.New();
+            err_http_code.SetDataTypeProperties(DataType.DT_UI4, 0, 0, 0, 0);
+            err_http_code.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE_ERROR_HTTP_CODE;
 
             // TODO: initialize here custom properties for the model. It would be clearer and follows the MS Specs.
         }
@@ -355,7 +388,9 @@ namespace com.webkingsoft.JSONSource_Common
 
             return model;
         }
-        
+
+
+        private int _error_lane_output_id = -1;
         /// <summary>
         /// This function is invoked by the environment once, before data processing happens. So it's a great time to configure the basics
         /// before starting to process data. In here, we retrieve all the data that is not supposed to change later on.
@@ -363,10 +398,14 @@ namespace com.webkingsoft.JSONSource_Common
         public override void PreExecute()
         {
             AttachDebugger();
+            
+            // Lookup basic lane ids for faster lookup afterwards in PrimeOutput. First ERROR LANE
+            int errorOutputIndex=-1;
+            GetErrorOutputInfo(ref _error_lane_output_id, ref errorOutputIndex);
 
             // Load the model and fail if no model is found
             JSONSourceComponentModel model = GetModel(true);
-
+            
             // Save the input column index, used to parse parameters for web-requests
             _parametersInputLane = ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
 
@@ -414,19 +453,18 @@ namespace com.webkingsoft.JSONSource_Common
                 _dateParsePolicy = DateParseHandling.None;
             }
 
+            // Load runtime info from model and store them locally
             _httpMethod = model.DataSource.WebMethod;
-
             _uriBindingType = model.DataSource.UriBindingType;
             _uriBindingValue= model.DataSource.UriBindingValue;
-
             _dataRootType = model.DataMapping.RootType;
-
             _dataRootPath = model.DataMapping.JsonRootPath;
-
             _unboundHttpHeaders = model.DataSource.HttpHeaders;
             _unboundHttpParams = model.DataSource.HttpParameters;
-
             _cookieVarname = model.DataSource.CookieVariable;
+            _networkErrorHandling = model.AdvancedSettings.NetworkErrorPolicy;
+            _httpErrorPolicies = model.AdvancedSettings.HttpErrorPolicy;
+
             // Configure the operation mode. If there is at least one input, we consider ourself in TRANSFORM. If no input is attached, we are in SOURCE.
             _mode = ComponentMetaData.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].IsAttached ? OperationMode.TRANSFORM : OperationMode.SOURCE;
         }
@@ -527,49 +565,127 @@ namespace com.webkingsoft.JSONSource_Common
         /// The PrimeOutput method is called for source components and for transformations with asynchronous outputs. 
         /// Unlike the ProcessInput method described below, the PrimeOutput method is only called once for each component that requires it.
         /// </summary>
-        /// <param name="outputs"></param>
-        /// <param name="outputIDs"></param>
-        /// <param name="buffers"></param>
+        /// <param name="outputs">Numbers of outputIDs provided</param>
+        /// <param name="outputIDs">IDs of outputs</param>
+        /// <param name="buffers">Buffers associated to outputs</param>
         public override void PrimeOutput(int outputs, int[] outputIDs, PipelineBuffer[] buffers)
         {
             // In case of SOURCE mode, we need to handle all the work here. Otherwise, in TRANSFORMATION mode, we just have to save a pointer
             // to the outputbuffer and do the work in ProcessInput.
-            
-            // Store a pointer to the output buffers we obtain here.
-            if (buffers.Length != 0)
-                _outputbuffer = buffers[0];
-            else
-                return;
+
+            // Lookup buffers. We espect one error lane and one output lane. Indexes have been pre-calculated within PRE-EXECUTE
+            for (int i=0;i<outputs;i++) {
+                if (outputIDs[i] == _error_lane_output_id) {
+                    _errorbuffer = buffers[i];
+                } else {
+                    // We simply assume that if the lane is not for error, then it regards output.
+                    _outputbuffer = buffers[i];
+                }
+            }
 
             if (_mode == OperationMode.SOURCE)
             {
-                Uri uri = ResolveUri(_uriBindingType, _uriBindingValue);
+                // The following while loop is used to retry connection in case of errors. We brake when we
+                // reach maximum error limit.
+                while (true)
+                {
+                    try
+                    {
+                        Uri uri = ResolveUri(_uriBindingType, _uriBindingValue);
 
-                bool cancel = false;
+                        bool cancel = false;
 
-                // So we are clear to proceed with the HTTP request.
-                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Component is running in SOURCE MODE.", null, 0, ref cancel);
+                        // So we are clear to proceed with the HTTP request.
+                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Component is running in SOURCE MODE.", null, 0, ref cancel);
 
-                bool downloaded;
-                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", uri.ToString()), null, 0, ref cancel);
-                string fname = GetFileFromUri(uri,null,null,out downloaded);
+                        bool downloaded;
+                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", uri.ToString()), null, 0, ref cancel);
+                        string fname = GetFileFromUri(uri, null, null, out downloaded);
 
-                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
+                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
 
-                // Process data according to IOMappings
-                using (StreamReader sr = new StreamReader(File.Open(fname, FileMode.Open)))
-                    ProcessInMemory(sr, _dataRootType, null, _outputbuffer);
+                        // Process data according to IOMappings
+                        using (StreamReader sr = new StreamReader(File.Open(fname, FileMode.Open)))
+                            ProcessInMemory(sr, _dataRootType, null, _outputbuffer);
 
-                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Json parsed correctly.", null, 0, ref cancel);
+                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Json parsed correctly.", null, 0, ref cancel);
+                        
+                        // TODO: UI option to prevent removal of downloaded data?
+                        if (downloaded)
+                        {
+                            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Removing downloaded json file {0}.", fname), null, 0, ref cancel);
+                            File.Delete(fname);
+                        }
+                    }
+                    catch (DataCollectionException e)
+                    {
+                        // TODO: Fire warning.
+                        ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("An error occurred during json gathering. This might be a consequence of a variety of reasons, including network problems. Error was: {0}. Details: {1}",e.Message,e.StackTrace), null, 0);
 
+                        _errorbuffer.AddRow();
+                        // First two places reagard Error code and column index. We cannot mark any specific cause of the problem, so just put 0-0 here.
+                        _errorbuffer[0] = 0;
+                        _errorbuffer[1] = 0;
+                        _errorbuffer[2] = "DATA_COLLECTION";
+                        // Truncate error message if too long
+                        _errorbuffer[3] = e.Message.Length > 4000 ? e.Message.Substring(0,4000):e.Message;
+                        _errorbuffer[4] = null;  // No http response, so far.
+
+                        if (!_networkErrorHandling.ShouldContinue())
+                        {
+                            ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, "Maximum number of failures reached. Aborting the execution.", null, 0);
+                            break;
+                        }
+                        else
+                        {
+                            ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("According to ErrorPolicy we should try again. Not aborting (yet), instead sleeping {0} seconds.", _networkErrorHandling.SleepTimeInSeconds), null, 0);
+                            Thread.Sleep(_networkErrorHandling.SleepTimeInSeconds);
+                        }
+                    }
+                    catch(BadHttpCodeException e)
+                    {
+                        // TODO: Fire warning.
+                        ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("The http response provided by the server wasn't successful. Error was: {0}. Details: {1}", e.Message, e.StackTrace), null, 0);
+
+                        _errorbuffer.AddRow();
+                        // First two places reagard Error code and column index. We cannot mark any specific cause of the problem, so just put 0-0 here.
+                        _errorbuffer[0] = 0;
+                        _errorbuffer[1] = 0;
+                        _errorbuffer[2] = "HTTP_BAD_RESPONSE_CODE";
+                        // Truncate error message if too long
+                        _errorbuffer[3] = e.Message.Length > 4095 ? e.Message.Substring(0, 4095) : e.Message;
+                        
+                        // Check if the user has provided any specific error handling regarding this code, otherwise apply same strategy of datagathering error.
+                        int code = e.GetResponseCode();
+                        _errorbuffer[4] = code;
+
+                        ErrorHandlingPolicy p = _networkErrorHandling;
+                        if (_httpErrorPolicies.ContainsKey(code)) {
+                            bool cancel = false;
+                            ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Found HTTP error handling policy for error code "+code, null, 0, ref cancel);
+                            p = _httpErrorPolicies[code];
+                        }
+
+                        if (!p.ShouldContinue())
+                        {
+                            ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, "Maximum number of failures reached. Aborting the execution.", null, 0);
+                            break;
+                        }
+                        else
+                        {
+                            ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("According to ErrorPolicy we should try again. Not aborting (yet), instead sleeping {0} seconds.", p.SleepTimeInSeconds), null, 0);
+                            Thread.Sleep(p.SleepTimeInSeconds);
+                        }
+                    }
+                    // We intentionally avoid to catch any other exception, such as bad json parsing and so on. Those errors must case failure of entire component,
+                    // which is normal when the user fails to correctly parse json.
+                }
+
+                // Close output lane
                 _outputbuffer.SetEndOfRowset();
 
-                // TODO: UI option to prevent removal of downloaded data?
-                if (downloaded)
-                {
-                    ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Removing downloaded json file {0}.",fname), null, 0, ref cancel);
-                    File.Delete(fname);
-                }
+                // Close the error lane.
+                _errorbuffer.SetEndOfRowset();
 
             }
             else {
@@ -845,7 +961,6 @@ namespace com.webkingsoft.JSONSource_Common
             throw new ApplicationException("This is a design error. Contact the developer.");
 
         }*/
-
         
         private int ProcessObject(JObject obj, PipelineBuffer inputbuffer)
         {

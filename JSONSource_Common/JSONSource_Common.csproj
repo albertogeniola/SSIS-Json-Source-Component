@@ -90,7 +90,9 @@
       <DependentUpon>SourceView.cs</DependentUpon>
     </Compile>
     <Compile Include="Enum.cs" />
+    <Compile Include="Exceptions\BadHttpCodeException.cs" />
     <Compile Include="Exceptions\BrokenModelException.cs" />
+    <Compile Include="Exceptions\DataCollectionException.cs" />
     <Compile Include="Exceptions\ModelNotFoundException.cs" />
     <Compile Include="HTTPParameter.cs" />
     <Compile Include="HTTPParametersGui.cs">

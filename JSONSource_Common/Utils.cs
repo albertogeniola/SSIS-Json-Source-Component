@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Cache;
 using System.Net.Http;
 using System.Text;
+using com.webkingsoft.JSONSource_Common.Exceptions;
 #if LINQ_SUPPORTED
 using System.Linq;
 #endif
@@ -33,6 +34,19 @@ namespace com.webkingsoft.JSONSource_Common
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="method"></param>
+        /// <param name="encodedpars"></param>
+        /// <param name="headers"></param>
+        /// <param name="cookiecontainer"></param>
+        /// <param name="customLocalTempDir"></param>
+        /// <exception cref="DataCollectionException">When an error happens before getting the response from the server. Details are into the inner exception</exception>
+        /// <exception cref="BadHttpCodeException">When the server has answered a non-2XX response code</exception>
+        /// <returns></returns>
         private static string DownloadJsonFile(Uri url, string method, Dictionary<string, string> encodedpars, Dictionary<string, string> headers, ref CookieContainer cookiecontainer, string customLocalTempDir)
         {
             string localTmp = null;
@@ -95,15 +109,22 @@ namespace com.webkingsoft.JSONSource_Common
                         req.Method = HttpMethod.Delete;
                         break;
                 }
-
+                
                 mtd = client.SendAsync(req);
+                HttpResponseMessage result = null;
 
-                // Will block
-                var result = mtd.Result;
-
+                try { 
+                    result = mtd.Result;
+                } catch(AggregateException e) {
+                    // Any kind of exception could have happened in here. 
+                    // So, we simply wrap the exception into one of our specific class that will be catched later from the caller.
+                    throw new DataCollectionException("Error during HTTP request to "+req.RequestUri, e.InnerException);
+                }
+                
+                // In case there was no hard failure connected to the network, we have to check whether the result code was ok or not.
                 if (!result.IsSuccessStatusCode)
                 {
-                    throw new Exception("Status code received was " + result.StatusCode + ", i.e. " + result.ReasonPhrase);
+                    throw new BadHttpCodeException(result);
                 }
 
                 // Write to file.

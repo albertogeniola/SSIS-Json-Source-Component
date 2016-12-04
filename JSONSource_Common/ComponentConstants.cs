@@ -35,7 +35,8 @@ namespace com.webkingsoft.JSONSource_Common
         public const string NAME_INPUT_LANE_PARAMS = "Http Parameters Lane";
 
         // Error output constants
-        public const string NAME_OUTPUT_ERROR_LANE = "Errors";
+        public const int INDEX_OUTPUT_ERROR_LANE = 1;
+        public const string NAME_OUTPUT_ERROR_LANE = "Error";
         public const string NAME_OUTPUT_ERROR_LANE_ERROR_TYPE = "Error Type";
         public const string NAME_OUTPUT_ERROR_LANE_ERROR_DETAILS = "Error Details";
         public const string NAME_OUTPUT_ERROR_LANE_ERROR_HTTP_CODE = "HttpCode";

@@ -72,9 +72,6 @@ namespace com.webkingsoft.JSONSource_Common
                 // About the output, add an output for each IOMap entry (json derived) and for each CopyColumn. HttpParameters are not added as output if not explicitly said so.
                 AddOutputColumns(_model.DataMapping.IoMap, _model.DataMapping.InputColumnsToCopy);
 
-                // Add Error columns
-                AddErrorColumns();
-
                 // Serialize the configuration.
                 // TODO: use a standard way to do that
                 _md.CustomPropertyCollection[ComponentConstants.PROPERTY_KEY_MODEL].Value = componentEditor.SavedModel.ToJsonConfig();
@@ -87,6 +84,8 @@ namespace com.webkingsoft.JSONSource_Common
         private void AddInputColumns(IEnumerable<string> inputColNames)
         {
             var input = _md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS];
+            
+
             // Only add them if the inputlan is connected.
             if (!input.IsAttached) {
                 _md.FireWarning(0, _md.Name, "Cannot add inputs because input lane is not attached.", null, 0);
@@ -102,34 +101,7 @@ namespace com.webkingsoft.JSONSource_Common
                 incol.LineageID = _virtualInputs[colname].LineageID;
             }
         }
-
-        private void AddErrorColumns() {
-            // Reconfigure outputs: 
-            _md.OutputCollection[ComponentConstants.NAME_OUTPUT_ERROR_LANE].Name = "Error";
-            _md.OutputCollection[ComponentConstants.NAME_OUTPUT_ERROR_LANE].OutputColumnCollection.RemoveAll();
-
-            // Error output columns will contain some generic information about the errors that occurred during the execution, plus any input/request/filepath associated to that source
-            // -> ERROR_TYPE: can be "application", "parsing", "http", "generic"
-            // -> ERROR_DETAILS: contain some details regarding the error
-            // -> HTTP Query
-            // -> HTTP Code: used only if the error regards HTTP
-            // -> HTTP Response
-            IDTSOutputColumn100 err_type = _md.OutputCollection[ComponentConstants.NAME_OUTPUT_ERROR_LANE].OutputColumnCollection.New();
-            err_type.SetDataTypeProperties(DataType.DT_WSTR, 50, 0, 0, 0);
-            err_type.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE_ERROR_TYPE;
-
-            IDTSOutputColumn100 err_details = _md.OutputCollection[ComponentConstants.NAME_OUTPUT_ERROR_LANE].OutputColumnCollection.New();
-            err_details.SetDataTypeProperties(DataType.DT_WSTR, 50, 0, 0, 0);
-            err_details.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE_ERROR_DETAILS;
-
-            IDTSOutputColumn100 err_http_code= _md.OutputCollection[ComponentConstants.NAME_OUTPUT_ERROR_LANE].OutputColumnCollection.New();
-            err_http_code.SetDataTypeProperties(DataType.DT_UI2, 50, 0, 0, 0);
-            err_http_code.Name = ComponentConstants.NAME_OUTPUT_ERROR_LANE_ERROR_HTTP_CODE;
-
-            // Now copy-paste all original columns, so we can basically "redirect" them on error.
-            //TODO
-        }
-
+        
         private void AddOutputColumns(IEnumerable<IOMapEntry> IoMap, IEnumerable<string> copyColNames)
         {
             // Reconfigure outputs: 
