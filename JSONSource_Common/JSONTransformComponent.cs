@@ -435,7 +435,7 @@ namespace com.webkingsoft.JSONSource_Common
 
         private void ProcessInMemory(string jsonData, ref PipelineBuffer inputBuffer)
         {
-            
+            bool fireAgain = false;
             bool cancel = false;
             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Loading whole model into memory and deserializing...", null, 0, ref cancel);
 
@@ -458,17 +458,17 @@ namespace com.webkingsoft.JSONSource_Common
                     // For each root element we got...
                     foreach (JToken t in els)
                     {
-                        if (t.Type == JTokenType.Array)
+                        switch (t.Type)
                         {
-                            count += ProcessArray(t as JArray, ref inputBuffer);
-                        }
-                        else if (t.Type == JTokenType.Object)
-                        {
-                            count += ProcessObject(t as JObject, ref inputBuffer);
-                        }
-                        else
-                        {
-                            throw new Exception("Invalid token returned by RootPath query: " + t.Type.ToString());
+                            case JTokenType.Array:
+                                count += ProcessArray((JArray)t, ref inputBuffer);
+                                break;
+                            case JTokenType.Object:
+                                count += ProcessObject((JObject)t, ref inputBuffer);
+                                break;
+                            default:
+                                ComponentMetaData.FireError(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, "One of the values provided to ProcessArray wasn't either an array or an object (it probably was a bare integer/string). This usually happens when you are trying to parse an object while you got a primitive value instead. This operation is not yet supported.", null, 0, out fireAgain);
+                                throw new Exception("One of the values provided to ProcessArray wasn't either an array or an object (it probably was a bare integer/string). This usually happens when you are trying to parse an object while you got a primitive value instead. This operation is not yet supported.");
                         }
                     }
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Succesfully parsed " + count + " tokens.", null, 0, ref cancel);
@@ -627,12 +627,24 @@ namespace com.webkingsoft.JSONSource_Common
 
         private int ProcessArray(JArray arr, ref PipelineBuffer inputbuffer)
         {
+            bool fireAgain = false;
             bool cancel = false;
             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Processing Array...", null, 0, ref cancel);
             int count = 0;
-            foreach (JObject obj in arr)
+            foreach (JToken t in arr)
             {
-                count += ProcessObject(obj, ref inputbuffer);
+                switch (t.Type) {
+                    case JTokenType.Array:
+                        count += ProcessArray((JArray)t, ref inputbuffer);
+                        break;
+                    case JTokenType.Object:
+                        count += ProcessObject((JObject)t, ref inputbuffer);
+                        break;
+                    default:
+                        ComponentMetaData.FireError(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, "One of the values provided to ProcessArray wasn't either an array or an object (it probably was a bare integer/string). This usually happens when you are trying to parse an object while you got a primitive value instead. This operation is not yet supported.", null, 0, out fireAgain);
+                        throw new Exception("One of the values provided to ProcessArray wasn't either an array or an object (it probably was a bare integer/string). This usually happens when you are trying to parse an object while you got a primitive value instead. This operation is not yet supported.");
+                }
+                
             }
             return count;
         }

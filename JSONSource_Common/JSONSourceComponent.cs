@@ -587,7 +587,8 @@ namespace com.webkingsoft.JSONSource_Common
             {
                 // The following while loop is used to retry connection in case of errors. We brake when we
                 // reach maximum error limit.
-                while (true)
+                bool done = false;
+                while (!done)
                 {
                     try
                     {
@@ -616,20 +617,26 @@ namespace com.webkingsoft.JSONSource_Common
                             ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Removing downloaded json file {0}.", fname), null, 0, ref cancel);
                             File.Delete(fname);
                         }
+
+                        // We were successful. The following statement will break the loop.
+                        done = true;
                     }
                     catch (DataCollectionException e)
                     {
                         // TODO: Fire warning.
                         ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("An error occurred during json gathering. This might be a consequence of a variety of reasons, including network problems. Error was: {0}. Details: {1}",e.Message,e.StackTrace), null, 0);
 
-                        _errorbuffer.AddRow();
-                        // First two places reagard Error code and column index. We cannot mark any specific cause of the problem, so just put 0-0 here.
-                        _errorbuffer[0] = 0;
-                        _errorbuffer[1] = 0;
-                        _errorbuffer[2] = "DATA_COLLECTION";
-                        // Truncate error message if too long
-                        _errorbuffer[3] = e.Message.Length > 4000 ? e.Message.Substring(0,4000):e.Message;
-                        _errorbuffer[4] = null;  // No http response, so far.
+                        if (_errorbuffer != null)
+                        {
+                            _errorbuffer.AddRow();
+                            // First two places reagard Error code and column index. We cannot mark any specific cause of the problem, so just put 0-0 here.
+                            _errorbuffer[0] = 0;
+                            _errorbuffer[1] = 0;
+                            _errorbuffer[2] = "DATA_COLLECTION";
+                            // Truncate error message if too long
+                            _errorbuffer[3] = e.Message.Length > 4000 ? e.Message.Substring(0, 4000) : e.Message;
+                            _errorbuffer[4] = null;  // No http response, so far.
+                        }
 
                         if (!_networkErrorHandling.ShouldContinue())
                         {
@@ -646,18 +653,21 @@ namespace com.webkingsoft.JSONSource_Common
                     {
                         // TODO: Fire warning.
                         ComponentMetaData.FireWarning(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, String.Format("The http response provided by the server wasn't successful. Error was: {0}. Details: {1}", e.Message, e.StackTrace), null, 0);
-
-                        _errorbuffer.AddRow();
-                        // First two places reagard Error code and column index. We cannot mark any specific cause of the problem, so just put 0-0 here.
-                        _errorbuffer[0] = 0;
-                        _errorbuffer[1] = 0;
-                        _errorbuffer[2] = "HTTP_BAD_RESPONSE_CODE";
-                        // Truncate error message if too long
-                        _errorbuffer[3] = e.Message.Length > 4095 ? e.Message.Substring(0, 4095) : e.Message;
-                        
-                        // Check if the user has provided any specific error handling regarding this code, otherwise apply same strategy of datagathering error.
                         int code = e.GetResponseCode();
-                        _errorbuffer[4] = code;
+
+                        if (_errorbuffer != null)
+                        {
+                            _errorbuffer.AddRow();
+                            // First two places reagard Error code and column index. We cannot mark any specific cause of the problem, so just put 0-0 here.
+                            _errorbuffer[0] = 0;
+                            _errorbuffer[1] = 0;
+                            _errorbuffer[2] = "HTTP_BAD_RESPONSE_CODE";
+                            // Truncate error message if too long
+                            _errorbuffer[3] = e.Message.Length > 4095 ? e.Message.Substring(0, 4095) : e.Message;
+
+                            // Check if the user has provided any specific error handling regarding this code, otherwise apply same strategy of datagathering error.
+                            _errorbuffer[4] = code;
+                        }
 
                         ErrorHandlingPolicy p = _networkErrorHandling;
                         if (_httpErrorPolicies.ContainsKey(code)) {
@@ -685,7 +695,8 @@ namespace com.webkingsoft.JSONSource_Common
                 _outputbuffer.SetEndOfRowset();
 
                 // Close the error lane.
-                _errorbuffer.SetEndOfRowset();
+                if (_errorbuffer!=null)
+                    _errorbuffer.SetEndOfRowset();
 
             }
             else {
@@ -806,6 +817,7 @@ namespace com.webkingsoft.JSONSource_Common
          */
         private void ProcessInMemory(StreamReader sr, RootType rootType, PipelineBuffer inputbuffer, PipelineBuffer outputbuffer)
         {
+            bool fireAgain = false;
             using (sr)
             {
                 bool cancel = false;
@@ -844,14 +856,16 @@ namespace com.webkingsoft.JSONSource_Common
                     int count = 0;
                     // For each root element we got...
                     foreach (JToken t in els) {
-                        if (t.Type == JTokenType.Array) {
-                            count+=ProcessArray(t as JArray, inputbuffer);
-                        }
-                        else if (t.Type == JTokenType.Object) {
-                            count+=ProcessObject(t as JObject, inputbuffer);
-                        }
-                        else {
-                            throw new Exception("Invalid token returned by RootPath query: "+t.Type.ToString());
+                        switch(t.Type) { 
+                            case JTokenType.Array:
+                                count+=ProcessArray(t as JArray, inputbuffer);
+                                break;
+                            case JTokenType.Object:
+                                count+=ProcessObject(t as JObject, inputbuffer);
+                                break;
+                            default:
+                                ComponentMetaData.FireError(ComponentConstants.RUNTIME_GENERIC_ERROR, ComponentMetaData.Name, "One of the values provided to ProcessArray wasn't either an array or an object (it probably was a bare integer/string). This usually happens when you are trying to parse an object while you got a primitive value instead. This operation is not yet supported.", null, 0, out fireAgain);
+                                throw new Exception("One of the values provided to ProcessArray wasn't either an array or an object (it probably was a bare integer/string). This usually happens when you are trying to parse an object while you got a primitive value instead. This operation is not yet supported.");
                         }
                     }
                     ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Succesfully parsed " + count + " tokens.", null, 0, ref cancel);
