@@ -592,16 +592,20 @@ namespace com.webkingsoft.JSONSource_Common
                 {
                     try
                     {
+                        // For every input row, bind the parameters
                         Uri uri = ResolveUri(_uriBindingType, _uriBindingValue);
 
+                        // Perform the request with appropriate inputs as HTTP params. In this case, we don't need to pass any input buffer,
+                        // because there will be no input lane.
+                        var headers = ResolveParametersBinding(_unboundHttpHeaders);
+                        var parameters = ResolveParametersBinding(_unboundHttpParams);
+
+                        bool downloaded;
                         bool cancel = false;
 
                         // So we are clear to proceed with the HTTP request.
                         ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, "Component is running in SOURCE MODE.", null, 0, ref cancel);
-
-                        bool downloaded;
-                        ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executing request {0}", uri.ToString()), null, 0, ref cancel);
-                        string fname = GetFileFromUri(uri, null, null, out downloaded);
+                        string fname = GetFileFromUri(uri, parameters, headers, out downloaded);
 
                         ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Temp json downloaded to {0}. Parsing json now...", fname), null, 0, ref cancel);
 
@@ -728,8 +732,12 @@ namespace com.webkingsoft.JSONSource_Common
                     cookies = Utils.GetVariable(VariableDispenser, _cookieVarname, out type) as CookieContainer;
                 }
 
-                var res = Utils.DownloadJson(this.VariableDispenser, uri, _httpMethod, parameters, headers, cookies);
-                
+                string computed_uri; ;
+                var res = Utils.DownloadJson(this.VariableDispenser, uri, _httpMethod, parameters, headers, cookies, out computed_uri);
+
+                bool cancel = false;
+                ComponentMetaData.FireInformation(1000, ComponentMetaData.Name, String.Format("Executed request {0}", computed_uri.ToString()), null, 0, ref cancel);
+
                 // If the cookie container parameter was not null, assign the container to the variable
                 if (!String.IsNullOrEmpty(_cookieVarname))
                 {
@@ -783,8 +791,8 @@ namespace com.webkingsoft.JSONSource_Common
                     Uri uri = ResolveUri(_uriBindingType, _uriBindingValue, inputbuffer);
 
                     // Perform the request with appropriate inputs as HTTP params...
-                    var headers = ResolveParametersBinding(_unboundHttpHeaders);
-                    var parameters = ResolveParametersBinding(_unboundHttpParams);
+                    var headers = ResolveParametersBinding(_unboundHttpHeaders, inputbuffer);
+                    var parameters = ResolveParametersBinding(_unboundHttpParams, inputbuffer);
 
                     // TODO FireInfo so that we log each request...
                     string fname = GetFileFromUri(uri, parameters, headers, out downloaded);

@@ -47,7 +47,7 @@ namespace com.webkingsoft.JSONSource_Common
         /// <exception cref="DataCollectionException">When an error happens before getting the response from the server. Details are into the inner exception</exception>
         /// <exception cref="BadHttpCodeException">When the server has answered a non-2XX response code</exception>
         /// <returns></returns>
-        private static string DownloadJsonFile(Uri url, string method, Dictionary<string, string> encodedpars, Dictionary<string, string> headers, ref CookieContainer cookiecontainer, string customLocalTempDir)
+        private static string DownloadJsonFile(Uri url, string method, Dictionary<string, string> encodedpars, Dictionary<string, string> headers, ref CookieContainer cookiecontainer, string customLocalTempDir, out string computed_url)
         {
             string localTmp = null;
             string filePath = null;
@@ -83,6 +83,7 @@ namespace com.webkingsoft.JSONSource_Common
 
                 HttpRequestMessage req = new HttpRequestMessage();
                 req.RequestUri = url;
+                computed_url = url.ToString();
 
                 if (headers != null)
                     foreach (var h in headers) {
@@ -250,8 +251,8 @@ namespace com.webkingsoft.JSONSource_Common
 
             return res;
         }*/
-
-        public static string DownloadJson(IDTSVariableDispenser100 vd, Uri url, string method, Dictionary<string, string> parameters, Dictionary<string, string> headers, CookieContainer cookies, string customLocalTempDir = null)
+        
+        public static string DownloadJson(IDTSVariableDispenser100 vd, Uri url, string method, Dictionary<string, string> parameters, Dictionary<string, string> headers, CookieContainer cookies, out string computed_url, string customLocalTempDir = null)
         {
             method = method.ToUpper();
             UriBuilder b = new UriBuilder(url);
@@ -292,7 +293,7 @@ namespace com.webkingsoft.JSONSource_Common
             if (cc == null)
                 cc = new CookieContainer();
 
-            string res = DownloadJsonFile(b.Uri, method, parameters, headers, ref cc, customLocalTempDir);
+            string res = DownloadJsonFile(b.Uri, method, parameters, headers, ref cc, customLocalTempDir, out computed_url);
             
             return res;
             

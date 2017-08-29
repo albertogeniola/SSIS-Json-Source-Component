@@ -20,7 +20,7 @@ namespace com.webkingsoft.JSONSource_Common
         private IDTSComponentMetaData100 _md;
         private IServiceProvider _sp;
         private JSONSourceComponentModel _model;
-        private IDTSVirtualInputColumnCollection100 _virtualInputs;
+        private IDTSVirtualInput100 _virtualInputLane;
 
         public void Help(System.Windows.Forms.IWin32Window parentWindow)
         {
@@ -44,9 +44,8 @@ namespace com.webkingsoft.JSONSource_Common
         /// <returns></returns>
         public bool Edit(System.Windows.Forms.IWin32Window parentWindow, Variables vars, Connections cons)
         {
-            _virtualInputs = _md.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].GetVirtualInput().VirtualInputColumnCollection;
             DtsPipelineComponentAttribute componentAttribute = (DtsPipelineComponentAttribute)Attribute.GetCustomAttribute(typeof(JSONSourceComponent), typeof(DtsPipelineComponentAttribute), false);
-            SourceAdvancedUI componentEditor = new SourceAdvancedUI(vars,_sp, _virtualInputs,_md.Version,componentAttribute.CurrentVersion);
+            SourceAdvancedUI componentEditor = new SourceAdvancedUI(vars,_sp, _virtualInputLane.VirtualInputColumnCollection, _md.Version,componentAttribute.CurrentVersion);
             componentEditor.LoadModel(_model);
 
             DialogResult result = componentEditor.ShowDialog(parentWindow);
@@ -94,11 +93,16 @@ namespace com.webkingsoft.JSONSource_Common
 
             // Clear inputs
             input.InputColumnCollection.RemoveAll();
+            var component = _md.Instantiate();
+            // Set all virtualinputs as READONLY
+            foreach (IDTSVirtualInputColumn100 vcol in _virtualInputLane.VirtualInputColumnCollection) {
+                component.SetUsageType(input.ID, _virtualInputLane, vcol.LineageID, DTSUsageType.UT_READONLY);
+            }
 
             // For each virtual input selected, add a physical input
             foreach (var colname in inputColNames) {
                 var incol = input.InputColumnCollection.New();
-                incol.LineageID = _virtualInputs[colname].LineageID;
+                incol.LineageID = _virtualInputLane.VirtualInputColumnCollection[colname].LineageID;
             }
         }
         
@@ -184,6 +188,7 @@ namespace com.webkingsoft.JSONSource_Common
             if (_md == null)
                 _md = (IDTSComponentMetaData100)_md.Instantiate();
 
+            _virtualInputLane = dtsComponentMetadata.InputCollection[ComponentConstants.NAME_INPUT_LANE_PARAMS].GetVirtualInput();
         }
     }
 }
