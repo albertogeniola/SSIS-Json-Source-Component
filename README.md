@@ -1,4 +1,4 @@
-# SSIS-Json-Source-Component ![Logo](https://www.hardwareforyou.it/images/loghi/256x256.png)
+# ![Logo](https://www.hardwareforyou.it/images/loghi/256x256.png) SSIS-Json-Source-Component 
 
 # What's JSONSource?
 
