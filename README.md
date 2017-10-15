@@ -13,6 +13,13 @@ Among the major features of JSONSource, there are:
 *   Supports HTTP GET/POST parameters via input lines/variables/hard-coding
 *   Login into webservice are now possible using a combination of multiple components
 
+# Download
+JSON Source Component can be downloaded in two flavors:
+- All in one installer, here: https://github.com/albertogeniola/SSIS-Json-Source-Component/releases/download/0.1/setup.exe
+- DLL Pack, here: https://github.com/albertogeniola/SSIS-Json-Source-Component/releases/download/0.1/Manual.DLLPack.zip
+
+For detailed install instructions, refer to this guide: https://github.com/albertogeniola/SSIS-Json-Source-Component/blob/master/Installation.md
+
 ## Flexible source
 
 JSONSource supports different kinds of data sources: it can be either used for parsing a text file on the disk or directly download the json file, by performing. Beside, the developer can specify a variable holding the HTTP URL or the physical disk path to the json data.
