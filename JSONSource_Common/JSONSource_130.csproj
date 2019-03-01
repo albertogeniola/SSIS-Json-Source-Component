@@ -7,10 +7,11 @@
     <ProjectGuid>{12963DEA-8F7C-4211-B971-4C09F72B7DC5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>com.webkingsoft.JSONSource_130</RootNamespace>
-    <AssemblyName>com.webkingsoft.JSONSource_130</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>com.webkingsoft.JSONSuite_130</RootNamespace>
+    <AssemblyName>com.webkingsoft.JSONSuite_130</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +21,7 @@
     <DefineConstants>TRACE;DEBUG;DTS130; LINQ_SUPPORTED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +30,7 @@
     <DefineConstants>TRACE;DTS130; LINQ_SUPPORTED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -96,59 +99,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComponentConstants.cs" />
-    <Compile Include="ErrorHandlingPolicy.cs" />
-    <Compile Include="Exceptions\BadHttpCodeException.cs" />
-    <Compile Include="Exceptions\BrokenModelException.cs" />
-    <Compile Include="Exceptions\DataCollectionException.cs" />
-    <Compile Include="Exceptions\ModelNotFoundException.cs" />
-    <Compile Include="IComponentModel.cs" />
-    <Compile Include="CustomControls\AdvancedView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CustomControls\AdvancedView.Designer.cs">
-      <DependentUpon>AdvancedView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CustomControls\ColumnView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CustomControls\ColumnView.Designer.cs">
-      <DependentUpon>ColumnView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CustomControls\JSONPreview.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CustomControls\JSONPreview.Designer.cs">
-      <DependentUpon>JSONPreview.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CustomControls\SourceView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CustomControls\SourceView.Designer.cs">
-      <DependentUpon>SourceView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Enum.cs" />
-    <Compile Include="HTTPParameter.cs" />
-    <Compile Include="IOMapEntry.cs" />
-    <Compile Include="JSONSourceComponent.cs" />
-    <Compile Include="JSONSourceComponentUI.cs" />
-    <Compile Include="JSONTransformComponent.cs" />
-    <Compile Include="JSONTransformComponentUI.cs" />
-    <Compile Include="JsonTransformUI.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="JsonTransformUI.Designer.cs">
-      <DependentUpon>JsonTransformUI.cs</DependentUpon>
-    </Compile>
-    <Compile Include="JsonTypes.cs" />
-    <Compile Include="ModelNotFoundException.cs" />
-    <Compile Include="HTTPParametersGui.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="HTTPParametersGui.Designer.cs">
-      <DependentUpon>HTTPParametersGui.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ParamBinding.cs" />
+    <Compile Include="JsonArraySplitter.cs" />
+    <Compile Include="Model\AbstractCustomPropertyHelper.cs" />
+    <Compile Include="Model\ArraySplitterProperties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -160,62 +113,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="RootType.cs" />
-    <Compile Include="JSONSourceComponentModel.cs" />
-    <Compile Include="SourceUI\SourceAdvancedUI.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SourceUI\SourceAdvancedUI.Designer.cs">
-      <DependentUpon>SourceAdvancedUI.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TransformationModel.cs" />
-    <Compile Include="UserPrompter.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UserPrompter.Designer.cs">
-      <DependentUpon>UserPrompter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Utils.cs" />
-    <Compile Include="VariableChooser.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VariableChooser.Designer.cs">
-      <DependentUpon>VariableChooser.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CustomControls\AdvancedView.resx">
-      <DependentUpon>AdvancedView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\ColumnView.resx">
-      <DependentUpon>ColumnView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\JSONPreview.resx">
-      <DependentUpon>JSONPreview.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\SourceView.resx">
-      <DependentUpon>SourceView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="JsonTransformUI.resx">
-      <DependentUpon>JsonTransformUI.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HTTPParametersGui.resx">
-      <DependentUpon>HTTPParametersGui.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SourceUI\SourceAdvancedUI.resx">
-      <DependentUpon>SourceAdvancedUI.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserPrompter.resx">
-      <DependentUpon>UserPrompter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VariableChooser.resx">
-      <DependentUpon>VariableChooser.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -226,21 +128,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Resources\256x256_96x96.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\folder_explore.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="jsource.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\jsource.ico" />
+    <EmbeddedResource Include="jsource.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
