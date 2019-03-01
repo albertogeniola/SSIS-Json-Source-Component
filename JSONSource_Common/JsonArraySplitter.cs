@@ -31,6 +31,7 @@ namespace com.webkingsoft.JSONSuite_Common
         private static readonly string INPUT_LANE_NAME = "Raw json input";
         private static readonly string OUTPUT_LANE_NAME = "Array Elements";
         private static readonly string ERROR_LANE_NAME = "Error elements";
+        private int[] savedInputLaneVirtualLineageIds = new int[] { };
 
         /// Remember the lifecycle!
         /// AcquireConnections()
@@ -62,14 +63,14 @@ namespace com.webkingsoft.JSONSuite_Common
             // We assume only one output will be available + 1 error output lane.
             var output = ComponentMetaData.OutputCollection.New();
             output.Name = OUTPUT_LANE_NAME;
-            output.ExclusionGroup = 1;
+            // output.ExclusionGroup = 1;
             
             // Configure Error output
             ComponentMetaData.UsesDispositions = true;
             var error = ComponentMetaData.OutputCollection.New();
             error.Name = ERROR_LANE_NAME;
             error.IsErrorOut = true;
-            error.ExclusionGroup = 1;
+            // error.ExclusionGroup = 1;
 
             // The ArraySplitter takes a line as input and produces 1+ output lines.
             // This means that the output is asynchronous to the input. By definition, this means that the associated input ID must be 0.
@@ -79,6 +80,11 @@ namespace com.webkingsoft.JSONSuite_Common
             // Custom property initialization
             var props = new ArraySplitterProperties();
             props.CopyToComponent(ComponentMetaData.CustomPropertyCollection);
+
+            // The current implementation does not handle external metadata validation.
+            // Therefore we must inform the design time about that.
+            // TODO: Change this once we implement external metadata validation
+            ComponentMetaData.ValidateExternalMetadata = false;
         }
 
         public override DTSValidationStatus Validate()
@@ -97,18 +103,69 @@ namespace com.webkingsoft.JSONSuite_Common
             // No external connection is expected for now.
 
             // ------ Custom properties checks ------
-            ArraySplitterProperties properties = new ArraySplitterProperties();
-            properties.LoadFromComponent(ComponentMetaData.CustomPropertyCollection);
-
-
+            var customPropertiesValidation = ValidateCustomProperties();
+            if (customPropertiesValidation != DTSValidationStatus.VS_ISVALID)
+                return customPropertiesValidation;
+            
             // As very last step, invoke the base validation implementation which will check that every input 
             // column is associated to an output of the upstream component.
             return base.Validate();
         }
-        
+
+        private DTSValidationStatus ValidateCustomProperties()
+        {
+            // TODO: handle validation for external metadata
+
+            bool pbCancel = false;
+
+            ArraySplitterProperties properties = new ArraySplitterProperties();
+            properties.LoadFromComponent(ComponentMetaData.CustomPropertyCollection);
+
+            // The user should have specified a valid input column where to fetch json from
+            if (string.IsNullOrEmpty(properties.ArrayInputColumnName))
+            {
+                ComponentMetaData.FireError(0, ComponentMetaData.Name, "Invalid input column specified.", "", 0, out pbCancel);
+                return DTSValidationStatus.VS_ISBROKEN;
+            }
+
+            // The selected input column name must reflect one of the available inputs
+            // Moreover, the selected input column must be a valid STRING/TEXT type.
+            bool found = false;
+            foreach (IDTSInputColumn100 col in ComponentMetaData.InputCollection[INPUT_LANE_NAME].InputColumnCollection)
+            {
+                if (col.Name == properties.ArrayInputColumnName)
+                {
+                    found = true;
+
+                    // Check the data type of the column
+                    if (col.DataType != DataType.DT_NTEXT &&
+                        col.DataType != DataType.DT_TEXT &&
+                        col.DataType != DataType.DT_WSTR &&
+                        col.DataType != DataType.DT_STR)
+                    {
+
+                        ComponentMetaData.FireError(0, ComponentMetaData.Name, "The selected input column must be in textual format (TEXT, NTEXT, STR, WSTR).", "", 0, out pbCancel);
+                        return DTSValidationStatus.VS_ISBROKEN;
+                    }
+
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                ComponentMetaData.FireError(0, ComponentMetaData.Name, "The specified input column \"" + properties.ArrayInputColumnName +
+                    "\" is not available among the columns of the input lane \"" + INPUT_LANE_NAME + "\"", "", 0, out pbCancel);
+                return DTSValidationStatus.VS_ISBROKEN;
+            }
+
+            return DTSValidationStatus.VS_ISVALID;
+        }
+
         private DTSValidationStatus ValidateInput() {
             // TODO: we might be able to return NEEDS_NEW_METADATA for some edge-cases. For now, just return CORRUPT.
             bool pbCancel = false;
+            IDTSInput100 inputLane = null;
 
             // Only one input lane is expected
             if (ComponentMetaData.InputCollection.Count != 1)
@@ -120,7 +177,8 @@ namespace com.webkingsoft.JSONSuite_Common
             // Input lane must be named as INPUT_LANE_NAME
             try
             {
-                if (ComponentMetaData.InputCollection[INPUT_LANE_NAME] == null)
+                inputLane = ComponentMetaData.InputCollection[INPUT_LANE_NAME];
+                if (inputLane == null)
                     throw new Exception("Missing input lane");
             }
             catch (Exception e)
@@ -128,6 +186,41 @@ namespace com.webkingsoft.JSONSuite_Common
                 ComponentMetaData.FireError(0, ComponentMetaData.Name, "Incorrect number of inputs.", "", 0, out pbCancel);
                 return DTSValidationStatus.VS_ISCORRUPT;
             }
+
+            // Detect changes in virtual inputs.
+            // If a new column is added/removed from the upstream, we need to rebuild the metadata
+            // accordingly. To do so, let's maintain a list of lineage ID and compare it here.
+            if (inputLane.GetVirtualInput().VirtualInputColumnCollection.Count != savedInputLaneVirtualLineageIds.Count()) {
+                ComponentMetaData.FireError(0, ComponentMetaData.Name, "Column metadata has changed.", "", 0, out pbCancel);
+                return DTSValidationStatus.VS_NEEDSNEWMETADATA;
+            }
+
+            foreach (IDTSVirtualInputColumn100 vColumn in inputLane.GetVirtualInput().VirtualInputColumnCollection)
+            {
+                if (!savedInputLaneVirtualLineageIds.Contains(vColumn.LineageID))
+                {
+                    ComponentMetaData.FireError(0, ComponentMetaData.Name, "Column metadata has changed.", "", 0, out pbCancel);
+                    return DTSValidationStatus.VS_NEEDSNEWMETADATA;
+                }
+            }
+
+            foreach (int vColumnId in savedInputLaneVirtualLineageIds)
+            {
+                bool idFound = false;
+                foreach (IDTSVirtualInputColumn100 vcol in inputLane.GetVirtualInput().VirtualInputColumnCollection) {
+                    if (vcol.LineageID == vColumnId) {
+                        idFound = true;
+                        break;
+                    }
+                }
+                
+                if (!idFound)
+                {
+                    ComponentMetaData.FireError(0, ComponentMetaData.Name, "Column metadata has changed.", "", 0, out pbCancel);
+                    return DTSValidationStatus.VS_NEEDSNEWMETADATA;
+                }
+            }
+
             return DTSValidationStatus.VS_ISVALID;
         }
 
@@ -167,7 +260,7 @@ namespace com.webkingsoft.JSONSuite_Common
             try
             {
                 errlane = ComponentMetaData.OutputCollection[ERROR_LANE_NAME];
-                if (outlane == null)
+                if (errlane == null)
                     throw new Exception("Missing output lane " + ERROR_LANE_NAME);
             }
             catch (Exception e)
@@ -176,13 +269,20 @@ namespace com.webkingsoft.JSONSuite_Common
                 return DTSValidationStatus.VS_ISCORRUPT;
             }
 
-            if (!outlane.IsErrorOut)
+            if (!errlane.IsErrorOut)
             {
                 ComponentMetaData.FireError(0, ComponentMetaData.Name, "The output lane " + ERROR_LANE_NAME + " should be used for errors and not for result.", "", 0, out pbCancel);
                 return DTSValidationStatus.VS_ISCORRUPT;
             }
 
             return DTSValidationStatus.VS_ISVALID;
+        }
+
+        public override void ReinitializeMetaData()
+        {
+            // The base implementation of this method should 
+            base.ReinitializeMetaData();
+
         }
 
         /*
