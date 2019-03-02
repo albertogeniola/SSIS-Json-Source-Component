@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 #if LINQ_SUPPORTED
@@ -32,20 +33,7 @@ namespace com.webkingsoft.JSONSuite_Common
         private static readonly string OUTPUT_LANE_NAME = "Array Elements";
         private static readonly string ERROR_LANE_NAME = "Error elements";
 
-        /// Remember the lifecycle!
-        /// AcquireConnections()
-        /// Validate()
-        /// ReleaseConnections()
-        /// PrepareForExecute()
-        /// AcquireConnections()
-        /// PreExecute()
-        /// PrimeOutput()
-        /// ProcessInput()
-        /// PostExecute()
-        /// ReleaseConnections()
-        /// Cleanup()
-
-        // Public overrided methods
+        // Public overrided methods - Design time
         public override void ProvideComponentProperties()
         {
             // This method is invoked by the design time when the component is added to the data flow for the very first time. 
@@ -113,9 +101,51 @@ namespace com.webkingsoft.JSONSuite_Common
             if (columnUsageTypeValidation != DTSValidationStatus.VS_ISVALID)
                 return columnUsageTypeValidation;
 
+            // ------ Input:Output relationship ------
+            var ioRelationshipValidation = ValidateIoRelationship();
+            if (ioRelationshipValidation != DTSValidationStatus.VS_ISVALID)
+                return ioRelationshipValidation;
+
             // As very last step, invoke the base validation implementation which will check that every input 
             // column is associated to an output of the upstream component.
             return base.Validate();
+        }
+
+        private DTSValidationStatus ValidateIoRelationship()
+        {
+            bool pbCancel = false;
+
+            // Make sure that for every input column there is a matching output column
+            // with same name/type
+            var inputLane = ComponentMetaData.InputCollection[INPUT_LANE_NAME];
+            var outputLane = ComponentMetaData.OutputCollection[OUTPUT_LANE_NAME];
+            foreach (IDTSInputColumn100 icol in inputLane.InputColumnCollection) {
+                bool found = false;
+                bool matchType = false;
+                foreach (IDTSOutputColumn100 ocol in outputLane.OutputColumnCollection) {
+                    if (ocol.Name == icol.Name) {
+                        found = true;
+
+                        matchType = ocol.Length == icol.Length &&
+                            ocol.CodePage == icol.CodePage &&
+                            ocol.DataType == icol.DataType &&
+                            ocol.Precision == icol.Precision;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    ComponentMetaData.FireError(0,ComponentMetaData.Name, "Metadata changed: no output column matching input column " + icol.Name, "", 0, out pbCancel);
+                    return DTSValidationStatus.VS_NEEDSNEWMETADATA;
+                }
+
+                if (!matchType) {
+                    ComponentMetaData.FireError(0, ComponentMetaData.Name, "Metadata changed: input column " + icol.Name, " type/length/precision/codepage differs from the ones of associated input column", 0, out pbCancel);
+                    return DTSValidationStatus.VS_NEEDSNEWMETADATA;
+                }
+            }
+
+            return DTSValidationStatus.VS_ISVALID;
         }
 
         public override void ReinitializeMetaData()
@@ -159,7 +189,7 @@ namespace com.webkingsoft.JSONSuite_Common
             throw new Exception("You cannot delete the output lane");
         }
 
-        // Private methods
+        // Private methods (design time)
         private void CreateOutputAndMetaDataColumns(IDTSOutput100 outlane)
         {
             // Since this component is asynchronous, we need to add output columns by ourself.
@@ -379,6 +409,262 @@ namespace com.webkingsoft.JSONSuite_Common
             }
         }*/
 
-    }
+        public override void PerformUpgrade(int pipelineVersion)
+        {
+            // TODO: change this!
+            //base.PerformUpgrade(pipelineVersion);
+        }
 
+        // Public overrided methods - Runtime
+        private Dictionary<int, int> _ioColumnMapping;
+        private int _jsonInputColumnIndex = -1;
+        private int _jsonOutputColumnIndex = -1;
+        private PipelineBuffer _outputBuffer;
+        private PipelineBuffer _errorBuffer;
+
+        delegate string JsonStringExtractor(PipelineBuffer inputBuffer);
+        private JsonStringExtractor _extractor;
+
+        // This array will contain the values from input lane that should be copied to the
+        // output
+        private object[] copyVals = null;
+
+        public override void PreExecute()
+        {
+#if DEBUG
+            MessageBox.Show("Attach the debugger now! PID: " + System.Diagnostics.Process.GetCurrentProcess().Id);
+#endif
+            ArraySplitterProperties config = new ArraySplitterProperties();
+            config.LoadFromComponent(ComponentMetaData.CustomPropertyCollection);
+
+            // This method is invoked once before the component starts doing its job. 
+            // This is the perfect time to build up the fast-access data we will use later on during execution.
+            // In particualr, we need to build a dictionary that holds up destination buffer index for every input
+            // column index. 
+            _ioColumnMapping = new Dictionary<int, int>();
+
+            // To do so, we lookup every output column name with the relative input column name
+            IDTSOutput100 output = ComponentMetaData.OutputCollection[OUTPUT_LANE_NAME];
+            IDTSInput100 input = ComponentMetaData.InputCollection[INPUT_LANE_NAME];
+
+            // TODO: handle the case some mapping is not found.
+            // TODO: enforce the mapping check into VALIDATE() method.
+            foreach(IDTSInputColumn100 iCol in input.InputColumnCollection) {
+                bool isJsonIndex = false;
+                int iindex = BufferManager.FindColumnByLineageID(input.Buffer, iCol.LineageID);
+                if (iCol.Name == config.ArrayInputColumnName)
+                {
+                    isJsonIndex = true;
+                    _jsonInputColumnIndex = iindex;
+
+                    // Select the functio that will take care of extracting the json from the input buffer.
+                    switch (iCol.DataType)
+                    {
+                        case DataType.DT_TEXT:
+                            _extractor = AnsiDecode;
+                            break;
+                        case DataType.DT_NTEXT:
+                            _extractor = UnicodeDecode;
+                            break;
+                        case DataType.DT_STR:
+                        case DataType.DT_WSTR:
+                            _extractor = SimpleStringExtractor;
+                            break;
+                        default:
+                            throw new Exception("Unhandled data type for json array column.");
+                    }
+                }
+
+                foreach (IDTSOutputColumn100 oCol in output.OutputColumnCollection) {
+                    if (iCol.Name == oCol.Name) {
+                        int oindex = BufferManager.FindColumnByLineageID(output.Buffer, oCol.LineageID);
+                        _ioColumnMapping.Add(iindex, oindex);
+
+                        if (isJsonIndex) {
+                            _jsonOutputColumnIndex = oindex;
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        public override void PrimeOutput(int outputs, int[] outputIDs, PipelineBuffer[] buffers)
+        {
+            // This is an Asynch transformation component, thus both PrimeOutput and ProcessInput are 
+            // invoked by the runtime. In this method, we only save the refereces to output/buffers 
+            // locally for later processing.
+            int outputId = ComponentMetaData.OutputCollection[OUTPUT_LANE_NAME].ID;
+            int errorId = ComponentMetaData.OutputCollection[ERROR_LANE_NAME].ID;
+            for (int i = 0; i < outputs; i++) { 
+                if (outputIDs[i] == outputId)
+                        _outputBuffer = buffers[i];
+                else if (outputIDs[i] == errorId)
+                        _errorBuffer = buffers[i];
+            }
+        }
+
+        public override void ProcessInput(int inputID, PipelineBuffer buffer)
+        {
+            // This method processes the data coming into some input.
+            // However we only have one possible input, so we don't need to check the inputId.
+            if (!buffer.EndOfRowset) {
+                while (buffer.NextRow()) {
+                    ProcessInputRow(buffer);
+                }
+            }
+
+            // TODO: ensure there is at least one output lane attached.
+            _outputBuffer?.SetEndOfRowset();
+            _errorBuffer?.SetEndOfRowset();
+        }
+
+        private void ProcessInputRow(PipelineBuffer inputBuffer) {
+            bool pbCancel = false;
+
+            // In here, we need to read the input buffer, select the column with JSON array,
+            // unpack the json elements in separate output rows. Every row will be copied 
+            // from the input buffer and will hold one specific element of the array. 
+            // For instance, assume the following row is received into the input buffer:
+            // Name     | Surname | Age | Hobbies
+            // Alberto  | Geniola | 28  | ["Coding", "Gaming", "Cooking"]
+            // ...
+            // 
+            // The expected output would be:
+            // Name     | Surname | Age | Hobbies:
+            // Alberto  | Geniola | 28  | "Coding"
+            // Alberto  | Geniola | 28  | "Gaming"
+            // Alberto  | Geniola | 28  | "Cooking"
+            // ...
+
+            // Loop over all the columns in the buffer and prepare the items to be used to fill the
+            // output buffer (e.g. all the input values except the json array)
+            copyVals = new object[inputBuffer.ColumnCount];
+            for (int i = 0; i < inputBuffer.ColumnCount; i++) {
+                // Skip the json input column.
+                if (i == _jsonInputColumnIndex)
+                    continue;
+
+                // Retrieve the mapped output column index on the output buffer
+                int mappedOutputBufferIndex = _ioColumnMapping[i];
+
+                copyVals[mappedOutputBufferIndex] = inputBuffer[i];
+            }
+
+            // Now parse the input json array and, for each item in the array, produce a new output line.
+            string rawJson = _extractor(inputBuffer);
+            using (var jtr = new JsonTextReader(new StringReader(rawJson)))
+            {
+                // Start reading the array. The very first token we expect is the array-start element.
+                try {
+                    if (!jtr.Read())
+                    {
+                        throw new NullOrEmptyArrayException();
+                    }
+
+                    // We expect "ArrayStart" element. If that differs, then the input is not well formed.
+                    if (jtr.TokenType != JsonToken.StartArray) {
+                        ComponentMetaData.FireError(0, ComponentMetaData.Name, "The json string should start with the '[' symbol, but it does not.", "",0, out pbCancel);
+                        _errorBuffer.AddRow();
+                        _errorBuffer.SetInt32(0, (int)ERROR_CODES.ERROR_MISSING_START_ARRAY);
+                    }
+
+                    // Now, we expect a variable number number of tokens 
+                    int targetDepth = jtr.Depth;
+
+                    JsonLoadSettings settings = new JsonLoadSettings();
+                    JArray array = JArray.ReadFrom(jtr) as JArray;
+                    int processedTokens = 0;
+                    foreach (JToken token in array) {
+                        SendRowToOutputBuffer(token.ToString(Formatting.None));
+                        processedTokens++;
+                    }
+
+                    if (processedTokens == 0) {
+                        // If there was no item in the array or if the array was empty, we still need to 
+                        // provide one output row. So we do it here.
+                        SendRowToOutputBuffer(null);
+                    }
+
+                    /*
+                    while (jtr.Read()) {
+                        // Read items to the target depth. Consume all the string until we get back to the 
+                        // target depth
+                        if (jtr.Depth > targetDepth) {
+                            sb.Append(jtr.Value);
+                            continue;
+                        }
+                        
+                        if (jtr.TokenType == JsonToken.EndArray)
+                            break;
+                        else {
+                            // We are done with this line. We can send it to the output buffer
+                            SendRowToOutputBuffer(sb.ToString());
+                            sb.Clear();
+                        }
+                    }*/
+
+
+                    // TODO: Make sure there is nothing more to read
+                    if (jtr.Read()) {
+                        // This should not happen! There is no need to fail here. Just throw a warning.
+                        ComponentMetaData.FireWarning(0, ComponentMetaData.Name, "The JSON array did contain some more data after the closing bracket. ']'.", "", 0);
+                    }
+                } catch (NullOrEmptyArrayException ex) {
+                    // If we failed to read or there is nothing to read, just throw a warning and cotinue.
+                    ComponentMetaData.FireWarning(0, ComponentMetaData.Name, "No JSON data recevied", "", 0);
+                    // TODO: handle the case there is an empty input / empty input array.
+                    // TODO: Add the output anyways
+                }
+            }
+        }
+        
+        private string AnsiDecode(PipelineBuffer inputBuffer) {
+            var length = inputBuffer.GetBlobLength(_jsonInputColumnIndex);
+            if (length >= int.MaxValue) {
+                // Too long!
+                throw new Exception("Json element too long.");
+            }
+            var data = inputBuffer.GetBlobData(_jsonInputColumnIndex, 0, (int)length);
+            return Encoding.Default.GetString(data);
+        }
+
+        private string UnicodeDecode(PipelineBuffer inputBuffer)
+        {
+            var length = inputBuffer.GetBlobLength(_jsonInputColumnIndex);
+            if (length >= int.MaxValue)
+            {
+                // Too long!
+                throw new Exception("Json element too long.");
+            }
+            var data = inputBuffer.GetBlobData(_jsonInputColumnIndex, 0, (int)length);
+            return Encoding.Unicode.GetString(data);
+        }
+
+        private string SimpleStringExtractor(PipelineBuffer inputBuffer) {
+            return inputBuffer.GetString(_jsonInputColumnIndex);
+        }
+
+        private void SendRowToOutputBuffer(string jsonArrayElement) {
+            _outputBuffer.AddRow();
+            for (int i = 0; i < copyVals.Length; i++) {
+                // Skip the json item value, which will be filled later.
+                if (i == _jsonInputColumnIndex)
+                    continue;
+                _outputBuffer[i] = copyVals[i];
+            }
+
+            _outputBuffer[_jsonOutputColumnIndex] = jsonArrayElement;
+            
+        }
+
+        public enum ERROR_CODES : int {
+            ERROR_MISSING_START_ARRAY = -101,
+            ERROR_MISSING_END_ARRAY = -102
+        }
+
+        // TODO: move this into a stand-alone file 
+        public class NullOrEmptyArrayException : Exception { }
+    }
 }

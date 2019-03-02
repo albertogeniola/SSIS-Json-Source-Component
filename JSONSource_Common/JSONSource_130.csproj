@@ -102,6 +102,7 @@
     <Compile Include="JsonArraySplitter.cs" />
     <Compile Include="Model\AbstractCustomPropertyHelper.cs" />
     <Compile Include="Model\ArraySplitterProperties.cs" />
+    <Compile Include="Model\ColumnInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -133,6 +134,10 @@
     <EmbeddedResource Include="jsource.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetPath) "C:\Program Files (x86)\Microsoft SQL Server\130\DTS\PipelineComponents\"
+"c:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\gacutil.exe" -i "C:\Program Files (x86)\Microsoft SQL Server\130\DTS\PipelineComponents\$(TargetFileName)"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
