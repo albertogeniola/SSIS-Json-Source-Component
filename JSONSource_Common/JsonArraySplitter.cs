@@ -31,7 +31,6 @@ namespace com.webkingsoft.JSONSuite_Common
         private static readonly string INPUT_LANE_NAME = "Raw json input";
         private static readonly string OUTPUT_LANE_NAME = "Array Elements";
         private static readonly string ERROR_LANE_NAME = "Error elements";
-        private int[] savedInputLaneVirtualLineageIds = new int[] { };
 
         /// Remember the lifecycle!
         /// AcquireConnections()
@@ -46,11 +45,12 @@ namespace com.webkingsoft.JSONSuite_Common
         /// ReleaseConnections()
         /// Cleanup()
 
+        // Public overrided methods
         public override void ProvideComponentProperties()
         {
             // This method is invoked by the design time when the component is added to the data flow for the very first time. 
             // In here, we need to configure the input and the output lanes and set the synchronization type.
-            
+
             // Clear all inputs and custom props, plus setup outputs
             base.RemoveAllInputsOutputsAndCustomProperties();
 
@@ -64,7 +64,7 @@ namespace com.webkingsoft.JSONSuite_Common
             var output = ComponentMetaData.OutputCollection.New();
             output.Name = OUTPUT_LANE_NAME;
             // output.ExclusionGroup = 1;
-            
+
             // Configure Error output
             ComponentMetaData.UsesDispositions = true;
             var error = ComponentMetaData.OutputCollection.New();
@@ -103,22 +103,110 @@ namespace com.webkingsoft.JSONSuite_Common
             // No external connection is expected for now.
 
             // ------ Custom properties checks ------
-            var customPropertiesValidation = ValidateCustomProperties();
+            ArraySplitterProperties props;
+            var customPropertiesValidation = ValidateCustomProperties(out props);
             if (customPropertiesValidation != DTSValidationStatus.VS_ISVALID)
                 return customPropertiesValidation;
-            
+
+            // ------ Usage type -------
+            var columnUsageTypeValidation = ValidateColumnsUsageType(props);
+            if (columnUsageTypeValidation != DTSValidationStatus.VS_ISVALID)
+                return columnUsageTypeValidation;
+
             // As very last step, invoke the base validation implementation which will check that every input 
             // column is associated to an output of the upstream component.
             return base.Validate();
         }
 
-        private DTSValidationStatus ValidateCustomProperties()
+        public override void ReinitializeMetaData()
+        {
+            // Remove the previous output columns and the the relative metadata columns
+            IDTSOutput100 output = ComponentMetaData.OutputCollection[OUTPUT_LANE_NAME];
+            output.ExternalMetadataColumnCollection.RemoveAll();
+            output.OutputColumnCollection.RemoveAll();
+
+            // Make sure that every input column is treated as READONLY (for not interesting ones)
+            // or READWRITE (for json array ones).
+            AlignVirtualInputsToInputs();
+
+            // Add them back from scratch
+            CreateOutputAndMetaDataColumns(output);
+        }
+        
+        public override void OnInputPathAttached(int inputID)
+        {
+            // We only have one input lane in this component, so we assume inputId that one.
+            AlignVirtualInputsToInputs();
+        }
+        
+        public override IDTSOutput100 InsertOutput(DTSInsertPlacement insertPlacement, int outputID)
+        {
+            throw new Exception("This component doesn't support any additional output");
+        }
+
+        public override IDTSInput100 InsertInput(DTSInsertPlacement insertPlacement, int inputID)
+        {
+            throw new Exception("This component doesn't support any additional input");
+        }
+
+        public override void DeleteInput(int inputID)
+        {
+            throw new Exception("You cannot delete the input lane");
+        }
+
+        public override void DeleteOutput(int outputID)
+        {
+            throw new Exception("You cannot delete the output lane");
+        }
+
+        // Private methods
+        private void CreateOutputAndMetaDataColumns(IDTSOutput100 outlane)
+        {
+            // Since this component is asynchronous, we need to add output columns by ourself.
+            // In fact, for asynchronous components, the row buffer is not shared.
+            // We want to add an output column for every input column we have.
+            IDTSInput100 input = ComponentMetaData.InputCollection[INPUT_LANE_NAME];
+            IDTSOutput100 outLane = ComponentMetaData.OutputCollection[OUTPUT_LANE_NAME];
+            var inputLane = ComponentMetaData.InputCollection[INPUT_LANE_NAME];
+            foreach (IDTSInputColumn100 col in inputLane.InputColumnCollection)
+            {
+                var outCol = outLane.OutputColumnCollection.New();
+                outCol.Name = col.Name;
+                outCol.SetDataTypeProperties(col.DataType, col.Length, col.Precision, col.Scale, col.CodePage);
+            }
+        }
+
+        private DTSValidationStatus ValidateColumnsUsageType(ArraySplitterProperties props)
+        {
+            bool pbCancel = false;
+            // Make sure all the columns in the input component have been marked as READ-ONLY, except the one 
+            // we are considering as JSON array. In case this is not the case, we might be able to recover by
+            // using the ReinitializeMetadata.
+            var inputLane = ComponentMetaData.InputCollection[INPUT_LANE_NAME];
+            foreach (IDTSInputColumn100 col in inputLane.InputColumnCollection)
+            {
+                // If this is the selected json array column, it must be RW
+                if (props.ArrayInputColumnName == col.Name && col.UsageType != DTSUsageType.UT_READWRITE)
+                {
+                    ComponentMetaData.FireError(0, ComponentMetaData.Name, "Column " + props.ArrayInputColumnName + " must be set as RW.", "", 0, out pbCancel);
+                    return DTSValidationStatus.VS_NEEDSNEWMETADATA;
+                }
+                else if (props.ArrayInputColumnName != col.Name && col.UsageType != DTSUsageType.UT_READONLY)
+                {
+                    ComponentMetaData.FireError(0, ComponentMetaData.Name, "Column " + col.Name + " must be set as RO.", "", 0, out pbCancel);
+                    return DTSValidationStatus.VS_NEEDSNEWMETADATA;
+                }
+            }
+            return DTSValidationStatus.VS_ISVALID;
+        }
+
+        private DTSValidationStatus ValidateCustomProperties(out ArraySplitterProperties properties)
         {
             // TODO: handle validation for external metadata
 
             bool pbCancel = false;
 
-            ArraySplitterProperties properties = new ArraySplitterProperties();
+            properties = new ArraySplitterProperties();
             properties.LoadFromComponent(ComponentMetaData.CustomPropertyCollection);
 
             // The user should have specified a valid input column where to fetch json from
@@ -162,7 +250,8 @@ namespace com.webkingsoft.JSONSuite_Common
             return DTSValidationStatus.VS_ISVALID;
         }
 
-        private DTSValidationStatus ValidateInput() {
+        private DTSValidationStatus ValidateInput()
+        {
             // TODO: we might be able to return NEEDS_NEW_METADATA for some edge-cases. For now, just return CORRUPT.
             bool pbCancel = false;
             IDTSInput100 inputLane = null;
@@ -187,38 +276,12 @@ namespace com.webkingsoft.JSONSuite_Common
                 return DTSValidationStatus.VS_ISCORRUPT;
             }
 
-            // Detect changes in virtual inputs.
             // If a new column is added/removed from the upstream, we need to rebuild the metadata
-            // accordingly. To do so, let's maintain a list of lineage ID and compare it here.
-            if (inputLane.GetVirtualInput().VirtualInputColumnCollection.Count != savedInputLaneVirtualLineageIds.Count()) {
+            // accordingly. 
+            if (!ComponentMetaData.AreInputColumnsValid)
+            {
                 ComponentMetaData.FireError(0, ComponentMetaData.Name, "Column metadata has changed.", "", 0, out pbCancel);
                 return DTSValidationStatus.VS_NEEDSNEWMETADATA;
-            }
-
-            foreach (IDTSVirtualInputColumn100 vColumn in inputLane.GetVirtualInput().VirtualInputColumnCollection)
-            {
-                if (!savedInputLaneVirtualLineageIds.Contains(vColumn.LineageID))
-                {
-                    ComponentMetaData.FireError(0, ComponentMetaData.Name, "Column metadata has changed.", "", 0, out pbCancel);
-                    return DTSValidationStatus.VS_NEEDSNEWMETADATA;
-                }
-            }
-
-            foreach (int vColumnId in savedInputLaneVirtualLineageIds)
-            {
-                bool idFound = false;
-                foreach (IDTSVirtualInputColumn100 vcol in inputLane.GetVirtualInput().VirtualInputColumnCollection) {
-                    if (vcol.LineageID == vColumnId) {
-                        idFound = true;
-                        break;
-                    }
-                }
-                
-                if (!idFound)
-                {
-                    ComponentMetaData.FireError(0, ComponentMetaData.Name, "Column metadata has changed.", "", 0, out pbCancel);
-                    return DTSValidationStatus.VS_NEEDSNEWMETADATA;
-                }
             }
 
             return DTSValidationStatus.VS_ISVALID;
@@ -250,8 +313,9 @@ namespace com.webkingsoft.JSONSuite_Common
                 return DTSValidationStatus.VS_ISCORRUPT;
             }
 
-            if (outlane.IsErrorOut) {
-                ComponentMetaData.FireError(0, ComponentMetaData.Name, "The output lane "+ OUTPUT_LANE_NAME +" should be used for output and not for error.", "", 0, out pbCancel);
+            if (outlane.IsErrorOut)
+            {
+                ComponentMetaData.FireError(0, ComponentMetaData.Name, "The output lane " + OUTPUT_LANE_NAME + " should be used for output and not for error.", "", 0, out pbCancel);
                 return DTSValidationStatus.VS_ISCORRUPT;
             }
 
@@ -277,14 +341,25 @@ namespace com.webkingsoft.JSONSuite_Common
 
             return DTSValidationStatus.VS_ISVALID;
         }
-
-        public override void ReinitializeMetaData()
+        
+        private void AlignVirtualInputsToInputs()
         {
-            // The base implementation of this method should 
-            base.ReinitializeMetaData();
+            ArraySplitterProperties model = new ArraySplitterProperties();
+            model.LoadFromComponent(ComponentMetaData.CustomPropertyCollection);
 
+            // TODO: Set the usage type of every column to READONLY, except for the one selected by the user as JSON raw input. 
+            // That one should be used as READ-WRITE.
+            IDTSInput100 input = ComponentMetaData.InputCollection[INPUT_LANE_NAME];
+            var vInput = ComponentMetaData.InputCollection[INPUT_LANE_NAME].GetVirtualInput();
+            foreach (IDTSVirtualInputColumn100 vCol in vInput.VirtualInputColumnCollection)
+            {
+                // Set every column to readonly except made for the one that we will interpret as JSON
+                if (vCol.Name == model.ArrayInputColumnName)
+                    SetUsageType(input.ID, vInput, vCol.LineageID, DTSUsageType.UT_READWRITE);
+                else
+                    SetUsageType(input.ID, vInput, vCol.LineageID, DTSUsageType.UT_READONLY);
+            }
         }
-
         /*
         /// <summary>
         /// This function is used to attach a debugger. Just declare a boolean WK_DEBUG variable with TRUE value and invoke this function
@@ -303,36 +378,6 @@ namespace com.webkingsoft.JSONSuite_Common
                 // Do nothing
             }
         }*/
-
-        public override IDTSExternalMetadataColumn100 InsertExternalMetadataColumnAt(int iID, int iExternalMetadataColumnIndex, string strName, string strDescription)
-        {
-            return base.InsertExternalMetadataColumnAt(iID, iExternalMetadataColumnIndex, strName, strDescription);
-        }
-
-        public override IDTSExternalMetadataColumn100 MapInputColumn(int iInputID, int iInputColumnID, int iExternalMetadataColumnID)
-        {
-            return base.MapInputColumn(iInputID, iInputColumnID, iExternalMetadataColumnID);
-        }
-
-        public override IDTSOutput100 InsertOutput(DTSInsertPlacement insertPlacement, int outputID)
-        {
-            throw new Exception("This component doesn't support any additional output");
-        }
-
-        public override IDTSInput100 InsertInput(DTSInsertPlacement insertPlacement, int inputID)
-        {
-            throw new Exception("This component doesn't support any additional input");
-        }
-
-        public override void DeleteInput(int inputID)
-        {
-            throw new Exception("You cannot delete the input lane");
-        }
-
-        public override void DeleteOutput(int outputID)
-        {
-            throw new Exception("You cannot delete the output lane");
-        }
 
     }
 
