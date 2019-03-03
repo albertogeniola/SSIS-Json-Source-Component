@@ -1,0 +1,2 @@
+Name;Surname;Age;JSON_hobbies
+Alberto; Geniola; 28; "Cooking", ["innerArrayElement", "anotherInnerArrayElement"], {"Object": "test"}, null, undefined, "Gaming"

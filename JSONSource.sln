@@ -23,6 +23,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Setup", "Setup", "{885CEA31
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1E94CFB2-0E64-407A-9809-9E73E79BCDAC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ArraySplitter", "ArraySplitter", "{F20B3D7D-06CF-4598-9567-75D4A1DD0A9A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bad Json", "Bad Json", "{EF572789-55DF-4890-95CE-001CE571AEFC}"
+	ProjectSection(SolutionItems) = preProject
+		Test\ArraySplitter\Files\Bad Json\simple-array.CSV = Test\ArraySplitter\Files\Bad Json\simple-array.CSV
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Heterogeneus array", "Heterogeneus array", "{5D21164B-F8CA-4EF3-9E47-60FC71B81986}"
+	ProjectSection(SolutionItems) = preProject
+		Test\ArraySplitter\Files\Heterogeneus array\simple-array.CSV = Test\ArraySplitter\Files\Heterogeneus array\simple-array.CSV
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Missing array start", "Missing array start", "{942660CE-716A-455E-81F5-E3AB7FCD5582}"
+	ProjectSection(SolutionItems) = preProject
+		Test\ArraySplitter\Files\Missing array start\simple-array.CSV = Test\ArraySplitter\Files\Missing array start\simple-array.CSV
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,5 +105,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F20B3D7D-06CF-4598-9567-75D4A1DD0A9A} = {1E94CFB2-0E64-407A-9809-9E73E79BCDAC}
+		{EF572789-55DF-4890-95CE-001CE571AEFC} = {F20B3D7D-06CF-4598-9567-75D4A1DD0A9A}
+		{5D21164B-F8CA-4EF3-9E47-60FC71B81986} = {F20B3D7D-06CF-4598-9567-75D4A1DD0A9A}
+		{942660CE-716A-455E-81F5-E3AB7FCD5582} = {F20B3D7D-06CF-4598-9567-75D4A1DD0A9A}
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,2117 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="3/1/2019 2:34:09 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="WIN-E9RPL9S1FS2"
+  DTS:CreatorName="WIN-E9RPL9S1FS2\Administrator"
+  DTS:DTSID="{033BB663-72BF-4E54-B826-830AF1795907}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="13.0.1601.5"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="Package"
+  DTS:PackageType="5"
+  DTS:VersionBuild="62"
+  DTS:VersionGUID="{CB36F92B-7A55-496C-B4C9-C626D9E4BD58}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Bad Json Errors]"
+      DTS:CreationName="FLATFILE"
+      DTS:DTSID="{B600B686-4F02-4D2D-BA53-824FC33332F8}"
+      DTS:ObjectName="Bad Json Errors">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:Format="Delimited"
+          DTS:LocaleID="1033"
+          DTS:HeaderRowDelimiter="_x000D__x000A_"
+          DTS:RowDelimiter=""
+          DTS:TextQualifier="_x003C_none_x003E_"
+          DTS:CodePage="1252"
+          DTS:ConnectionString="C:\Users\Administrator\Source\Repos\jsonsource\Test\ArraySplitter\Files\Bad Json\errors.csv">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x002C_"
+              DTS:DataType="3"
+              DTS:TextQualified="True"
+              DTS:ObjectName="ErrorCode"
+              DTS:DTSID="{81D6FE31-0395-4E4E-81F7-2407929259FA}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x000D__x000A_"
+              DTS:DataType="3"
+              DTS:TextQualified="True"
+              DTS:ObjectName="ErrorColumn"
+              DTS:DTSID="{9FB12A61-AE97-4429-BFFE-F5F45BAEF7E5}"
+              DTS:CreationName="" />
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Bad Json Input]"
+      DTS:CreationName="FLATFILE"
+      DTS:DTSID="{deca1b3b-a28b-4848-bfa7-b972e4836966}"
+      DTS:ObjectName="Bad Json Input">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:Format="Delimited"
+          DTS:LocaleID="1033"
+          DTS:HeaderRowDelimiter="_x000D__x000A_"
+          DTS:ColumnNamesInFirstDataRow="True"
+          DTS:RowDelimiter=""
+          DTS:TextQualifier="_x003C_none_x003E_"
+          DTS:CodePage="1252"
+          DTS:ConnectionString="C:\Users\Administrator\Source\Repos\jsonsource\Test\ArraySplitter\Files\Bad Json\simple-array.CSV">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Name"
+              DTS:DTSID="{DC5D02BD-026B-4C29-9264-4C05DF135497}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Surname"
+              DTS:DTSID="{1CF6903A-F6F7-4DBA-AC09-44A82BCD56AF}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Age"
+              DTS:DTSID="{8C42CE31-A072-488D-87CE-6F82D608CF11}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x000D__x000A_"
+              DTS:DataType="302"
+              DTS:TextQualified="True"
+              DTS:ObjectName="JSON_hobbies"
+              DTS:DTSID="{5A9FE57B-DF66-4029-842D-95ABF2F3026A}"
+              DTS:CreationName="" />
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Bad Json Output]"
+      DTS:CreationName="FLATFILE"
+      DTS:DTSID="{abce94b4-ad4f-405d-8baf-374ee739ef40}"
+      DTS:ObjectName="Bad Json Output">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:Format="Delimited"
+          DTS:LocaleID="1033"
+          DTS:HeaderRowDelimiter="_x000D__x000A_"
+          DTS:ColumnNamesInFirstDataRow="True"
+          DTS:RowDelimiter=""
+          DTS:TextQualifier="_x003C_none_x003E_"
+          DTS:CodePage="1252"
+          DTS:ConnectionString="C:\Users\Administrator\Source\Repos\jsonsource\Test\ArraySplitter\Files\Bad Json\output.csv">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Name"
+              DTS:DTSID="{022DD4BA-4101-416A-AFBC-B6B7C4A91CA9}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Surname"
+              DTS:DTSID="{B451BC5F-F0D0-4D64-B588-95E4C09236C8}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Age"
+              DTS:DTSID="{07E216F7-A6A0-4271-BA19-5B89CA0A112B}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x000D__x000A_"
+              DTS:DataType="302"
+              DTS:TextQualified="True"
+              DTS:ObjectName="JSON_hobbies"
+              DTS:DTSID="{5327C906-7CD9-43DC-9F61-123F79572E84}"
+              DTS:CreationName="" />
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Good Json Input]"
+      DTS:CreationName="FLATFILE"
+      DTS:DTSID="{F8D0961D-1B6D-4452-A9F2-1C4D8DCC12D3}"
+      DTS:ObjectName="Good Json Input">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:Format="Delimited"
+          DTS:LocaleID="1033"
+          DTS:HeaderRowDelimiter="_x000D__x000A_"
+          DTS:ColumnNamesInFirstDataRow="True"
+          DTS:RowDelimiter=""
+          DTS:TextQualifier="_x003C_none_x003E_"
+          DTS:CodePage="1252"
+          DTS:ConnectionString="C:\Users\Administrator\Source\Repos\jsonsource\Test\ArraySplitter\Files\Heterogeneus array\simple-array.CSV">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Name"
+              DTS:DTSID="{E3F901C1-2F50-45F5-857F-095967767023}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Surname"
+              DTS:DTSID="{3D1A4B63-C026-4223-B466-27C7963EE831}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Age"
+              DTS:DTSID="{9A6BACF5-4DDD-4AFF-BEA3-893FB4586142}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x000D__x000A_"
+              DTS:DataType="302"
+              DTS:TextQualified="True"
+              DTS:ObjectName="JSON_hobbies"
+              DTS:DTSID="{5D7352FE-10F4-42E4-886C-A1BCF364FC2C}"
+              DTS:CreationName="" />
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Good Json Output]"
+      DTS:CreationName="FLATFILE"
+      DTS:DTSID="{E3A42268-4D6C-4683-BB36-DEDE8F32E514}"
+      DTS:ObjectName="Good Json Output">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:Format="Delimited"
+          DTS:LocaleID="1033"
+          DTS:HeaderRowDelimiter="_x000D__x000A_"
+          DTS:RowDelimiter=""
+          DTS:TextQualifier="_x003C_none_x003E_"
+          DTS:CodePage="1252"
+          DTS:ConnectionString="C:\Users\Administrator\Source\Repos\jsonsource\Test\ArraySplitter\Files\Heterogeneus array\output.csv">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x002C_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Name"
+              DTS:DTSID="{E2B51BA2-0BE2-4C91-8064-98AAF25C5286}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x002C_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Surname"
+              DTS:DTSID="{8FA1E091-3553-4123-827C-ED8264675705}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x002C_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Age"
+              DTS:DTSID="{302B759F-5760-4C73-9ED5-C808C27A5A5F}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x000D__x000A_"
+              DTS:DataType="302"
+              DTS:TextQualified="True"
+              DTS:ObjectName="JSON_hobbies"
+              DTS:DTSID="{F14E0383-4BE1-41CA-8B21-1CB635795D5E}"
+              DTS:CreationName="" />
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Missing Bracket Errors]"
+      DTS:CreationName="FLATFILE"
+      DTS:DTSID="{7093A2CB-3B5B-4411-B1D7-A448400D3317}"
+      DTS:ObjectName="Missing Bracket Errors">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:Format="Delimited"
+          DTS:LocaleID="1033"
+          DTS:HeaderRowDelimiter="_x000D__x000A_"
+          DTS:RowDelimiter=""
+          DTS:TextQualifier="_x003C_none_x003E_"
+          DTS:CodePage="1252"
+          DTS:ConnectionString="C:\Users\Administrator\Source\Repos\jsonsource\Test\ArraySplitter\Files\Missing array start\errors.csv">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x002C_"
+              DTS:DataType="3"
+              DTS:TextQualified="True"
+              DTS:ObjectName="ErrorCode"
+              DTS:DTSID="{23653EBE-4157-4F70-BB41-5B6792C09770}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x000D__x000A_"
+              DTS:DataType="3"
+              DTS:TextQualified="True"
+              DTS:ObjectName="ErrorColumn"
+              DTS:DTSID="{F357AB31-BC40-46F4-B10F-F3A15A7F6BB4}"
+              DTS:CreationName="" />
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Missing Bracket Json Input]"
+      DTS:CreationName="FLATFILE"
+      DTS:DTSID="{15a6023d-f0c5-4074-8042-1c6e43a7d363}"
+      DTS:ObjectName="Missing Bracket Json Input">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:Format="Delimited"
+          DTS:LocaleID="1033"
+          DTS:HeaderRowDelimiter="_x000D__x000A_"
+          DTS:ColumnNamesInFirstDataRow="True"
+          DTS:RowDelimiter=""
+          DTS:TextQualifier="_x003C_none_x003E_"
+          DTS:CodePage="1252"
+          DTS:ConnectionString="C:\Users\Administrator\Source\Repos\jsonsource\Test\ArraySplitter\Files\Missing array start\simple-array.CSV">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Name"
+              DTS:DTSID="{2B354A22-314A-40B0-A3D6-E625C369F849}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Surname"
+              DTS:DTSID="{86CC9549-FD7D-4474-A16F-6070E030B471}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Age"
+              DTS:DTSID="{1F1AD4AE-A0D5-4612-8615-07C4F0136570}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x000D__x000A_"
+              DTS:DataType="302"
+              DTS:TextQualified="True"
+              DTS:ObjectName="JSON_hobbies"
+              DTS:DTSID="{C34773EB-566F-4914-B630-2752F547DE6A}"
+              DTS:CreationName="" />
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Missing Bracket Json Output]"
+      DTS:CreationName="FLATFILE"
+      DTS:DTSID="{da9b2336-ea0b-49b8-8f3d-6adb9ab5912e}"
+      DTS:ObjectName="Missing Bracket Json Output">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:Format="Delimited"
+          DTS:LocaleID="1033"
+          DTS:HeaderRowDelimiter="_x000D__x000A_"
+          DTS:ColumnNamesInFirstDataRow="True"
+          DTS:RowDelimiter=""
+          DTS:TextQualifier="_x003C_none_x003E_"
+          DTS:CodePage="1252"
+          DTS:ConnectionString="C:\Users\Administrator\Source\Repos\jsonsource\Test\ArraySplitter\Files\Missing array start\output.csv">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Name"
+              DTS:DTSID="{75C6EF8F-FF90-42D9-A91E-E5014ECA7079}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Surname"
+              DTS:DTSID="{22D8E1C8-B0C1-4816-9E3D-D41CCF9E5836}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x003B_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Age"
+              DTS:DTSID="{9F559108-3920-4482-A654-42EFD32FE6BA}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x000D__x000A_"
+              DTS:DataType="302"
+              DTS:TextQualified="True"
+              DTS:ObjectName="JSON_hobbies"
+              DTS:DTSID="{7473F34D-A364-4056-8C28-05B2FCE1619E}"
+              DTS:CreationName="" />
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Bad Json Token"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{87392517-5567-4229-9cfa-160d1e08339e}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Bad Json Token">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          version="1">
+          <components>
+            <component
+              refId="Package\Bad Json Token\Errors"
+              componentClassID="Microsoft.FlatFileDestination"
+              contactInfo="Flat File Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+              description="Flat File Destination"
+              localeId="1033"
+              name="Errors">
+              <properties>
+                <property
+                  dataType="System.Boolean"
+                  description="Specifies whether the data will overwrite or append to the destination file."
+                  name="Overwrite">true</property>
+                <property
+                  dataType="System.Null"
+                  description="Specifies the text to write to the destination file before any data is written."
+                  expressionType="Notify"
+                  name="Header" />
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Bad Json Token\Errors.Connections[FlatFileConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Bad Json Errors]"
+                  connectionManagerRefId="Package.ConnectionManagers[Bad Json Errors]"
+                  name="FlatFileConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Bad Json Token\Errors.Inputs[Flat File Destination Input]"
+                  hasSideEffects="true"
+                  name="Flat File Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Bad Json Token\Errors.Inputs[Flat File Destination Input].Columns[ErrorCode]"
+                      cachedDataType="i4"
+                      cachedName="ErrorCode"
+                      externalMetadataColumnId="Package\Bad Json Token\Errors.Inputs[Flat File Destination Input].ExternalColumns[ErrorCode]"
+                      lineageId="Package\Bad Json Token\JSON Array Splitter.Outputs[Error elements].Columns[ErrorCode]" />
+                    <inputColumn
+                      refId="Package\Bad Json Token\Errors.Inputs[Flat File Destination Input].Columns[ErrorColumn]"
+                      cachedDataType="i4"
+                      cachedName="ErrorColumn"
+                      externalMetadataColumnId="Package\Bad Json Token\Errors.Inputs[Flat File Destination Input].ExternalColumns[ErrorColumn]"
+                      lineageId="Package\Bad Json Token\JSON Array Splitter.Outputs[Error elements].Columns[ErrorColumn]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Bad Json Token\Errors.Inputs[Flat File Destination Input].ExternalColumns[ErrorCode]"
+                      dataType="i4"
+                      name="ErrorCode" />
+                    <externalMetadataColumn
+                      refId="Package\Bad Json Token\Errors.Inputs[Flat File Destination Input].ExternalColumns[ErrorColumn]"
+                      dataType="i4"
+                      name="ErrorColumn" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+            </component>
+            <component
+              refId="Package\Bad Json Token\Flat File Destination"
+              componentClassID="Microsoft.FlatFileDestination"
+              contactInfo="Flat File Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+              description="Flat File Destination"
+              localeId="1033"
+              name="Flat File Destination">
+              <properties>
+                <property
+                  dataType="System.Boolean"
+                  description="Specifies whether the data will overwrite or append to the destination file."
+                  name="Overwrite">true</property>
+                <property
+                  dataType="System.Null"
+                  description="Specifies the text to write to the destination file before any data is written."
+                  expressionType="Notify"
+                  name="Header" />
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Bad Json Token\Flat File Destination.Connections[FlatFileConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Bad Json Output]"
+                  connectionManagerRefId="Package.ConnectionManagers[Bad Json Output]"
+                  name="FlatFileConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input]"
+                  hasSideEffects="true"
+                  name="Flat File Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input].Columns[Name]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Name"
+                      externalMetadataColumnId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Name]"
+                      lineageId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements].Columns[Name]" />
+                    <inputColumn
+                      refId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input].Columns[Surname]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Surname"
+                      externalMetadataColumnId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Surname]"
+                      lineageId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements].Columns[Surname]" />
+                    <inputColumn
+                      refId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input].Columns[Age]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Age"
+                      externalMetadataColumnId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Age]"
+                      lineageId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements].Columns[Age]" />
+                    <inputColumn
+                      refId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input].Columns[JSON_hobbies]"
+                      cachedCodepage="1252"
+                      cachedDataType="text"
+                      cachedName="JSON_hobbies"
+                      externalMetadataColumnId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[JSON_hobbies]"
+                      lineageId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements].Columns[JSON_hobbies]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Name]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Name" />
+                    <externalMetadataColumn
+                      refId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Surname]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Surname" />
+                    <externalMetadataColumn
+                      refId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Age]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Age" />
+                    <externalMetadataColumn
+                      refId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[JSON_hobbies]"
+                      codePage="1252"
+                      dataType="text"
+                      name="JSON_hobbies" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+            </component>
+            <component
+              refId="Package\Bad Json Token\Flat File Source"
+              componentClassID="Microsoft.FlatFileSource"
+              contactInfo="Flat File Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;1"
+              description="Flat File Source"
+              localeId="1033"
+              name="Flat File Source"
+              usesDispositions="true"
+              version="1">
+              <properties>
+                <property
+                  dataType="System.Boolean"
+                  description="Specifies whether zero-length columns are treated as null."
+                  name="RetainNulls">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of an output column containing the file name. If no name is specified, no output column containing the file name will be generated."
+                  name="FileNameColumnName"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Bad Json Token\Flat File Source.Connections[FlatFileConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Bad Json Input]"
+                  connectionManagerRefId="Package.ConnectionManagers[Bad Json Input]"
+                  name="FlatFileConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output]"
+                  name="Flat File Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].Columns[Name]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Name]"
+                      length="50"
+                      lineageId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].Columns[Name]"
+                      name="Name"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the data is in binary format."
+                          name="UseBinaryFormat">false</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].Columns[Surname]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Surname]"
+                      length="50"
+                      lineageId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].Columns[Surname]"
+                      name="Surname"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the data is in binary format."
+                          name="UseBinaryFormat">false</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].Columns[Age]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Age]"
+                      length="50"
+                      lineageId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].Columns[Age]"
+                      name="Age"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the data is in binary format."
+                          name="UseBinaryFormat">false</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].Columns[JSON_hobbies]"
+                      codePage="1252"
+                      dataType="text"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[JSON_hobbies]"
+                      lineageId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].Columns[JSON_hobbies]"
+                      name="JSON_hobbies"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the data is in binary format."
+                          name="UseBinaryFormat">false</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Name]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Name" />
+                    <externalMetadataColumn
+                      refId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Surname]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Surname" />
+                    <externalMetadataColumn
+                      refId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Age]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Age" />
+                    <externalMetadataColumn
+                      refId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[JSON_hobbies]"
+                      codePage="1252"
+                      dataType="text"
+                      name="JSON_hobbies" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Error Output]"
+                  isErrorOut="true"
+                  name="Flat File Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Error Output].Columns[Flat File Source Error Output Column]"
+                      codePage="1252"
+                      dataType="text"
+                      description="Flat File Source Error Output Column"
+                      lineageId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Error Output].Columns[Flat File Source Error Output Column]"
+                      name="Flat File Source Error Output Column" />
+                    <outputColumn
+                      refId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Bad Json Token\JSON Array Splitter"
+              componentClassID="Microsoft.ManagedComponentHost"
+              description="Splits raw json arrays into single raw json elements."
+              name="JSON Array Splitter"
+              usesDispositions="true"
+              validateExternalMetadata="False">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Name of the column, belonging to the input lane, where the raw json is coming from."
+                  name="InputColumnName">JSON_hobbies</property>
+                <property
+                  dataType="System.String"
+                  name="UserComponentTypeName">com.webkingsoft.JSONSuite_Common.JsonArraySplitter, com.webkingsoft.JSONSuite_130, Version=0.1.0.0, Culture=neutral, PublicKeyToken=42a2313e1269904d</property>
+              </properties>
+              <inputs>
+                <input
+                  refId="Package\Bad Json Token\JSON Array Splitter.Inputs[Raw json input]"
+                  errorRowDisposition="RedirectRow"
+                  name="Raw json input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Bad Json Token\JSON Array Splitter.Inputs[Raw json input].Columns[Name]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Name"
+                      lineageId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].Columns[Name]" />
+                    <inputColumn
+                      refId="Package\Bad Json Token\JSON Array Splitter.Inputs[Raw json input].Columns[Surname]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Surname"
+                      lineageId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].Columns[Surname]" />
+                    <inputColumn
+                      refId="Package\Bad Json Token\JSON Array Splitter.Inputs[Raw json input].Columns[Age]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Age"
+                      lineageId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].Columns[Age]" />
+                    <inputColumn
+                      refId="Package\Bad Json Token\JSON Array Splitter.Inputs[Raw json input].Columns[JSON_hobbies]"
+                      cachedCodepage="1252"
+                      cachedDataType="text"
+                      cachedName="JSON_hobbies"
+                      lineageId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output].Columns[JSON_hobbies]"
+                      usageType="readWrite" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements]"
+                  name="Array Elements">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements].Columns[Name]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements].Columns[Name]"
+                      name="Name" />
+                    <outputColumn
+                      refId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements].Columns[Surname]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements].Columns[Surname]"
+                      name="Surname" />
+                    <outputColumn
+                      refId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements].Columns[Age]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements].Columns[Age]"
+                      name="Age" />
+                    <outputColumn
+                      refId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements].Columns[JSON_hobbies]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements].Columns[JSON_hobbies]"
+                      name="JSON_hobbies" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Bad Json Token\JSON Array Splitter.Outputs[Error elements]"
+                  isErrorOut="true"
+                  name="Error elements">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Bad Json Token\JSON Array Splitter.Outputs[Error elements].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Bad Json Token\JSON Array Splitter.Outputs[Error elements].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Bad Json Token\JSON Array Splitter.Outputs[Error elements].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Bad Json Token\JSON Array Splitter.Outputs[Error elements].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\Bad Json Token.Paths[Array Elements]"
+              endId="Package\Bad Json Token\Flat File Destination.Inputs[Flat File Destination Input]"
+              name="Array Elements"
+              startId="Package\Bad Json Token\JSON Array Splitter.Outputs[Array Elements]" />
+            <path
+              refId="Package\Bad Json Token.Paths[Error elements]"
+              endId="Package\Bad Json Token\Errors.Inputs[Flat File Destination Input]"
+              name="Error elements"
+              startId="Package\Bad Json Token\JSON Array Splitter.Outputs[Error elements]" />
+            <path
+              refId="Package\Bad Json Token.Paths[Flat File Source Output]"
+              endId="Package\Bad Json Token\JSON Array Splitter.Inputs[Raw json input]"
+              name="Flat File Source Output"
+              startId="Package\Bad Json Token\Flat File Source.Outputs[Flat File Source Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Heterogeneus JSON"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{BBFA10D5-4521-4A87-A0D8-AA09D08BC4E5}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Heterogeneus JSON">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          version="1">
+          <components>
+            <component
+              refId="Package\Heterogeneus JSON\Flat File Destination"
+              componentClassID="Microsoft.FlatFileDestination"
+              contactInfo="Flat File Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+              description="Flat File Destination"
+              localeId="1033"
+              name="Flat File Destination">
+              <properties>
+                <property
+                  dataType="System.Boolean"
+                  description="Specifies whether the data will overwrite or append to the destination file."
+                  name="Overwrite">true</property>
+                <property
+                  dataType="System.Null"
+                  description="Specifies the text to write to the destination file before any data is written."
+                  expressionType="Notify"
+                  name="Header" />
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Heterogeneus JSON\Flat File Destination.Connections[FlatFileConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Good Json Output]"
+                  connectionManagerRefId="Package.ConnectionManagers[Good Json Output]"
+                  name="FlatFileConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input]"
+                  hasSideEffects="true"
+                  name="Flat File Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input].Columns[Name]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Name"
+                      externalMetadataColumnId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Name]"
+                      lineageId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements].Columns[Name]" />
+                    <inputColumn
+                      refId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input].Columns[Surname]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Surname"
+                      externalMetadataColumnId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Surname]"
+                      lineageId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements].Columns[Surname]" />
+                    <inputColumn
+                      refId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input].Columns[Age]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Age"
+                      externalMetadataColumnId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Age]"
+                      lineageId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements].Columns[Age]" />
+                    <inputColumn
+                      refId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input].Columns[JSON_hobbies]"
+                      cachedCodepage="1252"
+                      cachedDataType="text"
+                      cachedName="JSON_hobbies"
+                      externalMetadataColumnId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[JSON_hobbies]"
+                      lineageId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements].Columns[JSON_hobbies]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Name]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Name" />
+                    <externalMetadataColumn
+                      refId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Surname]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Surname" />
+                    <externalMetadataColumn
+                      refId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Age]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Age" />
+                    <externalMetadataColumn
+                      refId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[JSON_hobbies]"
+                      codePage="1252"
+                      dataType="text"
+                      name="JSON_hobbies" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+            </component>
+            <component
+              refId="Package\Heterogeneus JSON\Flat File Source"
+              componentClassID="Microsoft.FlatFileSource"
+              contactInfo="Flat File Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;1"
+              description="Flat File Source"
+              localeId="1033"
+              name="Flat File Source"
+              usesDispositions="true"
+              version="1">
+              <properties>
+                <property
+                  dataType="System.Boolean"
+                  description="Specifies whether zero-length columns are treated as null."
+                  name="RetainNulls">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of an output column containing the file name. If no name is specified, no output column containing the file name will be generated."
+                  name="FileNameColumnName"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Heterogeneus JSON\Flat File Source.Connections[FlatFileConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Good Json Input]"
+                  connectionManagerRefId="Package.ConnectionManagers[Good Json Input]"
+                  name="FlatFileConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output]"
+                  name="Flat File Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].Columns[Name]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Name]"
+                      length="50"
+                      lineageId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].Columns[Name]"
+                      name="Name"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the data is in binary format."
+                          name="UseBinaryFormat">false</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].Columns[Surname]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Surname]"
+                      length="50"
+                      lineageId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].Columns[Surname]"
+                      name="Surname"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the data is in binary format."
+                          name="UseBinaryFormat">false</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].Columns[Age]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Age]"
+                      length="50"
+                      lineageId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].Columns[Age]"
+                      name="Age"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the data is in binary format."
+                          name="UseBinaryFormat">false</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].Columns[JSON_hobbies]"
+                      codePage="1252"
+                      dataType="text"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[JSON_hobbies]"
+                      lineageId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].Columns[JSON_hobbies]"
+                      name="JSON_hobbies"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the data is in binary format."
+                          name="UseBinaryFormat">false</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Name]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Name" />
+                    <externalMetadataColumn
+                      refId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Surname]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Surname" />
+                    <externalMetadataColumn
+                      refId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Age]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Age" />
+                    <externalMetadataColumn
+                      refId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[JSON_hobbies]"
+                      codePage="1252"
+                      dataType="text"
+                      name="JSON_hobbies" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Error Output]"
+                  isErrorOut="true"
+                  name="Flat File Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Error Output].Columns[Flat File Source Error Output Column]"
+                      codePage="1252"
+                      dataType="text"
+                      description="Flat File Source Error Output Column"
+                      lineageId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Error Output].Columns[Flat File Source Error Output Column]"
+                      name="Flat File Source Error Output Column" />
+                    <outputColumn
+                      refId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Heterogeneus JSON\JSON Array Splitter"
+              componentClassID="Microsoft.ManagedComponentHost"
+              description="Splits raw json arrays into single raw json elements."
+              name="JSON Array Splitter"
+              usesDispositions="true"
+              validateExternalMetadata="False">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Name of the column, belonging to the input lane, where the raw json is coming from."
+                  name="InputColumnName">JSON_hobbies</property>
+                <property
+                  dataType="System.String"
+                  name="UserComponentTypeName">com.webkingsoft.JSONSuite_Common.JsonArraySplitter, com.webkingsoft.JSONSuite_130, Version=0.1.0.0, Culture=neutral, PublicKeyToken=42a2313e1269904d</property>
+              </properties>
+              <inputs>
+                <input
+                  refId="Package\Heterogeneus JSON\JSON Array Splitter.Inputs[Raw json input]"
+                  errorRowDisposition="RedirectRow"
+                  name="Raw json input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Heterogeneus JSON\JSON Array Splitter.Inputs[Raw json input].Columns[Name]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Name"
+                      lineageId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].Columns[Name]" />
+                    <inputColumn
+                      refId="Package\Heterogeneus JSON\JSON Array Splitter.Inputs[Raw json input].Columns[Surname]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Surname"
+                      lineageId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].Columns[Surname]" />
+                    <inputColumn
+                      refId="Package\Heterogeneus JSON\JSON Array Splitter.Inputs[Raw json input].Columns[Age]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Age"
+                      lineageId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].Columns[Age]" />
+                    <inputColumn
+                      refId="Package\Heterogeneus JSON\JSON Array Splitter.Inputs[Raw json input].Columns[JSON_hobbies]"
+                      cachedCodepage="1252"
+                      cachedDataType="text"
+                      cachedName="JSON_hobbies"
+                      lineageId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output].Columns[JSON_hobbies]"
+                      usageType="readWrite" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements]"
+                  name="Array Elements">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements].Columns[Name]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements].Columns[Name]"
+                      name="Name" />
+                    <outputColumn
+                      refId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements].Columns[Surname]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements].Columns[Surname]"
+                      name="Surname" />
+                    <outputColumn
+                      refId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements].Columns[Age]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements].Columns[Age]"
+                      name="Age" />
+                    <outputColumn
+                      refId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements].Columns[JSON_hobbies]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements].Columns[JSON_hobbies]"
+                      name="JSON_hobbies" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Error elements]"
+                  isErrorOut="true"
+                  name="Error elements">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Error elements].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Error elements].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Error elements].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Error elements].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\Heterogeneus JSON.Paths[Array Elements]"
+              endId="Package\Heterogeneus JSON\Flat File Destination.Inputs[Flat File Destination Input]"
+              name="Array Elements"
+              startId="Package\Heterogeneus JSON\JSON Array Splitter.Outputs[Array Elements]" />
+            <path
+              refId="Package\Heterogeneus JSON.Paths[Flat File Source Output]"
+              endId="Package\Heterogeneus JSON\JSON Array Splitter.Inputs[Raw json input]"
+              name="Flat File Source Output"
+              startId="Package\Heterogeneus JSON\Flat File Source.Outputs[Flat File Source Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Missing array bracket"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{7e7016cb-a5ee-4e9c-afb9-ccbe3d68732c}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Missing array bracket">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          version="1">
+          <components>
+            <component
+              refId="Package\Missing array bracket\Errors"
+              componentClassID="Microsoft.FlatFileDestination"
+              contactInfo="Flat File Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+              description="Flat File Destination"
+              localeId="1033"
+              name="Errors">
+              <properties>
+                <property
+                  dataType="System.Boolean"
+                  description="Specifies whether the data will overwrite or append to the destination file."
+                  name="Overwrite">true</property>
+                <property
+                  dataType="System.Null"
+                  description="Specifies the text to write to the destination file before any data is written."
+                  expressionType="Notify"
+                  name="Header" />
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Missing array bracket\Errors.Connections[FlatFileConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Missing Bracket Errors]"
+                  connectionManagerRefId="Package.ConnectionManagers[Missing Bracket Errors]"
+                  name="FlatFileConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Missing array bracket\Errors.Inputs[Flat File Destination Input]"
+                  hasSideEffects="true"
+                  name="Flat File Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Missing array bracket\Errors.Inputs[Flat File Destination Input].Columns[ErrorCode]"
+                      cachedDataType="i4"
+                      cachedName="ErrorCode"
+                      externalMetadataColumnId="Package\Missing array bracket\Errors.Inputs[Flat File Destination Input].ExternalColumns[ErrorCode]"
+                      lineageId="Package\Missing array bracket\JSON Array Splitter.Outputs[Error elements].Columns[ErrorCode]" />
+                    <inputColumn
+                      refId="Package\Missing array bracket\Errors.Inputs[Flat File Destination Input].Columns[ErrorColumn]"
+                      cachedDataType="i4"
+                      cachedName="ErrorColumn"
+                      externalMetadataColumnId="Package\Missing array bracket\Errors.Inputs[Flat File Destination Input].ExternalColumns[ErrorColumn]"
+                      lineageId="Package\Missing array bracket\JSON Array Splitter.Outputs[Error elements].Columns[ErrorColumn]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Missing array bracket\Errors.Inputs[Flat File Destination Input].ExternalColumns[ErrorCode]"
+                      dataType="i4"
+                      name="ErrorCode" />
+                    <externalMetadataColumn
+                      refId="Package\Missing array bracket\Errors.Inputs[Flat File Destination Input].ExternalColumns[ErrorColumn]"
+                      dataType="i4"
+                      name="ErrorColumn" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+            </component>
+            <component
+              refId="Package\Missing array bracket\Flat File Destination"
+              componentClassID="Microsoft.FlatFileDestination"
+              contactInfo="Flat File Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+              description="Flat File Destination"
+              localeId="1033"
+              name="Flat File Destination">
+              <properties>
+                <property
+                  dataType="System.Boolean"
+                  description="Specifies whether the data will overwrite or append to the destination file."
+                  name="Overwrite">true</property>
+                <property
+                  dataType="System.Null"
+                  description="Specifies the text to write to the destination file before any data is written."
+                  expressionType="Notify"
+                  name="Header" />
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Missing array bracket\Flat File Destination.Connections[FlatFileConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Missing Bracket Json Output]"
+                  connectionManagerRefId="Package.ConnectionManagers[Missing Bracket Json Output]"
+                  name="FlatFileConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input]"
+                  hasSideEffects="true"
+                  name="Flat File Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input].Columns[Name]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Name"
+                      externalMetadataColumnId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Name]"
+                      lineageId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements].Columns[Name]" />
+                    <inputColumn
+                      refId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input].Columns[Surname]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Surname"
+                      externalMetadataColumnId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Surname]"
+                      lineageId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements].Columns[Surname]" />
+                    <inputColumn
+                      refId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input].Columns[Age]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Age"
+                      externalMetadataColumnId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Age]"
+                      lineageId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements].Columns[Age]" />
+                    <inputColumn
+                      refId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input].Columns[JSON_hobbies]"
+                      cachedCodepage="1252"
+                      cachedDataType="text"
+                      cachedName="JSON_hobbies"
+                      externalMetadataColumnId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[JSON_hobbies]"
+                      lineageId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements].Columns[JSON_hobbies]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Name]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Name" />
+                    <externalMetadataColumn
+                      refId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Surname]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Surname" />
+                    <externalMetadataColumn
+                      refId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Age]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Age" />
+                    <externalMetadataColumn
+                      refId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[JSON_hobbies]"
+                      codePage="1252"
+                      dataType="text"
+                      name="JSON_hobbies" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+            </component>
+            <component
+              refId="Package\Missing array bracket\Flat File Source"
+              componentClassID="Microsoft.FlatFileSource"
+              contactInfo="Flat File Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;1"
+              description="Flat File Source"
+              localeId="1033"
+              name="Flat File Source"
+              usesDispositions="true"
+              version="1">
+              <properties>
+                <property
+                  dataType="System.Boolean"
+                  description="Specifies whether zero-length columns are treated as null."
+                  name="RetainNulls">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of an output column containing the file name. If no name is specified, no output column containing the file name will be generated."
+                  name="FileNameColumnName"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Missing array bracket\Flat File Source.Connections[FlatFileConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Missing Bracket Json Input]"
+                  connectionManagerRefId="Package.ConnectionManagers[Missing Bracket Json Input]"
+                  name="FlatFileConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output]"
+                  name="Flat File Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].Columns[Name]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Name]"
+                      length="50"
+                      lineageId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].Columns[Name]"
+                      name="Name"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the data is in binary format."
+                          name="UseBinaryFormat">false</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].Columns[Surname]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Surname]"
+                      length="50"
+                      lineageId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].Columns[Surname]"
+                      name="Surname"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the data is in binary format."
+                          name="UseBinaryFormat">false</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].Columns[Age]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Age]"
+                      length="50"
+                      lineageId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].Columns[Age]"
+                      name="Age"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the data is in binary format."
+                          name="UseBinaryFormat">false</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].Columns[JSON_hobbies]"
+                      codePage="1252"
+                      dataType="text"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[JSON_hobbies]"
+                      lineageId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].Columns[JSON_hobbies]"
+                      name="JSON_hobbies"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the data is in binary format."
+                          name="UseBinaryFormat">false</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Name]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Name" />
+                    <externalMetadataColumn
+                      refId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Surname]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Surname" />
+                    <externalMetadataColumn
+                      refId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Age]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Age" />
+                    <externalMetadataColumn
+                      refId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[JSON_hobbies]"
+                      codePage="1252"
+                      dataType="text"
+                      name="JSON_hobbies" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Error Output]"
+                  isErrorOut="true"
+                  name="Flat File Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Error Output].Columns[Flat File Source Error Output Column]"
+                      codePage="1252"
+                      dataType="text"
+                      description="Flat File Source Error Output Column"
+                      lineageId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Error Output].Columns[Flat File Source Error Output Column]"
+                      name="Flat File Source Error Output Column" />
+                    <outputColumn
+                      refId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Missing array bracket\JSON Array Splitter"
+              componentClassID="Microsoft.ManagedComponentHost"
+              description="Splits raw json arrays into single raw json elements."
+              name="JSON Array Splitter"
+              usesDispositions="true"
+              validateExternalMetadata="False">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Name of the column, belonging to the input lane, where the raw json is coming from."
+                  name="InputColumnName">JSON_hobbies</property>
+                <property
+                  dataType="System.String"
+                  name="UserComponentTypeName">com.webkingsoft.JSONSuite_Common.JsonArraySplitter, com.webkingsoft.JSONSuite_130, Version=0.1.0.0, Culture=neutral, PublicKeyToken=42a2313e1269904d</property>
+              </properties>
+              <inputs>
+                <input
+                  refId="Package\Missing array bracket\JSON Array Splitter.Inputs[Raw json input]"
+                  errorRowDisposition="RedirectRow"
+                  name="Raw json input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Missing array bracket\JSON Array Splitter.Inputs[Raw json input].Columns[Name]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Name"
+                      lineageId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].Columns[Name]" />
+                    <inputColumn
+                      refId="Package\Missing array bracket\JSON Array Splitter.Inputs[Raw json input].Columns[Surname]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Surname"
+                      lineageId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].Columns[Surname]" />
+                    <inputColumn
+                      refId="Package\Missing array bracket\JSON Array Splitter.Inputs[Raw json input].Columns[Age]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Age"
+                      lineageId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].Columns[Age]" />
+                    <inputColumn
+                      refId="Package\Missing array bracket\JSON Array Splitter.Inputs[Raw json input].Columns[JSON_hobbies]"
+                      cachedCodepage="1252"
+                      cachedDataType="text"
+                      cachedName="JSON_hobbies"
+                      lineageId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output].Columns[JSON_hobbies]"
+                      usageType="readWrite" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements]"
+                  name="Array Elements">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements].Columns[Name]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements].Columns[Name]"
+                      name="Name" />
+                    <outputColumn
+                      refId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements].Columns[Surname]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements].Columns[Surname]"
+                      name="Surname" />
+                    <outputColumn
+                      refId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements].Columns[Age]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements].Columns[Age]"
+                      name="Age" />
+                    <outputColumn
+                      refId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements].Columns[JSON_hobbies]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements].Columns[JSON_hobbies]"
+                      name="JSON_hobbies" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Missing array bracket\JSON Array Splitter.Outputs[Error elements]"
+                  isErrorOut="true"
+                  name="Error elements">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Missing array bracket\JSON Array Splitter.Outputs[Error elements].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Missing array bracket\JSON Array Splitter.Outputs[Error elements].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Missing array bracket\JSON Array Splitter.Outputs[Error elements].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Missing array bracket\JSON Array Splitter.Outputs[Error elements].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\Missing array bracket.Paths[Array Elements]"
+              endId="Package\Missing array bracket\Flat File Destination.Inputs[Flat File Destination Input]"
+              name="Array Elements"
+              startId="Package\Missing array bracket\JSON Array Splitter.Outputs[Array Elements]" />
+            <path
+              refId="Package\Missing array bracket.Paths[Error elements]"
+              endId="Package\Missing array bracket\Errors.Inputs[Flat File Destination Input]"
+              name="Error elements"
+              startId="Package\Missing array bracket\JSON Array Splitter.Outputs[Error elements]" />
+            <path
+              refId="Package\Missing array bracket.Paths[Flat File Source Output]"
+              endId="Package\Missing array bracket\JSON Array Splitter.Inputs[Raw json input]"
+              name="Flat File Source Output"
+              startId="Package\Missing array bracket\Flat File Source.Outputs[Flat File Source Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="158,42"
+          Id="Package\Bad Json Token"
+          TopLeft="653.5,159.5" />
+        <NodeLayout
+          Size="180,42"
+          Id="Package\Heterogeneus JSON"
+          TopLeft="156.5,157.5" />
+        <NodeLayout
+          Size="183,42"
+          Id="Package\Missing array bracket"
+          TopLeft="416.5,157.5" />
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <TaskHost
+    design-time-name="Package\Bad Json Token">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="176,42"
+          Id="Package\Bad Json Token\Flat File Destination"
+          TopLeft="294,442" />
+        <NodeLayout
+          Size="156,42"
+          Id="Package\Bad Json Token\Flat File Source"
+          TopLeft="352,178" />
+        <NodeLayout
+          Size="109,42"
+          Id="Package\Bad Json Token\Errors"
+          TopLeft="536,445" />
+        <NodeLayout
+          Size="175,42"
+          Id="Package\Bad Json Token\JSON Array Splitter"
+          TopLeft="321,323" />
+        <EdgeLayout
+          Id="Package\Bad Json Token.Paths[Flat File Source Output]"
+          TopLeft="430,220">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-21.5,103"
+              Start="0,0"
+              End="-21.5,95.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,47.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,47.5"
+                    Point2="0,51.5"
+                    Point3="-4,51.5" />
+                  <mssgle:LineSegment
+                    End="-17.5,51.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-17.5,51.5"
+                    Point2="-21.5,51.5"
+                    Point3="-21.5,55.5" />
+                  <mssgle:LineSegment
+                    End="-21.5,95.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Bad Json Token.Paths[Error elements]"
+          TopLeft="436.333333333333,365">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="154.166666666667,80"
+              Start="0,0"
+              End="154.166666666667,72.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,28.4348810872027" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,28.4348810872027"
+                    Point2="0,32.4348810872027"
+                    Point3="4,32.4348810872027" />
+                  <mssgle:LineSegment
+                    End="150.166666666667,32.4348810872027" />
+                  <mssgle:CubicBezierSegment
+                    Point1="150.166666666667,32.4348810872027"
+                    Point2="154.166666666667,32.4348810872027"
+                    Point3="154.166666666667,36.4348810872027" />
+                  <mssgle:LineSegment
+                    End="154.166666666667,72.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="35.2671028645835,37.4348810872027,65.89515625,9.7490234375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Bad Json Token.Paths[Array Elements]"
+          TopLeft="381.333333333333,365">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,77"
+              Start="0,0"
+              End="0,69.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,69.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <TaskHost
+    design-time-name="Package\Heterogeneus JSON">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="175,42"
+          Id="Package\Heterogeneus JSON\JSON Array Splitter"
+          TopLeft="321,323" />
+        <NodeLayout
+          Size="176,42"
+          Id="Package\Heterogeneus JSON\Flat File Destination"
+          TopLeft="441,449" />
+        <NodeLayout
+          Size="156,42"
+          Id="Package\Heterogeneus JSON\Flat File Source"
+          TopLeft="352,178" />
+        <EdgeLayout
+          Id="Package\Heterogeneus JSON.Paths[Flat File Source Output]"
+          TopLeft="430,220">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-21.5,103"
+              Start="0,0"
+              End="-21.5,95.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,47.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,47.5"
+                    Point2="0,51.5"
+                    Point3="-4,51.5" />
+                  <mssgle:LineSegment
+                    End="-17.5,51.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-17.5,51.5"
+                    Point2="-21.5,51.5"
+                    Point3="-21.5,55.5" />
+                  <mssgle:LineSegment
+                    End="-21.5,95.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Heterogeneus JSON.Paths[Array Elements]"
+          TopLeft="408.5,365">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="120.5,84"
+              Start="0,0"
+              End="120.5,76.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,38" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,38"
+                    Point2="0,42"
+                    Point3="4,42" />
+                  <mssgle:LineSegment
+                    End="116.5,42" />
+                  <mssgle:CubicBezierSegment
+                    Point1="116.5,42"
+                    Point2="120.5,42"
+                    Point3="120.5,46" />
+                  <mssgle:LineSegment
+                    End="120.5,76.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <TaskHost
+    design-time-name="Package\Missing array bracket">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="176,42"
+          Id="Package\Missing array bracket\Flat File Destination"
+          TopLeft="323,450" />
+        <NodeLayout
+          Size="156,42"
+          Id="Package\Missing array bracket\Flat File Source"
+          TopLeft="352,178" />
+        <NodeLayout
+          Size="109,42"
+          Id="Package\Missing array bracket\Errors"
+          TopLeft="544,453" />
+        <NodeLayout
+          Size="175,42"
+          Id="Package\Missing array bracket\JSON Array Splitter"
+          TopLeft="321,323" />
+        <EdgeLayout
+          Id="Package\Missing array bracket.Paths[Flat File Source Output]"
+          TopLeft="430,220">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-21.5,103"
+              Start="0,0"
+              End="-21.5,95.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,47.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,47.5"
+                    Point2="0,51.5"
+                    Point3="-4,51.5" />
+                  <mssgle:LineSegment
+                    End="-17.5,51.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-17.5,51.5"
+                    Point2="-21.5,51.5"
+                    Point3="-21.5,55.5" />
+                  <mssgle:LineSegment
+                    End="-21.5,95.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Missing array bracket.Paths[Error elements]"
+          TopLeft="436.333333333333,365">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="162.166666666667,88"
+              Start="0,0"
+              End="162.166666666667,80.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.678369195923" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.678369195923"
+                    Point2="0,35.678369195923"
+                    Point3="4,35.678369195923" />
+                  <mssgle:LineSegment
+                    End="158.166666666667,35.678369195923" />
+                  <mssgle:CubicBezierSegment
+                    Point1="158.166666666667,35.678369195923"
+                    Point2="162.166666666667,35.678369195923"
+                    Point3="162.166666666667,39.678369195923" />
+                  <mssgle:LineSegment
+                    End="162.166666666667,80.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="39.2671028645835,40.678369195923,65.89515625,9.7490234375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Missing array bracket.Paths[Array Elements]"
+          TopLeft="409.75,365">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,85"
+              Start="0,0"
+              End="0,77.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,77.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
