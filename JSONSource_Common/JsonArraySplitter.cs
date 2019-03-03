@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -520,6 +521,21 @@ namespace com.webkingsoft.JSONSuite_Common
             _errorBuffer?.SetEndOfRowset();
         }
 
+        public override string DescribeRedirectedErrorCode(int iErrorCode)
+        {
+            // Return the error description associated to this code.
+            ERROR_CODES error = (ERROR_CODES)iErrorCode;
+            DescriptionAttribute attr = error.GetType().GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
+            if (attr != null)
+            {
+                return attr.Description;
+            }
+            else
+            {
+                return "Unknown error code: no description is available.";
+            }
+        }
+
         private void ProcessInputRow(PipelineBuffer inputBuffer) {
             bool pbCancel = false;
 
@@ -557,15 +573,17 @@ namespace com.webkingsoft.JSONSuite_Common
             using (var jtr = new JsonTextReader(new StringReader(rawJson)))
             {
                 // Start reading the array. The very first token we expect is the array-start element.
-                try {
+                try
+                {
                     if (!jtr.Read())
                     {
                         throw new NullOrEmptyArrayException();
                     }
 
                     // We expect "ArrayStart" element. If that differs, then the input is not well formed.
-                    if (jtr.TokenType != JsonToken.StartArray) {
-                        ComponentMetaData.FireError(0, ComponentMetaData.Name, "The json string should start with the '[' symbol, but it does not.", "",0, out pbCancel);
+                    if (jtr.TokenType != JsonToken.StartArray)
+                    {
+                        ComponentMetaData.FireError(0, ComponentMetaData.Name, "The json string should start with the '[' symbol, but it does not.", "", 0, out pbCancel);
                         _errorBuffer.AddRow();
                         _errorBuffer.SetInt32(0, (int)ERROR_CODES.ERROR_MISSING_START_ARRAY);
                     }
@@ -576,46 +594,35 @@ namespace com.webkingsoft.JSONSuite_Common
                     JsonLoadSettings settings = new JsonLoadSettings();
                     JArray array = JArray.ReadFrom(jtr) as JArray;
                     int processedTokens = 0;
-                    foreach (JToken token in array) {
+                    foreach (JToken token in array)
+                    {
                         SendRowToOutputBuffer(token.ToString(Formatting.None));
                         processedTokens++;
                     }
 
-                    if (processedTokens == 0) {
-                        // If there was no item in the array or if the array was empty, we still need to 
-                        // provide one output row. So we do it here.
+                    // If there was no item in the array or if the array was empty, we still need to 
+                    // provide one output row. So we do it here.
+                    if (processedTokens == 0)
+                    {
                         SendRowToOutputBuffer(null);
                     }
 
-                    /*
-                    while (jtr.Read()) {
-                        // Read items to the target depth. Consume all the string until we get back to the 
-                        // target depth
-                        if (jtr.Depth > targetDepth) {
-                            sb.Append(jtr.Value);
-                            continue;
-                        }
-                        
-                        if (jtr.TokenType == JsonToken.EndArray)
-                            break;
-                        else {
-                            // We are done with this line. We can send it to the output buffer
-                            SendRowToOutputBuffer(sb.ToString());
-                            sb.Clear();
-                        }
-                    }*/
-
-
-                    // TODO: Make sure there is nothing more to read
-                    if (jtr.Read()) {
+                    // Make sure there is nothing more to read
+                    if (jtr.Read())
+                    {
                         // This should not happen! There is no need to fail here. Just throw a warning.
                         ComponentMetaData.FireWarning(0, ComponentMetaData.Name, "The JSON array did contain some more data after the closing bracket. ']'.", "", 0);
                     }
-                } catch (NullOrEmptyArrayException ex) {
+                }
+                catch (NullOrEmptyArrayException ex)
+                {
                     // If we failed to read or there is nothing to read, just throw a warning and cotinue.
                     ComponentMetaData.FireWarning(0, ComponentMetaData.Name, "No JSON data recevied", "", 0);
-                    // TODO: handle the case there is an empty input / empty input array.
-                    // TODO: Add the output anyways
+                }
+                catch (Exception ex) {
+                    // Any other failure/error should cause row redirection
+                    ComponentMetaData.FireError((int)ERROR_CODES.ERROR_BAD_JSON, ComponentMetaData.Name, "Json data \""+ rawJson +"\" could not be parsed as expected. Error: " + ex.Message, "", 0, out pbCancel);
+                    SendErrorRow((int)ERROR_CODES.ERROR_BAD_JSON);
                 }
             }
         }
@@ -655,12 +662,22 @@ namespace com.webkingsoft.JSONSuite_Common
                 _outputBuffer[i] = copyVals[i];
             }
 
-            _outputBuffer[_jsonOutputColumnIndex] = jsonArrayElement;
-            
+            _outputBuffer[_jsonOutputColumnIndex] = jsonArrayElement; 
         }
 
+        private void SendErrorRow(int errorCode) {
+            _errorBuffer.AddRow();
+            _errorBuffer.SetErrorInfo(ComponentMetaData.OutputCollection[ERROR_LANE_NAME].ID, errorCode, 0);
+        }
+        
         public enum ERROR_CODES : int {
+            [Description("The input json is invalid for this component.")]
+            ERROR_BAD_JSON = -100,
+
+            [Description("Array-start token was expected, but not found.")]
             ERROR_MISSING_START_ARRAY = -101,
+
+            [Description("Array-end token was expected, but not found.")]
             ERROR_MISSING_END_ARRAY = -102
         }
 
