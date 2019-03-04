@@ -26,22 +26,40 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		BuildRelease.bat = BuildRelease.bat
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F079063E-66D8-451A-A68C-9AA22F0400A1}"
+EndProject
+Project("{159641D6-6404-4A2A-AE62-294DE0FE8301}") = "JsonArrayTest", "Test\ArraySplitter\JsonArrayTest\JsonArrayTest.dtproj", "{9ACDBD34-9C1C-4D0E-8D1B-6772EE0DBD78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Development|Mixed Platforms = Development|Mixed Platforms
 		Release|Mixed Platforms = Release|Mixed Platforms
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{8BCC409B-6FFB-43AB-8012-95DEFA6182EF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{8BCC409B-6FFB-43AB-8012-95DEFA6182EF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8BCC409B-6FFB-43AB-8012-95DEFA6182EF}.Development|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8BCC409B-6FFB-43AB-8012-95DEFA6182EF}.Development|Mixed Platforms.Build.0 = Debug|Any CPU
 		{8BCC409B-6FFB-43AB-8012-95DEFA6182EF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{8BCC409B-6FFB-43AB-8012-95DEFA6182EF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{3401A20B-BB8D-4D11-A758-FAD862D3459D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{3401A20B-BB8D-4D11-A758-FAD862D3459D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3401A20B-BB8D-4D11-A758-FAD862D3459D}.Development|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3401A20B-BB8D-4D11-A758-FAD862D3459D}.Development|Mixed Platforms.Build.0 = Debug|Any CPU
 		{3401A20B-BB8D-4D11-A758-FAD862D3459D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{3401A20B-BB8D-4D11-A758-FAD862D3459D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9ACDBD34-9C1C-4D0E-8D1B-6772EE0DBD78}.Debug|Mixed Platforms.ActiveCfg = Development
+		{9ACDBD34-9C1C-4D0E-8D1B-6772EE0DBD78}.Debug|Mixed Platforms.Build.0 = Development
+		{9ACDBD34-9C1C-4D0E-8D1B-6772EE0DBD78}.Development|Mixed Platforms.ActiveCfg = Development
+		{9ACDBD34-9C1C-4D0E-8D1B-6772EE0DBD78}.Development|Mixed Platforms.Build.0 = Development
+		{9ACDBD34-9C1C-4D0E-8D1B-6772EE0DBD78}.Release|Mixed Platforms.ActiveCfg = Development
+		{9ACDBD34-9C1C-4D0E-8D1B-6772EE0DBD78}.Release|Mixed Platforms.Build.0 = Development
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9ACDBD34-9C1C-4D0E-8D1B-6772EE0DBD78} = {F079063E-66D8-451A-A68C-9AA22F0400A1}
 	EndGlobalSection
 EndGlobal

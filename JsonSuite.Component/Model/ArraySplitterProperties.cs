@@ -15,7 +15,8 @@ namespace com.webkingsoft.JsonSuite.Component.Model
         
         protected override void InternalCopyToComponent(IDTSCustomPropertyCollection100 componentCustomProperties)
         {
-            CreateCustomProperty(componentCustomProperties, INPUT_COLUMN_NAME, INPUT_COLUMN_NAME_DESC);
+            var p = CreateCustomProperty(componentCustomProperties, INPUT_COLUMN_NAME, INPUT_COLUMN_NAME_DESC);
+            p.Value = ArrayInputColumnName;
         }
 
         public override void LoadFromComponent(IDTSCustomPropertyCollection100 componentCustomProperties)

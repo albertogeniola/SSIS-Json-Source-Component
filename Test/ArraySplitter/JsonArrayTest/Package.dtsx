@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Package"
   DTS:PackageType="5"
-  DTS:VersionBuild="65"
-  DTS:VersionGUID="{48C7DA41-9458-4BCB-8AE4-089D13F080DF}">
+  DTS:VersionBuild="73"
+  DTS:VersionGUID="{EA3ADF54-5DA5-48DB-8215-57950694662A}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -768,9 +768,6 @@
                   dataType="System.String"
                   description="Name of the column, belonging to the input lane, where the raw json is coming from."
                   name="InputColumnName">JSON_hobbies</property>
-                <property
-                  dataType="System.String"
-                  name="UserComponentTypeName">com.webkingsoft.JSONSuite_Common.JsonArraySplitter, com.webkingsoft.JsonSuite.Component, Version=0.1.0.0, Culture=neutral, PublicKeyToken=42a2313e1269904d</property>
               </properties>
               <inputs>
                 <input
@@ -1180,9 +1177,6 @@
                   dataType="System.String"
                   description="Name of the column, belonging to the input lane, where the raw json is coming from."
                   name="InputColumnName">JSON_hobbies</property>
-                <property
-                  dataType="System.String"
-                  name="UserComponentTypeName">com.webkingsoft.JSONSuite_Common.JsonArraySplitter, com.webkingsoft.JsonSuite.Component, Version=0.1.0.0, Culture=neutral, PublicKeyToken=42a2313e1269904d</property>
               </properties>
               <inputs>
                 <input
@@ -1645,9 +1639,6 @@
                   dataType="System.String"
                   description="Name of the column, belonging to the input lane, where the raw json is coming from."
                   name="InputColumnName">JSON_hobbies</property>
-                <property
-                  dataType="System.String"
-                  name="UserComponentTypeName">com.webkingsoft.JSONSuite_Common.JsonArraySplitter, com.webkingsoft.JsonSuite.Component, Version=0.1.0.0, Culture=neutral, PublicKeyToken=42a2313e1269904d</property>
               </properties>
               <inputs>
                 <input
@@ -1799,13 +1790,13 @@
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
-          Size="176,42"
-          Id="Package\Bad Json Token\Flat File Destination"
-          TopLeft="294,442" />
-        <NodeLayout
           Size="156,42"
           Id="Package\Bad Json Token\Flat File Source"
           TopLeft="352,178" />
+        <NodeLayout
+          Size="176,42"
+          Id="Package\Bad Json Token\Flat File Destination"
+          TopLeft="294,442" />
         <NodeLayout
           Size="109,42"
           Id="Package\Bad Json Token\Errors"
@@ -1813,21 +1804,21 @@
         <NodeLayout
           Size="175,42"
           Id="Package\Bad Json Token\JSON Array Splitter"
-          TopLeft="341,302" />
+          TopLeft="338,294" />
         <EdgeLayout
           Id="Package\Bad Json Token.Paths[Flat File Source Output]"
-          TopLeft="429.25,220">
+          TopLeft="427.75,220">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,82"
+              EndConnector="0,74"
               Start="0,0"
-              End="0,74.5">
+              End="0,66.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,74.5" />
+                    End="0,66.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1838,30 +1829,30 @@
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Bad Json Token.Paths[Array Elements]"
-          TopLeft="428.5,344">
+          TopLeft="425.5,336">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-46.5,98"
+              EndConnector="-43.5,106"
               Start="0,0"
-              End="-46.5,90.5">
+              End="-43.5,98.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,45" />
+                    End="0,49" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,45"
-                    Point2="0,49"
-                    Point3="-4,49" />
+                    Point1="0,49"
+                    Point2="0,53"
+                    Point3="-4,53" />
                   <mssgle:LineSegment
-                    End="-42.5,49" />
+                    End="-39.5,53" />
                   <mssgle:CubicBezierSegment
-                    Point1="-42.5,49"
-                    Point2="-46.5,49"
-                    Point3="-46.5,53" />
+                    Point1="-39.5,53"
+                    Point2="-43.5,53"
+                    Point3="-43.5,57" />
                   <mssgle:LineSegment
-                    End="-46.5,90.5" />
+                    End="-43.5,98.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1872,37 +1863,37 @@
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Bad Json Token.Paths[Error elements]"
-          TopLeft="456.333333333333,344">
+          TopLeft="453.333333333333,336">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="134.166666666667,101"
+              EndConnector="137.166666666667,109"
               Start="0,0"
-              End="134.166666666667,93.5">
+              End="137.166666666667,101.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,36.9490373725934" />
+                    End="0,40.1925254813137" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,36.9490373725934"
-                    Point2="0,40.9490373725934"
-                    Point3="4,40.9490373725934" />
+                    Point1="0,40.1925254813137"
+                    Point2="0,44.1925254813137"
+                    Point3="4,44.1925254813137" />
                   <mssgle:LineSegment
-                    End="130.166666666667,40.9490373725934" />
+                    End="133.166666666667,44.1925254813137" />
                   <mssgle:CubicBezierSegment
-                    Point1="130.166666666667,40.9490373725934"
-                    Point2="134.166666666667,40.9490373725934"
-                    Point3="134.166666666667,44.9490373725934" />
+                    Point1="133.166666666667,44.1925254813137"
+                    Point2="137.166666666667,44.1925254813137"
+                    Point3="137.166666666667,48.1925254813137" />
                   <mssgle:LineSegment
-                    End="134.166666666667,93.5" />
+                    End="137.166666666667,101.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="34.1357552083333,45.9490373725934,65.89515625,9.7490234375"
+              BoundingBox="35.6357552083333,49.1925254813137,65.89515625,9.7490234375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -1915,31 +1906,43 @@
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="176,42"
-          Id="Package\Heterogeneus JSON\Flat File Destination"
-          TopLeft="441,449" />
-        <NodeLayout
           Size="156,42"
           Id="Package\Heterogeneus JSON\Flat File Source"
           TopLeft="352,178" />
         <NodeLayout
+          Size="176,42"
+          Id="Package\Heterogeneus JSON\Flat File Destination"
+          TopLeft="397,443" />
+        <NodeLayout
           Size="175,42"
           Id="Package\Heterogeneus JSON\JSON Array Splitter"
-          TopLeft="344,292" />
+          TopLeft="358,304" />
         <EdgeLayout
-          Id="Package\Heterogeneus JSON.Paths[Flat File Source Output]"
-          TopLeft="430.75,220">
+          Id="Package\Heterogeneus JSON.Paths[Array Elements]"
+          TopLeft="445.5,346">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,72"
+              EndConnector="39.5,97"
               Start="0,0"
-              End="0,64.5">
+              End="39.5,89.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,64.5" />
+                    End="0,44.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,44.5"
+                    Point2="0,48.5"
+                    Point3="4,48.5" />
+                  <mssgle:LineSegment
+                    End="35.5,48.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="35.5,48.5"
+                    Point2="39.5,48.5"
+                    Point3="39.5,52.5" />
+                  <mssgle:LineSegment
+                    End="39.5,89.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1949,31 +1952,31 @@
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\Heterogeneus JSON.Paths[Array Elements]"
-          TopLeft="431.5,334">
+          Id="Package\Heterogeneus JSON.Paths[Flat File Source Output]"
+          TopLeft="430,220">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="97.5,115"
+              EndConnector="15.5,84"
               Start="0,0"
-              End="97.5,107.5">
+              End="15.5,76.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,53.5" />
+                    End="0,38" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,53.5"
-                    Point2="0,57.5"
-                    Point3="4,57.5" />
+                    Point1="0,38"
+                    Point2="0,42"
+                    Point3="4,42" />
                   <mssgle:LineSegment
-                    End="93.5,57.5" />
+                    End="11.5,42" />
                   <mssgle:CubicBezierSegment
-                    Point1="93.5,57.5"
-                    Point2="97.5,57.5"
-                    Point3="97.5,61.5" />
+                    Point1="11.5,42"
+                    Point2="15.5,42"
+                    Point3="15.5,46" />
                   <mssgle:LineSegment
-                    End="97.5,107.5" />
+                    End="15.5,76.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1991,13 +1994,13 @@
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
-          Size="176,42"
-          Id="Package\Missing array bracket\Flat File Destination"
-          TopLeft="323,450" />
-        <NodeLayout
           Size="156,42"
           Id="Package\Missing array bracket\Flat File Source"
           TopLeft="352,178" />
+        <NodeLayout
+          Size="176,42"
+          Id="Package\Missing array bracket\Flat File Destination"
+          TopLeft="323,450" />
         <NodeLayout
           Size="109,42"
           Id="Package\Missing array bracket\Errors"
@@ -2005,21 +2008,33 @@
         <NodeLayout
           Size="175,42"
           Id="Package\Missing array bracket\JSON Array Splitter"
-          TopLeft="350,310" />
+          TopLeft="400,310" />
         <EdgeLayout
           Id="Package\Missing array bracket.Paths[Flat File Source Output]"
-          TopLeft="433.75,220">
+          TopLeft="430,220">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,90"
+              EndConnector="57.5,90"
               Start="0,0"
-              End="0,82.5">
+              End="57.5,82.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,82.5" />
+                    End="0,41" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,41"
+                    Point2="0,45"
+                    Point3="4,45" />
+                  <mssgle:LineSegment
+                    End="53.5,45" />
+                  <mssgle:CubicBezierSegment
+                    Point1="53.5,45"
+                    Point2="57.5,45"
+                    Point3="57.5,49" />
+                  <mssgle:LineSegment
+                    End="57.5,82.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -2030,13 +2045,13 @@
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Missing array bracket.Paths[Array Elements]"
-          TopLeft="437.5,352">
+          TopLeft="487.5,352">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-26.5,98"
+              EndConnector="-76.5,98"
               Start="0,0"
-              End="-26.5,90.5">
+              End="-76.5,90.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
@@ -2047,13 +2062,13 @@
                     Point2="0,49"
                     Point3="-4,49" />
                   <mssgle:LineSegment
-                    End="-22.5,49" />
+                    End="-72.5,49" />
                   <mssgle:CubicBezierSegment
-                    Point1="-22.5,49"
-                    Point2="-26.5,49"
-                    Point3="-26.5,53" />
+                    Point1="-72.5,49"
+                    Point2="-76.5,49"
+                    Point3="-76.5,53" />
                   <mssgle:LineSegment
-                    End="-26.5,90.5" />
+                    End="-76.5,90.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -2064,13 +2079,13 @@
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Missing array bracket.Paths[Error elements]"
-          TopLeft="465.333333333333,352">
+          TopLeft="515.333333333333,352">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="133.166666666667,101"
+              EndConnector="83.1666666666666,101"
               Start="0,0"
-              End="133.166666666667,93.5">
+              End="83.1666666666666,93.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
@@ -2081,20 +2096,20 @@
                     Point2="0,40.9490373725934"
                     Point3="4,40.9490373725934" />
                   <mssgle:LineSegment
-                    End="129.166666666667,40.9490373725934" />
+                    End="79.1666666666666,40.9490373725934" />
                   <mssgle:CubicBezierSegment
-                    Point1="129.166666666667,40.9490373725934"
-                    Point2="133.166666666667,40.9490373725934"
-                    Point3="133.166666666667,44.9490373725934" />
+                    Point1="79.1666666666666,40.9490373725934"
+                    Point2="83.1666666666666,40.9490373725934"
+                    Point3="83.1666666666666,44.9490373725934" />
                   <mssgle:LineSegment
-                    End="133.166666666667,93.5" />
+                    End="83.1666666666666,93.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="33.6357552083333,45.9490373725934,65.89515625,9.7490234375"
+              BoundingBox="8.63575520833331,45.9490373725934,65.89515625,9.7490234375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>

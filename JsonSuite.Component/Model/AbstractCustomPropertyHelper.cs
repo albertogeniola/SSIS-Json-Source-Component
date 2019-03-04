@@ -32,10 +32,11 @@ namespace com.webkingsoft.JsonSuite.Component.Model
         /// <param name="componentCustomProperties"></param>
         public abstract void LoadFromComponent(IDTSCustomPropertyCollection100 componentCustomProperties);
 
-        protected void CreateCustomProperty(IDTSCustomPropertyCollection100 props, string name, string description) {
+        protected IDTSCustomProperty100 CreateCustomProperty(IDTSCustomPropertyCollection100 props, string name, string description) {
             var p = props.New();
             p.Name = name;
             p.Description = description;
+            return p;
         }
 
         protected object GetCustomProperty(IDTSCustomPropertyCollection100 props, string name) {

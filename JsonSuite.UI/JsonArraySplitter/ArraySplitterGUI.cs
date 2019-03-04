@@ -42,11 +42,11 @@ namespace com.webkingsoft.JsonSuite.UI
                 // Only add columns that are supported: TEXTUAL ones.
                 if (JsonSuite.Component.JsonArraySplitter.SUPPORTED_JSON_DATA_TYPE.Contains(vCol.DataType)) {
                     var vColumnWrapper = new ColumnWrapper(vCol);
-                    var item = inputColumns.Items.Add(vColumnWrapper);
+                    var selectedIndex = inputColumns.Items.Add(vColumnWrapper);
 
                     // If the column was the one previously selected into the metadata, preselect it.
                     if (props.ArrayInputColumnName == vCol.Name) {
-                        inputColumns.SelectedItem = item;
+                        inputColumns.SelectedIndex = selectedIndex;
                     }
                 }
             }
