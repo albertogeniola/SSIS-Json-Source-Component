@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace com.webkingsoft.JSONSuite_130.Properties {
+namespace com.webkingsoft.JsonSuite.Component.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace com.webkingsoft.JSONSuite_130.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("com.webkingsoft.JSONSuite_130.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("com.webkingsoft.JsonSuite.Component.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

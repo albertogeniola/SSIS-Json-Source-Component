@@ -4,30 +4,32 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E670B60F-1392-4620-B629-CDAF7267E9B1}</ProjectGuid>
+    <ProjectGuid>{3401A20B-BB8D-4D11-A758-FAD862D3459D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>com.webkingsoft.JSONSuite_110</RootNamespace>
-    <AssemblyName>com.webkingsoft.JSONSuite_110</AssemblyName>
+    <RootNamespace>com.webkingsoft.JsonSuite.Component</RootNamespace>
+    <AssemblyName>com.webkingsoft.JsonSuite.Component</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <!-- By default, if no DTSVERSION has been specified, assume 130 -->
+    <DTSVERSION Condition=" $(DTSVERSION) == '' ">130</DTSVERSION>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\$(DTSVERSION)\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\Desktop\Publish\110\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;DTS110; LINQ_SUPPORTED</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;LINQ_SUPPORTED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\$(DTSVERSION)\</OutputPath>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\Desktop\Publish\110\</OutputPath>
-    <DefineConstants>TRACE;DTS110; LINQ_SUPPORTED</DefineConstants>
+    <DefineConstants>TRACE;LINQ_SUPPORTED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -39,37 +41,34 @@
     <AssemblyOriginatorKeyFile>JSONSource.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SqlServer.Dts.Design, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.SqlServer.Dts.Design, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\110\SDK\Assemblies\Microsoft.SqlServer.Dts.Design.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\slq110\x32\$(DTSVERSION)\SDK\Assemblies\Microsoft.SqlServer.Dts.Design.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.SqlServer.DTSPipelineWrap, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.SqlServer.DTSPipelineWrap, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\110\SDK\Assemblies\Microsoft.SqlServer.DTSPipelineWrap.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\slq110\x32\$(DTSVERSION)\SDK\Assemblies\Microsoft.SqlServer.DTSPipelineWrap.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.SQLServer.DTSRuntimeWrap, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=x86">
+    <Reference Include="Microsoft.SQLServer.DTSRuntimeWrap, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\110\SDK\Assemblies\Microsoft.SQLServer.DTSRuntimeWrap.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\slq110\x32\$(DTSVERSION)\SDK\Assemblies\Microsoft.SQLServer.DTSRuntimeWrap.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\110\SDK\Assemblies\Microsoft.SQLServer.ManagedDTS.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>..\..\..\..\..\..\slq110\x32\$(DTSVERSION)\SDK\Assemblies\Microsoft.SQLServer.ManagedDTS.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.SqlServer.PipelineHost, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.SqlServer.PipelineHost, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft SQL Server\110\SDK\Assemblies\Microsoft.SqlServer.PipelineHost.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>..\..\..\..\..\..\slq110\x32\$(DTSVERSION)\SDK\Assemblies\Microsoft.SqlServer.PipelineHost.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b9a188c8922137c6, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -78,24 +77,20 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net" />
-    <Reference Include="System.Net.Http, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Net.Http">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Net.Http.Extensions">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.Extensions.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Net.Http.Primitives, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Net.Http.Primitives">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.Primitives.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Net.Http.WebRequest, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Net.Http.WebRequest">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Threading.Tasks, Version=2.6.10.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.Threading.Tasks.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Windows.Forms" />
@@ -130,7 +125,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="ClassDiagram1.cd" />
     <None Include="JSONSource.snk" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -142,24 +136,12 @@
     <EmbeddedResource Include="jsource.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Setup.iss" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
+    <EmbeddedResource Include="Icons\JsonArraySplitter.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
-  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
-    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
-    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
-  </Target>
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) "C:\Program Files (x86)\Microsoft SQL Server\110\DTS\PipelineComponents\"
-"c:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\gacutil.exe" "C:\Program Files (x86)\Microsoft SQL Server\110\DTS\PipelineComponents\$(TargetFileName)"</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PostBuildEvent>copy $(TargetPath) "C:\Program Files (x86)\Microsoft SQL Server\$(DTSVERSION)\DTS\PipelineComponents\"
+"c:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\gacutil.exe" -i "C:\Program Files (x86)\Microsoft SQL Server\$(DTSVERSION)\DTS\PipelineComponents\$(TargetFileName)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

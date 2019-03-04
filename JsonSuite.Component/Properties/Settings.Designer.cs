@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace com.webkingsoft.JSONSuite_Common.Properties {
+namespace com.webkingsoft.JsonSuite.Component.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

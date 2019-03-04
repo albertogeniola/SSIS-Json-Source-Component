@@ -25,28 +25,36 @@ Compression=lzma
 SolidCompression=yes
 UninstallDisplayName=JSON Source SSIS Plugin
 DisableWelcomePage=No
+OutputDir = ..\Dist
+
+Uninstallable=True
+WizardImageFile=C:\Users\Administrator\Downloads\256x256.bmp
+WizardSmallImageFile=C:\Users\Administrator\Downloads\50.bmp
+WizardImageStretch=False
+WizardImageBackColor=clWhite
+ShowTasksTreeLines=True
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
 ; Donate Button image
-Source: "Publish\donate.bmp"; Flags: dontcopy
+Source: "donate.bmp"; Flags: dontcopy
 
-Source: "Publish\130\com.webkingsoft.JSONSource_130.dll"; DestDir: "{code:GetSql130Path_32}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "com.webkingsoft.JSONSource_130"; Components: SSIS_130; Check: CheckSql130_32
-Source: "Publish\130\com.webkingsoft.JSONSource_130.dll"; DestDir: "{code:GetSql130Path_64}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "com.webkingsoft.JSONSource_130"; Components: SSIS_130; Check: CheckSql130_64
-Source: "Publish\130\Newtonsoft.Json.dll"; DestDir: "{code:GetSql130Path_32}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "Newtonsoft.Json"; Components: SSIS_130; Check: CheckSql130_32
-Source: "Publish\130\Newtonsoft.Json.dll"; DestDir: "{code:GetSql130Path_64}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "Newtonsoft.Json"; Components: SSIS_130; Check: CheckSql130_64
+Source: "..\JsonSuite.Component\bin\Release\130\com.webkingsoft.JsonSuite.Component.dll"; DestDir: "{code:GetSql130Path_32}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "com.webkingsoft.JSONSuite_130"; Components: SSIS_130; Check: CheckSql130_32
+Source: "..\JsonSuite.Component\bin\Release\130\com.webkingsoft.JsonSuite.Component.dll"; DestDir: "{code:GetSql130Path_64}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "com.webkingsoft.JSONSuite_130"; Components: SSIS_130; Check: CheckSql130_64
+Source: "..\JsonSuite.Component\bin\Release\130\Newtonsoft.Json.dll"; DestDir: "{code:GetSql130Path_32}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "Newtonsoft.Json"; Components: SSIS_130; Check: CheckSql130_32
+Source: "..\JsonSuite.Component\bin\Release\130\Newtonsoft.Json.dll"; DestDir: "{code:GetSql130Path_64}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "Newtonsoft.Json"; Components: SSIS_130; Check: CheckSql130_64
 
-Source: "Publish\120\com.webkingsoft.JSONSource_120.dll"; DestDir: "{code:GetSql120Path_32}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "com.webkingsoft.JSONSource_120"; Components: SSIS_120; Check: CheckSql120_32
-Source: "Publish\120\com.webkingsoft.JSONSource_120.dll"; DestDir: "{code:GetSql120Path_64}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "com.webkingsoft.JSONSource_120"; Components: SSIS_120; Check: CheckSql120_64
-Source: "Publish\120\Newtonsoft.Json.dll"; DestDir: "{code:GetSql120Path_32}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "Newtonsoft.Json"; Components: SSIS_120; Check: CheckSql120_32
-Source: "Publish\120\Newtonsoft.Json.dll"; DestDir: "{code:GetSql120Path_64}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "Newtonsoft.Json"; Components: SSIS_120; Check: CheckSql120_64
+Source: "..\JsonSuite.Component\bin\Release\120\com.webkingsoft.JsonSuite.Component.dll"; DestDir: "{code:GetSql120Path_32}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "com.webkingsoft.JSONSuite_120"; Components: SSIS_120; Check: CheckSql120_32
+Source: "..\JsonSuite.Component\bin\Release\120\com.webkingsoft.JsonSuite.Component.dll"; DestDir: "{code:GetSql120Path_64}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "com.webkingsoft.JSONSuite_120"; Components: SSIS_120; Check: CheckSql120_64
+Source: "..\JsonSuite.Component\bin\Release\120\Newtonsoft.Json.dll"; DestDir: "{code:GetSql120Path_32}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "Newtonsoft.Json"; Components: SSIS_120; Check: CheckSql120_32
+Source: "..\JsonSuite.Component\bin\Release\120\Newtonsoft.Json.dll"; DestDir: "{code:GetSql120Path_64}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "Newtonsoft.Json"; Components: SSIS_120; Check: CheckSql120_64
 
-Source: "Publish\110\com.webkingsoft.JSONSource_110.dll"; DestDir: "{code:GetSql110Path_32}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "com.webkingsoft.JSONSource_110"; Components: SSIS_110; Check: CheckSql110_32
-Source: "Publish\110\com.webkingsoft.JSONSource_110.dll"; DestDir: "{code:GetSql110Path_64}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "com.webkingsoft.JSONSource_110"; Components: SSIS_110; Check: CheckSql110_64
-Source: "Publish\110\Newtonsoft.Json.dll"; DestDir: "{code:GetSql110Path_32}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "Newtonsoft.Json"; Components: SSIS_110; Check: CheckSql110_32
-Source: "Publish\110\Newtonsoft.Json.dll"; DestDir: "{code:GetSql110Path_64}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "Newtonsoft.Json"; Components: SSIS_110; Check: CheckSql110_64
+Source: "..\JsonSuite.Component\bin\Release\110\com.webkingsoft.JsonSuite.Component.dll"; DestDir: "{code:GetSql110Path_32}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "com.webkingsoft.JSONSuite_110"; Components: SSIS_110; Check: CheckSql110_32
+Source: "..\JsonSuite.Component\bin\Release\110\com.webkingsoft.JsonSuite.Component.dll"; DestDir: "{code:GetSql110Path_64}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "com.webkingsoft.JSONSuite_110"; Components: SSIS_110; Check: CheckSql110_64
+Source: "..\JsonSuite.Component\bin\Release\110\Newtonsoft.Json.dll"; DestDir: "{code:GetSql110Path_32}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "Newtonsoft.Json"; Components: SSIS_110; Check: CheckSql110_32
+Source: "..\JsonSuite.Component\bin\Release\110\Newtonsoft.Json.dll"; DestDir: "{code:GetSql110Path_64}\PipelineComponents"; Flags: gacinstall; StrongAssemblyName: "Newtonsoft.Json"; Components: SSIS_110; Check: CheckSql110_64
 
 [Components]
 Name: "SSIS_130"; Description: "MS Sql Server 2016 (32 bit). Required for Visual Studio and BIDS."; Types: custom; Check: CheckSql130_32
@@ -58,9 +66,6 @@ Name: "SSIS_110"; Description: "MS Sql Server 2012 (64 bit)"; Types: custom; Che
 
 [Types]
 Name: "Custom"; Description: "Customize components"; Flags: iscustom
-
-[Setup]
-Uninstallable=True
 
 [Code]
 // -------------------------------------------
@@ -349,6 +354,6 @@ end;
 procedure CurPageChanged(CurPageID: Integer);
 begin
   case CurPageID of
-      wpFinished : WizardForm.FinishedLabel.Caption := 'Thank you for installing JSONSource suite. Please rememeber that this probject is maintained by only a single student who really listens to the community! Any donation is automatically spent on beer, thus really welcomed. The developer only codes when he has beer available :)';
+      wpFinished : WizardForm.FinishedLabel.Caption := 'Thank you for installing JSONSuite package. Please rememeber that this probject is maintained by only a single student who really listens to the community! Any donation is automatically spent on beer, thus really welcomed. The developer only codes when he has beer available :)';
   end;
 end;

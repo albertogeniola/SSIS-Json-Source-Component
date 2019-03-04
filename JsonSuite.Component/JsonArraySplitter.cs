@@ -21,13 +21,13 @@ using System.Windows.Forms;
 namespace com.webkingsoft.JSONSuite_Common
 {
     // TODO: add Custom UI, document the class
-#if DTS130
-    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Array Splitter", Description = "Splits raw json arrays into single raw json elements.", ComponentType = ComponentType.Transform, IconResource = "com.webkingsoft.JSONSuite_130.jsource.ico")] // UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_130,Version=1.1.000.0,Culture=neutral"
-#elif DTS120
-    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Array Splitter", Description = "Splits raw json arrays into single raw json elements.", ComponentType = ComponentType.Transform, IconResource = "com.webkingsoft.JSONSuite_120.jsource.ico")] // UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral"
-#elif DTS110
-    [DtsPipelineComponent(CurrentVersion = 1, DisplayName = "JSON Array Splitter", Description = "Splits raw json arrays into single raw json elements.", ComponentType = ComponentType.Transform, IconResource = "com.webkingsoft.JSONSuite_110.jsource.ico")] // UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_110,Version=1.1.000.0,Culture=neutral"
-#endif
+    [DtsPipelineComponent(
+        CurrentVersion = 1, 
+        DisplayName = "JSON Array Splitter", 
+        Description = "Splits raw json arrays into single raw json elements.",
+        ComponentType = ComponentType.Transform, 
+        IconResource = "com.webkingsoft.JsonSuite.Component.Icons.JsonArraySplitter.ico")
+    ] // UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral"
     public class JsonArraySplitter : PipelineComponent
     {
         private static readonly string INPUT_LANE_NAME = "Raw json input";
