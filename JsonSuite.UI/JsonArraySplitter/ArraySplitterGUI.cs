@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace com.webkingsoft.JSONSource.UI
+namespace com.webkingsoft.JsonSuite.UI
 {
     public partial class ArraySplitterGUI : Form
     {

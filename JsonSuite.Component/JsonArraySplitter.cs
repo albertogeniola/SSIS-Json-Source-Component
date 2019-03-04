@@ -1,4 +1,4 @@
-﻿using com.webkingsoft.JSONSuite_Common.Model;
+﻿using com.webkingsoft.JsonSuite.Component.Model;
 using Microsoft.SqlServer.Dts.Pipeline;
 using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 using Microsoft.SqlServer.Dts.Runtime.Wrapper;
@@ -18,16 +18,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 #endif
 
-namespace com.webkingsoft.JSONSuite_Common
+namespace com.webkingsoft.JsonSuite.Component
 {
     // TODO: add Custom UI, document the class
     [DtsPipelineComponent(
+        UITypeName = "com.webkingsoft.JsonSuite.UI.ArraySplitterUI, com.webkingsoft.JsonSuite.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=42a2313e1269904d",
         CurrentVersion = 1, 
         DisplayName = "JSON Array Splitter", 
         Description = "Splits raw json arrays into single raw json elements.",
         ComponentType = ComponentType.Transform, 
         IconResource = "com.webkingsoft.JsonSuite.Component.Icons.JsonArraySplitter.ico")
-    ] // UITypeName = "com.webkingsoft.JSONSource_Common.JSONSourceComponentUI,com.webkingsoft.JSONSource_120,Version=1.1.000.0,Culture=neutral"
+    ] 
     public class JsonArraySplitter : PipelineComponent
     {
         private static readonly string INPUT_LANE_NAME = "Raw json input";

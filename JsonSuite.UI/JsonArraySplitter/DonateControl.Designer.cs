@@ -1,4 +1,4 @@
-﻿namespace com.webkingsoft.JSONSource.UI
+﻿namespace com.webkingsoft.JsonSuite.UI
 {
     partial class DonateControl
     {

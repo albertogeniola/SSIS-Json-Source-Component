@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-namespace com.webkingsoft.JSONSource.UI
+namespace com.webkingsoft.JsonSuite.UI
 {
     public partial class DonateControl : UserControl
     {

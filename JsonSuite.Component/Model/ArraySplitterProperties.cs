@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace com.webkingsoft.JSONSuite_Common.Model
+namespace com.webkingsoft.JsonSuite.Component.Model
 {
     public class ArraySplitterProperties : AbstractCustomPropertyHelper
     {
