@@ -12,34 +12,36 @@ namespace com.webkingsoft.JsonSuite.UI
 {
     class ArraySplitterUI : IDtsComponentUI
     {
+        private ArraySplitterGUI _view;
+
+        public void Initialize(IDTSComponentMetaData100 dtsComponentMetadata, IServiceProvider serviceProvider)
+        {
+            // This method is invoked before Edit/New. In here we simply create the
+            // form to display and save reference to the component stuff we will later on be useful.
+            _view = new ArraySplitterGUI(dtsComponentMetadata, serviceProvider);
+        }
+
         public void Delete(IWin32Window parentWindow)
         {
-            MessageBox.Show("works!");
-            throw new NotImplementedException();
+            // Do nothing!
         }
 
         public bool Edit(IWin32Window parentWindow, Variables variables, Connections connections)
         {
-            MessageBox.Show("works!");
-            throw new NotImplementedException();
+            // This method should return TRUE if the user performed any change and wants to save it.
+            // False otherwise. The DesignTime will persist changes only if this method returns true.
+            var result = _view.ShowDialog();
+            return result == DialogResult.OK;
         }
 
         public void Help(IWin32Window parentWindow)
         {
-            MessageBox.Show("works!");
-            throw new NotImplementedException();
+            // Do nothing!
         }
-
-        public void Initialize(IDTSComponentMetaData100 dtsComponentMetadata, IServiceProvider serviceProvider)
-        {
-            MessageBox.Show("works!");
-            throw new NotImplementedException();
-        }
-
+        
         public void New(IWin32Window parentWindow)
         {
-            MessageBox.Show("works!");
-            throw new NotImplementedException();
+            // Do nothing!
         }
     }
 }

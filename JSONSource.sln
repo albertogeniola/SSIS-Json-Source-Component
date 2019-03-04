@@ -14,6 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Setup", "Setup", "{885CEA31
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonSuite.UI", "JsonSuite.UI\JsonSuite.UI.csproj", "{8BCC409B-6FFB-43AB-8012-95DEFA6182EF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3401A20B-BB8D-4D11-A758-FAD862D3459D} = {3401A20B-BB8D-4D11-A758-FAD862D3459D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonSuite.Component", "JsonSuite.Component\JsonSuite.Component.csproj", "{3401A20B-BB8D-4D11-A758-FAD862D3459D}"
 EndProject

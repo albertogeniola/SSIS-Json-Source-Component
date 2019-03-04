@@ -47,8 +47,8 @@
             // 
             // label1
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.Font = new System.Drawing.Font("Segoe Print", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
@@ -56,8 +56,8 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(527, 147);
             this.label1.TabIndex = 1;
-            this.label1.Text = "This software has been developed in sleepless night. Why don\'t you thank the deve" +
-    "loper by offering him a beer?";
+            this.label1.Text = "This software has been developed during sleepless nights. Why don\'t you thank the" +
+    " developer by offering him a beer?";
             // 
             // DonateControl
             // 

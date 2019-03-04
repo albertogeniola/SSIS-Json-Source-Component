@@ -28,16 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ArraySplitterGUI));
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.inputColumns = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.okBtn = new System.Windows.Forms.Button();
             this.cancelBtn = new System.Windows.Forms.Button();
-            this.donateControl1 = new DonateControl();
+            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
+            this.donateControl1 = new com.webkingsoft.JsonSuite.UI.DonateControl();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -68,13 +71,14 @@
             this.label2.TabIndex = 2;
             this.label2.Text = "Select the input column containing the JSON array:";
             // 
-            // comboBox1
+            // inputColumns
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(248, 140);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(352, 21);
-            this.comboBox1.TabIndex = 3;
+            this.inputColumns.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.inputColumns.FormattingEnabled = true;
+            this.inputColumns.Location = new System.Drawing.Point(248, 140);
+            this.inputColumns.Name = "inputColumns";
+            this.inputColumns.Size = new System.Drawing.Size(352, 21);
+            this.inputColumns.TabIndex = 3;
             // 
             // label3
             // 
@@ -93,15 +97,21 @@
             this.okBtn.TabIndex = 5;
             this.okBtn.Text = "OK";
             this.okBtn.UseVisualStyleBackColor = true;
+            this.okBtn.Click += new System.EventHandler(this.okBtn_Click);
             // 
             // cancelBtn
             // 
+            this.cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelBtn.Location = new System.Drawing.Point(616, 203);
             this.cancelBtn.Name = "cancelBtn";
             this.cancelBtn.Size = new System.Drawing.Size(75, 23);
             this.cancelBtn.TabIndex = 6;
             this.cancelBtn.Text = "Cancel";
             this.cancelBtn.UseVisualStyleBackColor = true;
+            // 
+            // errorProvider
+            // 
+            this.errorProvider.ContainerControl = this;
             // 
             // donateControl1
             // 
@@ -116,15 +126,17 @@
             // 
             // ArraySplitterGUI
             // 
+            this.AcceptButton = this.okBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
+            this.CancelButton = this.cancelBtn;
             this.ClientSize = new System.Drawing.Size(784, 311);
             this.Controls.Add(this.donateControl1);
             this.Controls.Add(this.cancelBtn);
             this.Controls.Add(this.okBtn);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.inputColumns);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label1);
@@ -132,6 +144,7 @@
             this.Name = "ArraySplitterGUI";
             this.Text = "Array Splitter Configuration";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -142,10 +155,11 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox inputColumns;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button okBtn;
         private System.Windows.Forms.Button cancelBtn;
         private DonateControl donateControl1;
+        private System.Windows.Forms.ErrorProvider errorProvider;
     }
 }

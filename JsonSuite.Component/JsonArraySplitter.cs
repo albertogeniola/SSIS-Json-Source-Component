@@ -31,9 +31,15 @@ namespace com.webkingsoft.JsonSuite.Component
     ] 
     public class JsonArraySplitter : PipelineComponent
     {
-        private static readonly string INPUT_LANE_NAME = "Raw json input";
-        private static readonly string OUTPUT_LANE_NAME = "Array Elements";
-        private static readonly string ERROR_LANE_NAME = "Error elements";
+        public static readonly string INPUT_LANE_NAME = "Raw json input";
+        public static readonly string OUTPUT_LANE_NAME = "Array Elements";
+        public static readonly string ERROR_LANE_NAME = "Error elements";
+        public static readonly DataType[] SUPPORTED_JSON_DATA_TYPE = new DataType[] {
+            DataType.DT_NTEXT,
+            DataType.DT_TEXT,
+            DataType.DT_WSTR,
+            DataType.DT_STR
+        };
 
         // Public overrided methods - Design time
         public override void ProvideComponentProperties()
@@ -258,12 +264,8 @@ namespace com.webkingsoft.JsonSuite.Component
                     found = true;
 
                     // Check the data type of the column
-                    if (col.DataType != DataType.DT_NTEXT &&
-                        col.DataType != DataType.DT_TEXT &&
-                        col.DataType != DataType.DT_WSTR &&
-                        col.DataType != DataType.DT_STR)
+                    if (!SUPPORTED_JSON_DATA_TYPE.Contains(col.DataType))
                     {
-
                         ComponentMetaData.FireError(0, ComponentMetaData.Name, "The selected input column must be in textual format (TEXT, NTEXT, STR, WSTR).", "", 0, out pbCancel);
                         return DTSValidationStatus.VS_ISBROKEN;
                     }
