@@ -22,7 +22,7 @@ namespace com.webkingsoft.JsonSuite.Component
 {
     // TODO: add Custom UI, document the class
     [DtsPipelineComponent(
-        UITypeName = "com.webkingsoft.JsonSuite.UI.JsonObjectParserUI, com.webkingsoft.JsonSuite.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=42a2313e1269904d",
+        UITypeName = "com.webkingsoft.JsonSuite.UI.ObjectParserUI, com.webkingsoft.JsonSuite.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=42a2313e1269904d",
         CurrentVersion = 1, 
         DisplayName = "JSON Object Parser", 
         Description = "Parses a JSON object into multiple columns.",
@@ -121,8 +121,7 @@ namespace com.webkingsoft.JsonSuite.Component
             output.ExternalMetadataColumnCollection.RemoveAll();
             output.OutputColumnCollection.RemoveAll();
 
-            // Make sure that every input column is treated as READONLY (for not interesting ones)
-            // or READWRITE (for json array ones).
+            // Setup usage type for every virtual input column
             AlignVirtualInputsToInputs();
 
             // Add them back from scratch
@@ -166,9 +165,9 @@ namespace com.webkingsoft.JsonSuite.Component
                 IDTSOutput100 outLane = ComponentMetaData.OutputCollection[OUTPUT_LANE_NAME];
                 var outCol = outLane.OutputColumnCollection.New();
                 outCol.Name = columnConf.Key;
-                var opts = columnConf.Value.AttributeMappingOptions;
+                var opts = columnConf.Value;
                 outCol.SetDataTypeProperties(
-                    opts.GetSSISDataType(),
+                    opts.SSISDataType,
                     opts.SSISLength, 
                     opts.SSISPrecision, 
                     opts.SSISScale, 
@@ -201,8 +200,6 @@ namespace com.webkingsoft.JsonSuite.Component
 
         private DTSValidationStatus ValidateCustomProperties(out ObjectParserProperties properties)
         {
-            // TODO: handle validation for external metadata
-
             bool pbCancel = false;
 
             properties = new ObjectParserProperties();
@@ -215,32 +212,33 @@ namespace com.webkingsoft.JsonSuite.Component
                 return DTSValidationStatus.VS_ISBROKEN;
             }
 
-            // The selected input column name must reflect one of the available inputs
-            // Moreover, the selected input column must be a valid STRING/TEXT type.
-            bool found = false;
+            // Check if the raw-json column is found from the input lane and make sure it is in a supported
+            // format. 
+            IDTSInputColumn100 inputJsonColumn = null;
+            List<IDTSInputColumn100> remainingColumnsToCheck = new List<IDTSInputColumn100>();
             foreach (IDTSInputColumn100 col in ComponentMetaData.InputCollection[INPUT_LANE_NAME].InputColumnCollection)
             {
+                // If the column is the one used for json input, check its format (should be one of the supported ones)
                 if (col.Name == properties.RawJsonInputColumnName)
                 {
-                    found = true;
-
-                    // Check the data type of the column
                     if (!SUPPORTED_JSON_DATA_TYPE.Contains(col.DataType))
                     {
                         ComponentMetaData.FireError(0, ComponentMetaData.Name, "The selected input column must be in textual format (TEXT, NTEXT, STR, WSTR).", "", 0, out pbCancel);
                         return DTSValidationStatus.VS_ISBROKEN;
-                    }
-
-                    break;
+                    } else
+                        inputJsonColumn = col;
                 }
             }
 
-            if (!found)
+            // If there is no input column with the expected name, we need to rebuild the metadata
+            if (inputJsonColumn == null)
             {
                 // Though, if the specified column is available within the virtual inputs, we can rebuild
                 // the metadata.
-                foreach (IDTSVirtualInputColumn100 vCol in ComponentMetaData.InputCollection[INPUT_LANE_NAME].GetVirtualInput().VirtualInputColumnCollection) {
-                    if (vCol.Name == properties.RawJsonInputColumnName) {
+                foreach (IDTSVirtualInputColumn100 vCol in ComponentMetaData.InputCollection[INPUT_LANE_NAME].GetVirtualInput().VirtualInputColumnCollection)
+                {
+                    if (vCol.Name == properties.RawJsonInputColumnName)
+                    {
                         ComponentMetaData.FireError(0, ComponentMetaData.Name, "Metadata changed.", "", 0, out pbCancel);
                         return DTSValidationStatus.VS_NEEDSNEWMETADATA;
                     }
@@ -251,15 +249,51 @@ namespace com.webkingsoft.JsonSuite.Component
                 return DTSValidationStatus.VS_ISBROKEN;
             }
 
+            // Check that there is one output column for every expected ObjectAttribute.
+            foreach (KeyValuePair<string, ObjectParserProperties.AttributeMapping> entry in properties.AttributeMappings) {
+                IDTSOutputColumn100 associatedOutputColumn = null;
+                foreach (IDTSOutputColumn100 oCol in ComponentMetaData.OutputCollection[OUTPUT_LANE_NAME].OutputColumnCollection)
+                {
+                    if (oCol.Name == entry.Key) {
+                        associatedOutputColumn = oCol;
+                        break;
+                    }
+                }
+
+                if (associatedOutputColumn == null) {
+                    // This column is missing. 
+                    // This column is no more needed. We need to rebuild the metadata.
+                    ComponentMetaData.FireError(0, ComponentMetaData.Name, "Metadata changed.", "", 0, out pbCancel);
+                    return DTSValidationStatus.VS_NEEDSNEWMETADATA;
+                }
+
+                // If the column has been found, make sure it's respecting the mapping
+                if (!CheckColumnMapping(associatedOutputColumn, entry.Value)) {
+                    ComponentMetaData.FireError(0, ComponentMetaData.Name, "Metadata changed.", "", 0, out pbCancel);
+                    return DTSValidationStatus.VS_NEEDSNEWMETADATA;
+                }
+            }
+
+            // Check also that there is no more columns except the ones associated to the json object attrs. 
+            foreach (IDTSOutputColumn100 oCol in ComponentMetaData.OutputCollection[OUTPUT_LANE_NAME].OutputColumnCollection) {
+                if (!properties.AttributeMappings.ContainsKey(oCol.Name)) {
+                    // This column is no more needed. We need to rebuild the metadata.
+                    ComponentMetaData.FireError(0, ComponentMetaData.Name, "Metadata changed.", "", 0, out pbCancel);
+                    return DTSValidationStatus.VS_NEEDSNEWMETADATA;
+                }
+            }
+            
             // TODO: Make sure there are no collisions on either input columns and outputColumns
-
-            // Now, for every expected attribute to extract, there must be an associated output column.
-
-
-            // TODO: check if there is any other output column. If so, it means that the output is out-of synch
-            // so we need to rebuild the metadata.
-
             return DTSValidationStatus.VS_ISVALID;
+        }
+
+        private bool CheckColumnMapping(IDTSOutputColumn100 oCol, ObjectParserProperties.AttributeMapping conf)
+        {
+            return oCol.CodePage == conf.SSISCodePage &&
+                oCol.DataType == conf.SSISDataType &&
+                oCol.Precision == conf.SSISPrecision &&
+                oCol.Length == conf.SSISLength &&
+                oCol.Scale == conf.SSISScale;
         }
 
         private DTSValidationStatus ValidateInput()
@@ -387,17 +421,13 @@ namespace com.webkingsoft.JsonSuite.Component
 
         delegate string JsonStringExtractor(PipelineBuffer inputBuffer);
         private JsonStringExtractor _extractor;
-
-        // This array will contain the values from input lane that should be copied to the
-        // output
-        private object[] copyVals = null;
-
+        
         public override void PreExecute()
         {
 #if DEBUG
             MessageBox.Show("Attach the debugger now! PID: " + System.Diagnostics.Process.GetCurrentProcess().Id);
 #endif
-            ArraySplitterProperties config = new ArraySplitterProperties();
+            ObjectParserProperties config = new ObjectParserProperties();
             config.LoadFromComponent(ComponentMetaData.CustomPropertyCollection);
 
             // This method is invoked once before the component starts doing its job. 
@@ -415,7 +445,7 @@ namespace com.webkingsoft.JsonSuite.Component
             foreach(IDTSInputColumn100 iCol in input.InputColumnCollection) {
                 bool isJsonIndex = false;
                 int iindex = BufferManager.FindColumnByLineageID(input.Buffer, iCol.LineageID);
-                if (iCol.Name == config.ArrayInputColumnName)
+                if (iCol.Name == config.RawJsonInputColumnName)
                 {
                     isJsonIndex = true;
                     _jsonInputColumnIndex = iindex;
@@ -434,7 +464,7 @@ namespace com.webkingsoft.JsonSuite.Component
                             _extractor = SimpleStringExtractor;
                             break;
                         default:
-                            throw new Exception("Unhandled data type for json array column.");
+                            throw new Exception("Unhandled data type for json input column.");
                     }
                 }
 
@@ -499,94 +529,7 @@ namespace com.webkingsoft.JsonSuite.Component
         }
 
         private void ProcessInputRow(PipelineBuffer inputBuffer) {
-            bool pbCancel = false;
-
-            // In here, we need to read the input buffer, select the column with JSON array,
-            // unpack the json elements in separate output rows. Every row will be copied 
-            // from the input buffer and will hold one specific element of the array. 
-            // For instance, assume the following row is received into the input buffer:
-            // Name     | Surname | Age | Hobbies
-            // Alberto  | Geniola | 28  | ["Coding", "Gaming", "Cooking"]
-            // ...
-            // 
-            // The expected output would be:
-            // Name     | Surname | Age | Hobbies:
-            // Alberto  | Geniola | 28  | "Coding"
-            // Alberto  | Geniola | 28  | "Gaming"
-            // Alberto  | Geniola | 28  | "Cooking"
-            // ...
-
-            // Loop over all the columns in the buffer and prepare the items to be used to fill the
-            // output buffer (e.g. all the input values except the json array)
-            copyVals = new object[inputBuffer.ColumnCount];
-            for (int i = 0; i < inputBuffer.ColumnCount; i++) {
-                // Skip the json input column.
-                if (i == _jsonInputColumnIndex)
-                    continue;
-
-                // Retrieve the mapped output column index on the output buffer
-                int mappedOutputBufferIndex = _ioColumnMapping[i];
-
-                copyVals[mappedOutputBufferIndex] = inputBuffer[i];
-            }
-
-            // Now parse the input json array and, for each item in the array, produce a new output line.
-            string rawJson = _extractor(inputBuffer);
-            using (var jtr = new JsonTextReader(new StringReader(rawJson)))
-            {
-                // Start reading the array. The very first token we expect is the array-start element.
-                try
-                {
-                    if (!jtr.Read())
-                    {
-                        throw new NullOrEmptyArrayException();
-                    }
-
-                    // We expect "ArrayStart" element. If that differs, then the input is not well formed.
-                    if (jtr.TokenType != JsonToken.StartArray)
-                    {
-                        ComponentMetaData.FireError(0, ComponentMetaData.Name, "The json string should start with the '[' symbol, but it does not.", "", 0, out pbCancel);
-                        _errorBuffer.AddRow();
-                        _errorBuffer.SetInt32(0, (int)ERROR_CODES.ERROR_MISSING_START_ARRAY);
-                    }
-
-                    // Now, we expect a variable number number of tokens 
-                    int targetDepth = jtr.Depth;
-
-                    JsonLoadSettings settings = new JsonLoadSettings();
-                    JArray array = JArray.ReadFrom(jtr) as JArray;
-                    int processedTokens = 0;
-                    foreach (JToken token in array)
-                    {
-                        SendRowToOutputBuffer(token.ToString(Formatting.None));
-                        processedTokens++;
-                    }
-
-                    // If there was no item in the array or if the array was empty, we still need to 
-                    // provide one output row. So we do it here.
-                    if (processedTokens == 0)
-                    {
-                        SendRowToOutputBuffer(null);
-                    }
-
-                    // Make sure there is nothing more to read
-                    if (jtr.Read())
-                    {
-                        // This should not happen! There is no need to fail here. Just throw a warning.
-                        ComponentMetaData.FireWarning(0, ComponentMetaData.Name, "The JSON array did contain some more data after the closing bracket. ']'.", "", 0);
-                    }
-                }
-                catch (NullOrEmptyArrayException ex)
-                {
-                    // If we failed to read or there is nothing to read, just throw a warning and cotinue.
-                    ComponentMetaData.FireWarning(0, ComponentMetaData.Name, "No JSON data recevied", "", 0);
-                }
-                catch (Exception ex) {
-                    // Any other failure/error should cause row redirection
-                    ComponentMetaData.FireError((int)ERROR_CODES.ERROR_BAD_JSON, ComponentMetaData.Name, "Json data \""+ rawJson +"\" could not be parsed as expected. Error: " + ex.Message, "", 0, out pbCancel);
-                    SendErrorRow((int)ERROR_CODES.ERROR_BAD_JSON);
-                }
-            }
+            
         }
         
         private string AnsiDecode(PipelineBuffer inputBuffer) {
@@ -616,6 +559,8 @@ namespace com.webkingsoft.JsonSuite.Component
         }
 
         private void SendRowToOutputBuffer(string jsonArrayElement) {
+            // TODO
+            /*
             _outputBuffer.AddRow();
             for (int i = 0; i < copyVals.Length; i++) {
                 // Skip the json item value, which will be filled later.
@@ -625,6 +570,7 @@ namespace com.webkingsoft.JsonSuite.Component
             }
 
             _outputBuffer[_jsonOutputColumnIndex] = jsonArrayElement; 
+            */
         }
 
         private void SendErrorRow(int errorCode) {
@@ -634,16 +580,7 @@ namespace com.webkingsoft.JsonSuite.Component
         
         public enum ERROR_CODES : int {
             [Description("The input json is invalid for this component.")]
-            ERROR_BAD_JSON = -100,
-
-            [Description("Array-start token was expected, but not found.")]
-            ERROR_MISSING_START_ARRAY = -101,
-
-            [Description("Array-end token was expected, but not found.")]
-            ERROR_MISSING_END_ARRAY = -102
+            ERROR_BAD_JSON = -100
         }
-
-        // TODO: move this into a stand-alone file 
-        public class NullOrEmptyArrayException : Exception { }
     }
 }

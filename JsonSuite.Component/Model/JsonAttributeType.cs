@@ -8,11 +8,10 @@ namespace com.webkingsoft.JsonSuite.Component.Model
 {
     public enum JsonAttributeType
     {
-        String,
         Number,
         Boolean,
-        Date,
 
+        String,
         Object,
         Array,
         Other

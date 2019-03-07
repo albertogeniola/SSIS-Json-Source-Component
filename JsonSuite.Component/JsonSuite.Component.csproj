@@ -105,7 +105,6 @@
     <Compile Include="JsonObjectParser.cs" />
     <Compile Include="JsonArraySplitter.cs" />
     <Compile Include="Model\AbstractCustomPropertyHelper.cs" />
-    <Compile Include="Model\AttributeMappingOptions.cs" />
     <Compile Include="Model\JsonAttributeType.cs" />
     <Compile Include="Model\ObjectParserProperties.cs" />
     <Compile Include="Model\ArraySplitterProperties.cs" />
@@ -141,6 +140,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icons\JsonArraySplitter.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\JsonObjectParser.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

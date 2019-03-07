@@ -89,7 +89,19 @@
     <Compile Include="DonateControl.Designer.cs">
       <DependentUpon>DonateControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="JsonObjectParser\ObjectParserGUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="JsonObjectParser\ObjectParserGUI.Designer.cs">
+      <DependentUpon>ObjectParserGUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JsonObjectParser\ObjectParserUI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="JsonArraySplitter\ArraySplitterGUI.resx">
@@ -98,9 +110,18 @@
     <EmbeddedResource Include="DonateControl.resx">
       <DependentUpon>DonateControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="JsonObjectParser\ObjectParserGUI.resx">
+      <DependentUpon>ObjectParserGUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="icons\JsonArraySplitter\Example.png" />
+    <Content Include="icons\JsonObjectParser\object-parser.png" />
+    <Content Include="icons\JsonObjectParser\object-parser2.png" />
     <EmbeddedResource Include="icons\JsonArraySplitter\icon.ico" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
+﻿using com.webkingsoft.JsonSuite.Component.Exceptions;
+using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 using Microsoft.SqlServer.Dts.Runtime.Wrapper;
 using System;
 using System.Collections.Generic;
@@ -66,11 +67,11 @@ namespace com.webkingsoft.JsonSuite.Component.Model
             foreach (KeyValuePair<string, AttributeMapping> mapping in AttributeMappings) {
                 outputColumns.Add(mapping.Key);
                 attributesExpressions.Add(mapping.Value.ObjectAttributeSelectionExpression);
-                attributesTypes.Add(mapping.Value.Type);
-                attributesScale.Add(mapping.Value.AttributeMappingOptions.SSISScale);
-                attributesPrecision.Add(mapping.Value.AttributeMappingOptions.SSISPrecision);
-                attributesLength.Add(mapping.Value.AttributeMappingOptions.SSISLength);
-                attributesCodepage.Add(mapping.Value.AttributeMappingOptions.SSISCodePage);
+                attributesTypes.Add(mapping.Value.AttributeType);
+                attributesScale.Add(mapping.Value.SSISScale);
+                attributesPrecision.Add(mapping.Value.SSISPrecision);
+                attributesLength.Add(mapping.Value.SSISLength);
+                attributesCodepage.Add(mapping.Value.SSISCodePage);
             }
 
             // Serialize that data. Simple arrays of strings/integers are automatically marshalled/unmarshalled.
@@ -113,14 +114,7 @@ namespace com.webkingsoft.JsonSuite.Component.Model
             // TODO: handle error cases when the user manually messes up with the custom properties
             Dictionary<string, AttributeMapping> res = new Dictionary<string, AttributeMapping>();
             for (int i = 0; i < outputCols.Length; i++) {
-                AttributeMapping mapping = new AttributeMapping()
-                {
-                    ObjectAttributeSelectionExpression = exprs[i],
-                    Type = types[i]
-                };
-
-                AttributeMappingOptions opts = new AttributeMappingOptions(types[i], scales[i], precisions[i]);
-                mapping.AttributeMappingOptions = opts;
+                AttributeMapping mapping = new AttributeMapping(exprs[i], types[i], scales[i], precisions[i]);
                 res.Add(outputCols[i], mapping);
             }
 
@@ -129,18 +123,127 @@ namespace com.webkingsoft.JsonSuite.Component.Model
         }
 
         public class AttributeMapping {
+            private int _scale;
+            private int _precision;
+
             /// <summary>
             /// The JPath expression to select the JSON attribute within the input object. 
             /// In the most simple case, that's just the attribute name.
             /// </summary>
             public string ObjectAttributeSelectionExpression { get; set; }
+                    
+            public AttributeMapping(string attributeSelectionExpression, JsonAttributeType type, int scale, int precision)
+            {
+                AttributeType = type;
+                ObjectAttributeSelectionExpression = attributeSelectionExpression;
+                _scale = scale;
+                _precision = precision;
+            }
 
-            /// <summary>
-            /// The expected type of the item to parse
-            /// </summary>
-            public JsonAttributeType Type { get; set; }
+            public JsonAttributeType AttributeType
+            {
+                get;
+            }
 
-            public AttributeMappingOptions AttributeMappingOptions { get; set; }
+            public int SSISScale
+            {
+                // If the type is number, allow the user to se it. In any other case, assume it's 0.
+                get
+                {
+                    switch (AttributeType)
+                    {
+                        case JsonAttributeType.Number:
+                            return _scale;
+                        default:
+                            return 0;
+                    }
+                }
+                set
+                {
+                    if (value < 0 || value > 28)
+                        throw new InvalidAtributeValueException("The type " + AttributeType + " cannot have a scale of " + value + ". Scale must be an integer value between 0 and 28 included.");
+
+                    switch (AttributeType)
+                    {
+                        case JsonAttributeType.Number:
+                            _scale = value;
+                            break;
+                        default:
+                            _scale = 0;
+                            break;
+                    }
+                }
+            }
+
+            public int SSISPrecision
+            {
+                // If the type is number, allow the user to se it. In any other case, assume it's 0.
+                get
+                {
+                    switch (AttributeType)
+                    {
+                        case JsonAttributeType.Number:
+                            return _precision;
+                        default:
+                            return 0;
+                    }
+                }
+                set
+                {
+                    if (value < 0 || value > 28)
+                        throw new InvalidAtributeValueException("The type " + AttributeType + " cannot have a precision of " + value + ". Precision must be an integer value between 0 and 28 included.");
+                    switch (AttributeType)
+                    {
+                        case JsonAttributeType.Number:
+                            _precision = value;
+                            break;
+                        default:
+                            _precision = 0;
+                            break;
+                    }
+                }
+            }
+
+            public int SSISLength
+            {
+                get
+                {
+                    return 0;
+                }
+            }
+
+            public int SSISCodePage
+            {
+                get
+                {
+                    return 0;
+                }
+            }
+
+            public DataType SSISDataType
+            {
+                get
+                {
+                    switch (AttributeType)
+                    {
+                        // For numbers, provide Numeric
+                        case JsonAttributeType.Number:
+                            return DataType.DT_NUMERIC;
+
+                        // For booleans, return the corresponding type
+                        case JsonAttributeType.Boolean:
+                            return DataType.DT_BOOL;
+
+                        // For array, objects, strings and any other, return DT_NEXT
+                        case JsonAttributeType.Array:
+                        case JsonAttributeType.Object:
+                        case JsonAttributeType.String:
+                        case JsonAttributeType.Other:
+                        default:
+                            return DataType.DT_NTEXT;
+                    }
+                }
+            }
         }
     }
 }
