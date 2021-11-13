@@ -1,3 +1,9 @@
+# ☠ This repo is now UNMAINTAINED ☠
+I am glad this component has helped a lot of people around using SSIS. 
+During the last years I have been focusing on other projects and is now time to let this repo die.
+There are modern components that are now able to do the same and are, probably, much better that this one.
+I'd like to say thank you to all of the supporters of the component. You rock guys.
+
 # ![Logo](https://www.hardwareforyou.it/images/loghi/256x256.png) SSIS-Json-Source-Component 
 
 # What's JSONSource?
